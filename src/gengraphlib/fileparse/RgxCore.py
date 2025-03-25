@@ -63,9 +63,12 @@ class RgxField:
 """
 class RgxLine:
 
-    def __init__(self: Self) -> None:
+    def __init__(self: Self, field_defs: dict[str, TRgxField ] | None= None) -> None:
         self.pattern: Pattern | None = None
-        self.fields: dict[str,RgxField ] = {}
+        self.fields: dict[str, RgxField] = {}
+
+        if field_defs:
+            self.add_fields( field_defs )
 
     def add_field( self: Self, name: str, rgx_str: str ) -> None:
         self.fields[name] = RgxField( name, rgx_str )

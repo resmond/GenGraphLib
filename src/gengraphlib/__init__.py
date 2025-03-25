@@ -3,8 +3,8 @@
 from fileparse.GNodeLib import NodeBase, TNODE, NodeDict
 from fileparse.ParseTriggers import TParseTestFn, ParseTrigger, ParseTriggers, ResultState
 from fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
-from fileparse.FileParse import FileParseContext
-from LogNodes import LogLineNode, LineNodeIndex, ModuleNode, ModuleNodeDict, ModuleTypeNode, ModuleTypeDict, ModuleTypeNodeDict
+from fileparse.FileIoContext import FileIoContext
+from LogLineNode import LogLineNode, LineNodeIndex, ModuleNode, ModuleNodeDict, ModuleTypeNode, ModuleTypeDict, ModuleTypeNodeDict
 from LogFileGraph import LogFileGraph
 
 __all__ = [
@@ -19,7 +19,7 @@ __all__ = [
     "ResultState",
 
     # from FileParse
-    "FileParseContext",
+    "FileIoContext",
 
     # from RgxCore
     "TRX_GROUPPATTERN",

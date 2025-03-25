@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from typing import  Self
 from collections.abc import Callable
+from dataclasses import dataclass
 from enum import IntEnum
-
-from typing import  Self, TypedDict, TypeVar, Any
 
 class ResultState(IntEnum):
     Found = 1
@@ -11,11 +11,15 @@ class ResultState(IntEnum):
     ParseError = -1
     Exception = -2
 
-class ParseTestResult(TypedDict):
-    state: ResultState
-    values: dict
+@dataclass
+class LineParseResult:
+    state: ResultState | None = None
+    tag: str | None = None
+    message: str | None = None
+    exception: Exception | None = None
+    #values: dict
 
-TParseTestFn = TypeVar( "TParseTestFn", bound = Callable[ [ str, str], ParseTestResult ] )
+TParseTestFn = Callable[ [ str, str], LineParseResult ]
 
 class ParseTrigger:
 
@@ -24,45 +28,28 @@ class ParseTrigger:
         self.match_phrase: str = match_phrase
         self.parse_fn: TParseTestFn = parse_fn
 
-    def parseif( self: Self, parse_str: str ) -> ParseTestResult | None:
+    def parseif( self: Self, parse_str: str ) -> LineParseResult | None:
         if parse_str.find(self.match_phrase) != -1:
             return self.parse_fn( parse_str )
         else:
             return None
 
     @staticmethod
-    def defautl_fn( input_str: str ) -> ParseTestResult | None:
-        return ParseTestResult( state=ResultState.NoneFound, values={"message": input_str} )
+    def defautl_fn( input_str: str ) -> LineParseResult | None:
+        return LineParseResult( state=ResultState.NoneFound, message=input_str )
 
 class ParseTriggers( dict[ str, ParseTrigger ] ):
 
     def __init__( self: Self ) -> None:
         super(ParseTriggers, self).__init__()
 
-    def execute( self: Self, input_str: str ) -> ParseTestResult:
-        results: dict[ str, Any ] | None = None
-        result: ParseTestResult = ParseTestResult( state=ResultState.NoneFound, values={"message": input_str} )
+    def execute( self: Self, input_str: str ) -> LineParseResult:
+        result: LineParseResult = LineParseResult( state=ResultState.NoneFound, message=input_str )
         for key, trigger in self.items():
             phrase: str = self[ key ].match_phrase
-            tag: str = self[ key ].tag
 
             if input_str.find( phrase ) != -1:
                 result = self[ key ].parse_fn( "", input_str )
-
-                match result["state"]:
-                    case ResultState.NoneFound:
-                        results[ tag ] = result.values
-                        print( f'Success on [{phrase}]=({tag}): {input_str}' )
-                        print( f'    {result.values}' )
-                        print()
-
-                    case ResultState.ParseError:
-                        print( f'ParseError on [{phrase}]: {input_str}' )
-
-                    case ResultState.Exception:
-                        print( f'Exception on [{phrase}]: {input_str}' )
-
-                    case _:
-                        print( f'Otherwise on [{phrase}]: {input_str}' )
+                result.tag = self[key].tag
 
         return result

@@ -1,73 +1,77 @@
 import json
 
 from typing import Self, TextIO
+from collections.abc import Callable
 
-#from fileparse.FileParse import FileParseContext
-from fileparse.FileParse import FileParseContext
 from fileparse.RgxCore import RgxLine, TRgxField
-from fileparse.ParseTriggers import ParseTriggers, ParseTestResult
-from LogNodes import LogLineNode, LineNodeIndex, ModuleTypeDict
+from fileparse.ParseTriggers import ParseTriggers, LineParseResult
+from LogLineNode import LogLineNode, LineNodes
+from LogModules import ModuleTypes
 
-patterns: dict[str, TRgxField ] = {
-    "date_seg": TRgxField( r"^\w*\s\w*\s\w*:\w*:\w*", tail= " " ),
-    "machine": TRgxField( r"\w*\S*", tail= " " ),
-    "thread_id": TRgxField( r"\w*\[\w*\]", tail= ": " ),
-    "module_id": TRgxField( r"\w*-\w*", tail= "." ),
-    "module_type_id": TRgxField( r"\w*", tail= " - " ),
-    "message": TRgxField( r".*" ),
-}
+LINE_CALLBACK = Callable[ str, bool ]
 
-class LogFileGraph:
+class LogFileContext:
+
+    fields: dict[str, TRgxField ] = {
+        "date_seg": TRgxField(r"^\w*\s\w*\s\w*:\w*:\w*", tail=" "),
+        "machine": TRgxField(r"\w*\S*", tail=" "),
+        "thread_id": TRgxField(r"\w*\[\w*\]", tail=": "),
+        "module_id": TRgxField(r"\w*-\w*", tail="."),
+        "module_type_id": TRgxField(r"\w*", tail=" - "),
+        "message": TRgxField(r".*"),
+    }
+
+    def __init__( self: Self) -> None:
+        self.parse_triggers: ParseTriggers = ParseTriggers()
+        self.rgx_line: RgxLine = RgxLine( field_defs = LogFileContext.fields )
+        self.writer: TextIO
+
+    def parse_file( self: Self, input_file_name: str, line_fn: LINE_CALLBACK ) -> None:
+
+        try:
+            with open( self.output_file_name, 'w', encoding='utf-8-sig' ) as self.writer:
+
+                reader: TextIO
+                with open( input_file_name, newline = '', encoding = 'utf-8-sig' ) as reader:
+                    for line_str in reader:
+                        line_fn( line_str )
+
+        except Exception as e:
+            print( f'File "{input_file_name}": {e}' )
+
+    def logwrite( self: Self, text: str ) -> None:
+        self.writer.write( text )
+
+class LogGraph:
 
     def __init__( self: Self, input_file_name: str, output_file_name: str ) -> None:
-        self.input_file_name = input_file_name
-        self.output_file_name = output_file_name
-        self.file_context: FileParseContext | None = None
-        self.rgx_line: RgxLine = RgxLine()
-        self.parse_triggers: ParseTriggers = ParseTriggers()
 
-        self.lines: LineNodeIndex = LineNodeIndex()
+        self.next_line_number: int = 0
+        self.lines: LineNodes = LineNodes()
+        self.module_types: ModuleTypes = ModuleTypes()
 
-        self.module_types: ModuleTypeDict = ModuleTypeDict()
+        #self.event_types: EventTypes = EventTypes()
 
 #        self.event_types["unmet"] = EventTypeBase( id= "unmet", match_phrase = "unmet condition" )
 #        from graphparse import EventTypeDict
-#        self.event_types: EventTypeDict = EventTypeDict()
 
-        self.next_line_number: int = 0
 
-        self.init()
-
-    def init( self: Self ) -> bool:
-        self.file_context = FileParseContext( self.input_file_name, self.output_file_name, self.process_line )
-        self.rgx_line.add_fields(patterns)
-
-#        for event_type_id in self.event_types:
-#            event_type: event_type = self.event_types[event_type_id]
-#            self.parse_triggers[ event_type_id ] = ParseTrigger( tag= event_type.id, match_phrase = event_type.match_phrase, parse_fn = self.process_event )
-
-        return True
-
-    def process_line( self: Self, new_line_str: str ) -> ParseTestResult:
-        parse_test_result: ParseTestResult = self.parse_triggers.execute( input_str= new_line_str )
-
+    def process_line( self: Self, new_line_str: str ) -> LineParseResult:
+        parse_test_result: LineParseResult = self.parse_triggers.execute( input_str= new_line_str )
+        self.next_line_number += 1
         return parse_test_result
 
-    def process_event( self: Self, event_type_id: str, new_line_str: str ) -> ParseTestResult:
+    def process_event( self: Self, event_type_id: str, new_line_str: str ) -> LineParseResult:
 
 #        if parse_test_result is not None and parse_test_result[ "state" ] == ResultState.Found:
         line_values: dict[str,str] = self.rgx_line.process_line(new_line_str)
         new_line_node: LogLineNode = LogLineNode( line_str= new_line_str, line_num=self.next_line_number )
-        parse_test_result = new_line_node.populate_data( event_type_id=event_type_id, line_values=line_values )
+        parse_test_result = new_line_node.parse_line( event_type_id=event_type_id, line_values=line_values )
 
 #        self.module_types.add_node(new_line_node)
-        self.file_context.write( f'{new_line_node}' )
-        self.next_line_number += 1
+        self.file_context.logwrite( f'{new_line_node}' )
 
         return parse_test_result
-
-    def parse( self: Self ) -> None:
-        self.file_context.parse_file()
 
     def finish( self: Self ) -> None:
         json_file: TextIO | None = None
