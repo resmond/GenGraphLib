@@ -3,7 +3,8 @@ from traceback import format_exception_only
 from typing import Self
 
 from fileparse.GNodeLib import NodeBase, NodeDict
-from graphparse import RgxLine, ParseTestResult, ResultState
+from fileparse.ParseTriggers import ParseTestResult, ResultState
+from fileparse.RgxCore import RgxLine
 
 class LogLineNode( NodeBase ):
 
