@@ -1,11 +1,12 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
 from fileparse.GNodeLib import NodeBase, TNODE, NodeDict
-from fileparse.ParseTriggers import TParseTestFn, ParseTrigger, ParseTriggers, ResultState
+from fileparse.ParseTriggers import TParseTestFn, MatchTrigger, ParseTriggers, ResultState
 from fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
 from fileparse.FileIoContext import FileIoContext
-from LogLineNode import LogLineNode, LineNodeIndex, ModuleNode, ModuleNodeDict, ModuleTypeNode, ModuleTypeDict, ModuleTypeNodeDict
-from LogFileGraph import LogFileGraph
+from LogLines import LogLine, LogLines
+from LogModules import Module, Modules, ModuleType, ModuleTypes
+from LogGraph import LogGraph
 
 __all__ = [
     "NodeBase",
@@ -14,7 +15,7 @@ __all__ = [
 
     # from ParseTriggers
     "TParseTestFn",
-    "ParseTrigger",
+    "MatchTrigger",
     "ParseTriggers",
     "ResultState",
 
@@ -28,15 +29,16 @@ __all__ = [
     "RgxLine",
 
     #from LogNodes
-    "LogLineNode",
-    "LineNodeIndex",
-    "ModuleNode",
-    "ModuleNodeDict",
-    "ModuleTypeNode",
-    "ModuleTypeDict",
-    "ModuleTypeNodeDict",
+    "LogLine",
+    "LogLines",
+
+    #from LogModules
+    "Module",
+    "Modules",
+    "ModuleType",
+    "ModuleTypes",
 
     #from LogFileGraph
-    "LogFileGraph"
+    "LogGraph"
 
 ]

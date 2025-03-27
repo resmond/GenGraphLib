@@ -3,3 +3,4 @@ setuptools~=76.1.0
 packaging~=24.2
 typing_extensions~=4.12.2
 regex
+json_stream

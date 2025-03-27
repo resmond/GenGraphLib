@@ -1,0 +1,40 @@
+{
+    "_TRANSPORT" : "journal",
+    "_RUNTIME_SCOPE" : "system",
+    "_COMM" : "systemd-resolve",
+    "SYSLOG_IDENTIFIER" : "systemd-resolved",
+    "_SYSTEMD_UNIT" : "systemd-resolved.service",
+    "_SYSTEMD_SLICE" : "system.slice",
+    "_SYSTEMD_CGROUP" : "/system.slice/systemd-resolved.service",
+    "SYSLOG_FACILITY" : "3",
+
+    "_HOSTNAME" : "gernby-NUC13ANHi7",
+
+    "PRIORITY" : "4",
+    "MESSAGE" : "Using degraded feature set UDP instead of TCP for DNS server ::1.",
+
+    "_EXE" : "/usr/lib/systemd/systemd-resolved",
+    "_CMDLINE" : "/usr/lib/systemd/systemd-resolved",
+    "CODE_FILE" : "src/resolve/resolved-dns-server.c",
+    "CODE_FUNC" : "dns_server_possible_feature_level",
+    "CODE_LINE" : "587",
+
+    "_CAP_EFFECTIVE" : "2000",
+    "_SELINUX_CONTEXT" : "unconfined\n",
+
+    "TID" : "1446",
+    "_UID" : "991",
+    "_PID" : "1446",
+    "_GID" : "991",
+
+    "__SEQNUM" : "7120708",
+    "__SEQNUM_ID" : "7d0971a098e24097a784ffa07ef8d85f",
+    "_BOOT_ID" : "66976bacb559487ea855811a90057f8d",
+    "_MACHINE_ID" : "4395b976dd294dd58d7b1ecc1f066791",
+
+    "__MONOTONIC_TIMESTAMP" :      "72624969531",
+    "_SOURCE_REALTIME_TIMESTAMP" : "1743014462704491",
+    "__REALTIME_TIMESTAMP" :       "1743014462704732",
+    "_SYSTEMD_INVOCATION_ID" : "2ad0b4e9fe764b13bfd8024485cc6b64",
+    "__CURSOR" : "s=7d0971a098e24097a784ffa07ef8d85f;i=6ca744;b=66976bacb559487ea855811a90057f8d;m=10e8c9173b;t=631432de34c5c;x=915dc09f5d4b1432",
+}

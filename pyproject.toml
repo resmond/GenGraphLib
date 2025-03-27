@@ -1,0 +1,44 @@
+[project]
+name = "GenGraphLib"
+description = "Node graph framework for journalctl logs."
+readme = "README.md"
+requires-python = ">=3.13"
+license = {file = "LICENSE.md"}
+keywords = [
+    "python",
+    "library",
+    "widgets",
+    "development",
+]
+authors = [
+    {name = "Richard Esmond"},
+]
+maintainers = [
+    {name = "Richard Esmond"}
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: Partially OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+]
+dynamic = [
+    "version",
+    "dependencies"
+]
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
+
+[tool.setuptools.packages.find]
+include = ["GenGraphLib*"]
+namespaces = false
+
+[dependency-groups]
+dev = [
+]

@@ -14,19 +14,7 @@ class FileIoContext:
         self.line_fn: Callable[str, bool] = line_fn
 
     def parse_file( self: Self ) -> None:
-        self.writer: TextIO = open( self.output_file_name, 'w', encoding='utf-8-sig' )
-
         reader: TextIO
-        with open( self.input_file_name, newline = '', encoding = 'utf-8-sig' ) as self.reader:
-
-
-
-        for line_str in self.reader:
-            self.line_fn( line_str )
-
-    def write( self: Self, text: str ) -> None:
-        self.writer.write( text )
-
-    def close( self ) -> None:
-        self.writer.close()
-        self.reader.close()
+        with open( self.input_file_name, newline = '', encoding = 'utf-8-sig' ) as reader:
+            for line_str in reader:
+                self.line_fn( line_str )

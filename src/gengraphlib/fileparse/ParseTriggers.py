@@ -11,8 +11,14 @@ class ResultState(IntEnum):
     ParseError = -1
     Exception = -2
 
+class TriggerType(IntEnum):
+    Scan = 1
+    RegEx = 2
+    LeadWhitespace = 3
+
 @dataclass
 class LineParseResult:
+    type: TriggerType = TriggerType.Scan
     state: ResultState | None = None
     tag: str | None = None
     message: str | None = None
@@ -21,7 +27,7 @@ class LineParseResult:
 
 TParseTestFn = Callable[ [ str, str], LineParseResult ]
 
-class ParseTrigger:
+class MatchTrigger:
 
     def __init__(self: Self, tag: str, match_phrase: str, parse_fn: TParseTestFn) -> None:
         self.tag: str = tag
@@ -38,7 +44,7 @@ class ParseTrigger:
     def defautl_fn( input_str: str ) -> LineParseResult | None:
         return LineParseResult( state=ResultState.NoneFound, message=input_str )
 
-class ParseTriggers( dict[ str, ParseTrigger ] ):
+class ParseTriggers( dict[ str, MatchTrigger ] ):
 
     def __init__( self: Self ) -> None:
         super(ParseTriggers, self).__init__()
@@ -46,10 +52,17 @@ class ParseTriggers( dict[ str, ParseTrigger ] ):
     def execute( self: Self, input_str: str ) -> LineParseResult:
         result: LineParseResult = LineParseResult( state=ResultState.NoneFound, message=input_str )
         for key, trigger in self.items():
-            phrase: str = self[ key ].match_phrase
+            match trigger.type:
 
-            if input_str.find( phrase ) != -1:
-                result = self[ key ].parse_fn( "", input_str )
-                result.tag = self[key].tag
+                case TriggerType.Scan:
+                    phrase: str = self[ key ].match_phrase
+                    if input_str.find( phrase ) != -1:
+                        result = self[ key ].parse_fn( "", input_str )
+                        result.tag = self[key].tag
+                case TriggerType.RegEx:
+
+                case TriggerType.LeadWhitespace:
+                    if input_str.startswith( " " ):
+                        result = self[ key ].parse_fn( "", input_str )
 
         return result

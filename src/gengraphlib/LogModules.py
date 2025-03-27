@@ -1,6 +1,6 @@
 from typing import Self
 
-from LogLineNode import LogLineNode
+from LogLines import LogLine
 from . import NodeBase, NodeDict
 
 class Module( NodeBase ):
@@ -24,7 +24,7 @@ class Modules( NodeDict[ Module ] ):
 
 class ModuleType( NodeDict[ Modules ] ):
 
-    def __init__(self: Self, line_node: LogLineNode | None = None, id: str = "module_type_node") -> None:
+    def __init__( self: Self, line_node: LogLine | None = None, id: str = "module_type_node" ) -> None:
         super( ModuleType, self ).__init__( id=id )
         #self.module_nodes = ModuleNodeDict(id="model_node_dict")
         #self.module_nodes[line_node.module_id] = ModuleNode( id=line_node.module_id, module_type_node=self )
@@ -42,10 +42,10 @@ class ModuleTypes( NodeDict[ ModuleType ] ):
         self[key] = new_node = ModuleType( id=key )
         return new_node
 
-    def accept_line_node( self: Self, line_node: LogLineNode ) -> None:
+    def accept_line_node( self: Self, line_node: LogLine ) -> None:
         self[ line_node.module_type_id ][ line_node.module_id ] = line_node
 
-    def __add__(self, other: LogLineNode) -> None:
+    def __add__( self, other: LogLine ) -> None:
         self.accept_line_node(other)
 
 #    def add_node( self: Self, line_node: ModuleTypeNode ) -> None:
