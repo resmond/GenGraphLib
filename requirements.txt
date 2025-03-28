@@ -4,3 +4,7 @@ packaging~=24.2
 typing_extensions~=4.12.2
 regex
 json_stream
+numpy
+numpydoc
+numba
+pandas

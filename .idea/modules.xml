@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GenGraphLib.iml" filepath="$PROJECT_DIR$/.idea/GenGraphLib.iml" />
+      <module fileurl="file://$USER_HOME$/data/jctl-logs/.idea/jctl-logs.iml" filepath="$USER_HOME$/data/jctl-logs/.idea/jctl-logs.iml" />
     </modules>
   </component>
 </project>
