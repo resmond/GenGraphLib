@@ -2,7 +2,7 @@
 name = "GenGraphLib"
 description = "Node graph framework for journalctl logs."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 license = {file = "LICENSE.md"}
 keywords = [
     "python",

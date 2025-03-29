@@ -1,12 +1,12 @@
 import os
 import json
 
-def read_json():
+def read_json(filepath: str):
 
     try:
         all_keys: dict[str, int] = {}
 
-        with open( "../../../data/jctl-last-1.json" ) as file:
+        with open( filepath ) as file:
             for line in file:
                 obj = json.loads(line)
                 for key, value in obj.items():
