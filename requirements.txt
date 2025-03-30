@@ -8,3 +8,5 @@ numpy
 numpydoc
 numba
 pandas
+sortedcontainers
+sortedcontainers-stubs

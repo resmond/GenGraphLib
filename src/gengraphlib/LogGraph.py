@@ -64,7 +64,7 @@ class LogGraph:
     def process_event( self: Self, event_type_id: str, new_line_str: str ) -> LineParseResult:
 
 #        if parse_test_result is not None and parse_test_result[ "state" ] == ResultState.Found:
-        line_values: dict[str,str] = self.rgx_line.process_line(new_line_str)
+        line_values: dict[str,str] = self.rgx_line._process_line( new_line_str )
         new_line_node: LogLine = LogLine( line_str= new_line_str, line_num=self.next_line_number )
         parse_test_result = new_line_node.parse_line( event_type_id=event_type_id, line_values=line_values )
 

@@ -1,0 +1,115 @@
+import os
+
+from typing import Self
+
+from dataclasses import dataclass
+import datetime as dt
+import subprocess
+import json as js
+
+from PipedBases import PipedToFileBase
+
+#import asyncio as aio
+#import asyncio.subprocess as asub
+
+
+@dataclass
+class BootRecord:
+    idx: int
+    id: str
+    first_dt: dt.datetime | None = None
+    last_dt: dt.datetime | None = None
+
+    @classmethod
+    def from_dict(cls, d: dict) -> Self:
+        return BootRecord(idx=d["idx"], id=d["id"], first_dt=d["first_dt"], last_dt=d["last_dt"])
+
+    def __repr__(self: Self ) -> str:
+        return f'{{"idx":{self.idx}, "id":"{self.id}", "first_dt":"{self.first_dt}", "last_dt":"{self.last_dt}"}}'
+    def __str__(self) -> str: return self.__repr__()
+
+    @classmethod
+    def parse_line( cls, line: str ) -> Self:
+        val_list: list[str] = line.split()
+        idx: str = val_list[0]
+        id: str = val_list[1]
+        first: str = " ".join(val_list[3:5])
+        last: str = " ".join(val_list[7:9])
+        boot_rec = BootRecord(
+            int(idx),
+            id,
+            dt.datetime.fromisoformat(first),
+            dt.datetime.fromisoformat(last),
+        )
+        return boot_rec
+
+    @classmethod
+    def parse_json( cls, json_str: str ) -> Self | None:
+        try:
+            ref_dict = js.loads(json_str.strip())
+            first_dt: dt.datetime = dt.datetime.fromisoformat(ref_dict["first_dt"])
+            last_dt: dt.datetime = dt.datetime.fromisoformat(ref_dict["last_dt"])
+            boot_rec = BootRecord(
+                idx=int(ref_dict["idx"]),
+                id=ref_dict["id"],
+                first_dt=first_dt,
+                last_dt=last_dt,
+            )
+            return boot_rec
+
+        except js.JSONDecodeError as jsext:
+            print(f'[BootRecord.parse_json] JSONDecodeError: {jsext}')
+            print(f'   [{jsext.colno}={json_str[jsext.colno]}]: {json_str}')
+            return None
+
+        except Exception as ext:
+            print(f'[BootRecord.parse_json] Exception: {ext}')
+            return None
+
+class PipedToKeys(PipedToFileBase):
+    def __init__( self: Self, output_filepath: str ) -> None:
+        super().__init__("PipedToKeys", output_filepath )
+
+    def process_line( self: Self, line: str ) -> bool:
+        return True
+
+class BootLogDir:
+
+    def __init__(self: Self, root_dir: str, boot_rec: BootRecord) -> None:
+        super().__init__()
+        self.boot_rec = boot_rec
+        self.root_dir = root_dir
+        self.dir_name = self.boot_rec.first_dt.isoformat()
+        self.dir_path = os.path.join(self.root_dir, self.dir_name)
+        self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
+        self.journalPipe = PipedToKeys(self.keys_filepath)
+
+    def _dir_exists( self: Self ) -> bool:
+        try:
+            dir_name = self.boot_rec.first_dt.isoformat()
+            dir_path = os.path.join(self.root_dir, dir_name)
+            os.makedirs( dir_path, exist_ok=True )
+            return True
+
+        except Exception as e:
+            print(f'[make_dir] Exception: {e}')
+            return False
+
+    def log_fromquery( self: Self ) -> bool:
+        try:
+            boot_id = self.boot_rec.id
+            if self._dir_exists():
+                # list[str] = [f"journalctl -b {boot_id} -o json","| python3 KeyStatsPipe.py", f"> {self.keys_filepath}"]
+                journalctl_cmd: str = f"journalctl -b {boot_id} -o json > {self.keys_filepath}"
+                result = subprocess.run(args=journalctl_cmd, shell=True, cwd=self.dir_path)
+                print(f'stderr: {result.stderr}')
+
+            return True
+
+        except Exception as e:
+            print(f'[export_log] Exception: {e}')
+            return False
+
+
+
+
