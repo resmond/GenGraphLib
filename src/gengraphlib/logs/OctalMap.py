@@ -1,4 +1,4 @@
-from collections import namedtuple
+from typing import NamedTuple
 from enum import IntEnum
 
 """
@@ -11,26 +11,30 @@ from enum import IntEnum
 """
 
 
-class CharCatagory(IntEnum):
-    LowerAscSeg  = 0   #  0b 000  - a-z + 6 Extra Char Defs
-    UpperAscSeg  = 1   #  0b 001   # 1 - A-Z + 6 Extra Char Defs
-    TokenSeg     = 2   #  0b 010   # 2 - 32 Tokens
-    MarkerSeg    = 3
+class CSeg( IntEnum ):
+    LowerAscSeg  = 0b000   # 0b 000  - a-z + 6 Extra Char Defs
+    UpperAscSeg  = 0b001   # 0b 001  - A-Z + 6 Extra Char Defs
+    TokenSeg     = 0b010   # 0b 010  - 32 Tokens
 
-    NumSegData   = 4   #   0b 1XX   # 6 - Hi-Bit + 7 bits of data
-    NumSegPos    = 5   #   0b 10X   # 5 - for negative signed segment + 6 bits of data
-    NumSegNeg    = 6   #   0b 11X   # 7 - for positive signed segment + 6 bits of data
-    NumExpSeg    = 7   #   0b 111   # 3 - Hi-bit is final marker + 4 bits of exponent data (repeating)
+    MarkerSeg    = 0b011   # 0b 011
+
+    NumSegData   = 0b100   # 0b 1XX   - Hi-Bit + 7 bits of data
+    NumSegPos    = 0b101   # 0b 10X   - for negative signed segment + 6 bits of data
+    NumSegNeg    = 0b110   # 0b 11X   - for positive signed segment + 6 bits of data
+    NumExpSeg    = 0b111   # 0b 111   - Hi-bit is final marker + 4 bits of exponent data (repeating)
 
 
 
 
-CharCat: type = namedtuple[CharCatagory, int]( "CharCat", ["cat", "val"])
+#char_cat_def = tuple[ CharCatagory, int]
+CCharDef: NamedTuple[CSeg, int ] = NamedTuple[CSeg, int ]( "CChar", [ "cat", "val" ] )
 
-def intToCatChar(_cint: int) -> CharCat:
-    return CharCat((_cint & 0xe0) >> 5, (_cint & 0x1f))
+def intToCatChar(_cint: int) -> CCharDef:
+    #_seg: CCatSeg = CCatSeg( _cint & 0xc0 >> 5 )
+    #_val: int = _cint & 0x1f
+    return CSeg( _cint & 0xc0 >> 5 ), _cint & 0x1f
 
-def catCharToInt( cat_char: CharCat) -> int:
+def catCharToInt( cat_char: CCharDef) -> int:
         return (cat_char.cat << 5) | cat_char.val
 
 def catCharToStr(_cint: int) -> str:
@@ -65,17 +69,6 @@ if __name__ == "__main__":
     test_str: str = "abcdefghijklmnopqrstuv"
 
     for cint in range( 0, 256 ):
-        """
-        octfld: str = CharTools.int_to_octfld( cint )
-        octstr: str = CharTools.int_to_octstr( cint )
-        hexstr: str = f'{hex(cint)}'
-        binfld: str = CharTools.int_to_binfld( cint )
-        binstr: str = CharTools.int_to_binstr( cint )
-        """
-
-        test: CharCat = ( CharCatagory.NumericChar, 6)
-        test_cat = test.cat
-
         char: str = catCharToStr( cint )
 
         chr_str: str = chr( cint )
@@ -91,6 +84,9 @@ if __name__ == "__main__":
         cat: int = (cint & 0xe0) >> 5
         val: int = (cint & 0x1f)
 
-        print(f'{cint:3}: {char}  0x {cint:4X}| 0b {cint:08b} 2b {bin_chars} |{cat_oct}| [{cat}] |{val_oct}| [{val}]' )
+        with open("/home/richard/data/jctl-logs/docs/chmap.txt", "w") as file:
+            line = f'{cint:3}: {char}  0x {cint:4X}| 0b {cint:08b} 2b {bin_chars} |{cat_oct}| [{cat}] |{val_oct}| [{val}]'
+            print( line )
+            file.write( line + "\n")
 
         
