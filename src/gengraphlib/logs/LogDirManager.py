@@ -1,5 +1,7 @@
 import subprocess
 
+from progress.bar import Bar
+
 from enum import StrEnum
 
 from typing import Self

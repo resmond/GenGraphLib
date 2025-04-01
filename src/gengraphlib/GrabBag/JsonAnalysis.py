@@ -13,16 +13,16 @@ from collections.abc import Callable
 JValTypes: type = type[str, int, float, bool, datetime]
 
 class JsonType( IntEnum ):
-    str: 1
-    int: 2
-    float: 3
-    bool: 4
-    date: 4
+    JString = 1
+    JInt    = 2
+    JFloat  = 3
+    JBool   = 4
+    JDate   = 5
 
-class FieldDef( NamedTuple[str, str ] ):
+class FieldDef(NamedTuple):
     json_key: str
     log_key: str
-    type: JsonType = JsonType.str
+    type: JsonType = JsonType.JString
     unique: bool = True
 
 class JsonTimestamp:
@@ -30,33 +30,88 @@ class JsonTimestamp:
         dt_val = datetime.fromisoformat(dt_str)
         super(JsonTimestamp, self).__init__(dt_val)
 
-key_map_list: list[FieldDef] =\
-[
-    ("sunit", "_SYSTEMD_UNIT"),
-    ("uunit", "UNIT"),
-    ("kdev", "_KERNEL_DEVICE"),
-    ("usnm", "_UDEV_SYSNAME"),
-    ("udnv", "_UDEV_DEVNODE"),
-    ("edlk", "_UDEV_DEVLINK"),
-    ("ksub", "_KERNEL_SUBSYSTEM"),
-    ("tid", "TID", JsonType.int),
-    ("pid", "_PID", JsonType.int),
-    ("trn", "_TRANSPORT"),
+key_map_list: list[FieldDef] = [
+    ("sunit", "_SYSTEMD_UNIT"),                                # 1
+    ("uunit", "UNIT"),                                         # 1
+    ("usnm", "_UDEV_SYSNAME"),                                 # 1
+    ("udnv", "_UDEV_DEVNODE"),                                 # 1
+    ("ksub", "_KERNEL_SUBSYSTEM"),                             # 1
+    ("tid", "TID", JsonType.JInt),                              # 1
     ("com", "_COMM"),
-    ("pri", "PRIORITY", JsonType.int ),
-    ("sid", "SYSLOG_IDENTIFIER"),
-    ("time", "_SOURCE_REALTIME_TIMESTAMP", JsonType.date),
+    ("sid", "SYSLOG_IDENTIFIER"),                              # 1
+    ("time", "_SOURCE_REALTIME_TIMESTAMP", JsonType.JDate),
     ("fac", "SYSLOG_FACILITY"),
-    ("lbk", "_LINE_BREAK", JsonType.bool),
+    ("lbk", "_LINE_BREAK", JsonType.JBool),
     ("cmd", "_CMDLINE"),
-    ("ounit", "OBJECT_SYSTEMD_UNIT"),
-    ("cmd", "OBJECT_CMDLINE"),
-    ("msg", "MESSAGE"),
-    ("doc", "DOCUMENTATION")
+    ("uiid", "USER_INVOCATION_ID"),                            # 1
+    ("gapi", "GLIB_OLD_LOG_API"),
+    ("nmd", "NM_DEVICE"),
+    ("gld", "GLIB_DOMAIN"),
+    ("nmlev", "NM_LOG_LEVEL"),
+    ("jres", "JOB_RESULT"),
+    ("stmst", "_SOURCE_MONOTONIC_TIMESTAMP"),
+    ("jid", "JOB_ID"),
+    ("jtp", "JOB_TYPE"),
+    ("iid", "INVOCATION_ID"),
+    ("stmst", "SYSLOG_TIMESTAMP"),
+    ("mid", "MESSAGE_ID"),
+    ("pid", "SYSLOG_PID"),
+    ("sunit", "_SYSTEMD_USER_UNIT"),                           # 1
+    ("souid", "_SYSTEMD_OWNER_UID"),                           # 1
+    ("stid", "_STREAM_ID"),                                    # 1
+    ("auses", "_AUDIT_SESSION"),
+    ("cdfn", "CODE_FUNC"),
+    ("cdln", "CODE_LINE"),
+    ("cdfl", "CODE_FILE"),
+    ("siid", "_SYSTEMD_INVOCATION_ID"),                        # 1
+    ("exe", "_EXE"),
+    ("sdslc", "_SYSTEMD_SLICE"),
+    ("linctx", "_SELINUX_CONTEXT"),
+    ("uid", "_UID"),
+    ("cur", "__CURSOR")
+
+
+#    ("cmd", "OBJECT_CMDLINE"),  #
+#    ("kdev", "_KERNEL_DEVICE"),  #
+#    ("edlk", "_UDEV_DEVLINK"),  #
+#    ("pid", "_PID", JsonType.int),  #
+#    ("trn", "_TRANSPORT"),  #
+#    ("pri", "PRIORITY", JsonType.int),  #
+#    ("ounit", "OBJECT_SYSTEMD_UNIT"),  #
+#    ("msg", "MESSAGE"),  #
+#    ("doc", "DOCUMENTATION"),  #
+]
+
+capture_list: list[str] = [
+    "sunit",
+    "uunit",
+    "usnm",
+    "udnv",
+    "ksub",
+    "tid",
+    "sid",
+    "uiid",
+    "sunit",
+    "souid",
+    "stid",
+    "siid",
+    "sdslc",
+    "linctx",
+    "uid"
 ]
 
 json_to_log: dict[str,str] = {json:log for (json, log) in key_map_list}
 log_to_json: dict[str,str] = {log:json for (json, log) in key_map_list}
+
+print_dict: dict[str, list[str]] = dict[str,list[str]]()
+capture_flags: dict[str, bool ] = {}
+
+for (json, log) in key_map_list:
+    print_dict[json] = []
+    capture_flags[log] = False
+
+for key in capture_list:
+    capture_flags[key] = False
 
 @dataclass
 class JsonKeyInfo:
@@ -81,17 +136,16 @@ class  JsonFieldStats[T: JValTypes]:
 class JsonRecordStats(dict[str, JsonFieldStats[JValTypes]]):
 
     def next_record( self: Self, rec: dict[str, JValTypes ] ) -> None:
-        for key, value in rec.items():
-            field_stats: JsonFieldStats[JValTypes] = self[key]
+        for rec_key, rec_value in rec.items():
+            field_stats: JsonFieldStats[JValTypes] = self[rec_key]
             field_stats.cnt += 1
-            print(f'{key}: {value}')
-            match value:
+            print(f'{rec_key}: {rec_value}')
+            match rec_value:
                 case int():
                     field_stats.val_cnt += 1
                     if field_stats.unique and field_stats.unique_values is None:
                         field_stats.unique_values = Counter[int]()
                     #field_stats.unique_values.__setitem__(value, 1)
-
 
                 case float():
                     field_stats.val_cnt += 1
@@ -100,7 +154,7 @@ class JsonRecordStats(dict[str, JsonFieldStats[JValTypes]]):
                     field_stats.null_cnt += 1
                 case str():
                     field_stats.val_cnt += 1
-                    field_stats.unique_values[value] += 1
+                    field_stats.unique_values[rec_value] += 1
                 case datetime():
                     field_stats.val_cnt += 1
 

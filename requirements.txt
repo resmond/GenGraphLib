@@ -10,3 +10,4 @@ numba
 pandas
 sortedcontainers
 sortedcontainers-stubs
+progress
