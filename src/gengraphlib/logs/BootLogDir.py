@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 import os
 
 from typing import Self
@@ -19,6 +21,7 @@ class BootRecord:
     id: str
     first_dt: dt.datetime | None = None
     last_dt: dt.datetime | None = None
+    bootlog_dir: 'BootLogDir' | None = None
 
     @classmethod
     def from_dict(cls, d: dict) -> Self:
@@ -72,6 +75,21 @@ class PipedToKeys(PipedToFileBase):
 
     def process_line( self: Self, line: str ) -> bool:
         return True
+"""
+    BootRecCmd
+        Init - 
+            test or creat /boot/{boot-first-datatime} directory
+            export boot-log using journalctl to stdout
+            readlines async and parse / remap data into json key-value fields
+            write data into jline file
+            
+        ExportKeys - 
+            slice and split key-value data into keys/key directories
+            
+"""
+class BootRecCmd( StrEnum ):
+    Init    = "Init"
+    ExportKeys  = "ExportKeys"
 
 class BootLogDir:
 
@@ -83,6 +101,30 @@ class BootLogDir:
         self.dir_path = os.path.join(self.root_dir, self.dir_name)
         self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
         self.journalPipe = PipedToKeys(self.keys_filepath)
+
+    @property
+    def idx(self: Self) -> int:
+        return self.boot_rec.idx
+
+    @property
+    def id(self: Self) -> str:
+        return self.boot_rec.id
+
+    @property
+    def first_dt(self: Self) -> dt.datetime:
+        return self.boot_rec.first_dt
+
+    @property
+    def last_dt(self: Self) -> dt.datetime:
+        return self.boot_rec.last_dt
+
+    def __repr__(self: Self) -> str:
+        return f'{{"dir_name":"{self.dir_name}", "dir_path":"{self.dir_path}", "keys_filepath":"{self.keys_filepath}"}}'
+
+    def __str__(self: Self) -> str: return self.__repr__()
+
+    def exec( self: Self, cmd: BootRecCmd ) -> bool:
+        return True
 
     def _dir_exists( self: Self ) -> bool:
         try:
@@ -99,7 +141,7 @@ class BootLogDir:
         try:
             boot_id = self.boot_rec.id
             if self._dir_exists():
-                # list[str] = [f"journalctl -b {boot_id} -o json","| python3 KeyStatsPipe.py", f"> {self.keys_filepath}"]
+                # list[str] = [f"journalctl -b {boot_id} -o json","| python3 KeyMaps.py", f"> {self.keys_filepath}"]
                 journalctl_cmd: str = f"journalctl -b {boot_id} -o json > {self.keys_filepath}"
                 result = subprocess.run(args=journalctl_cmd, shell=True, cwd=self.dir_path)
                 print(f'stderr: {result.stderr}')

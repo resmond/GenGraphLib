@@ -92,9 +92,15 @@ class PipedCmdBase:
 class PipedToFileBase(PipedCmdBase):
 
     def __init__( self: Self, pipe_name: str, output_filename: str ) -> None:
-        self.output_filename = output_filename
-        self.output_file = open( self.output_filename, "w" )
         super().__init__(pipe_name)
+        self.output_filename = output_filename
+        try:
+            self.output_file = open( self.output_filename, "w+" )
+        except Exception as exc:
+            print(f'[PipedToFileBase: {self.output_filename}] Exception: {exc}')
+            self.started = False
+            self.error = -3
+            return
 
     async def process_line( self: Self, line: str ) -> bool:
         try:
