@@ -16,16 +16,16 @@ from src.gengraphlib.fileparse.PipedBases import PipedToFileBase
 
 
 @dataclass
-class BootRecord:
+class BootRecordBase[TSelf: Self]:
     idx: int
     id: str
     first_dt: dt.datetime | None = None
     last_dt: dt.datetime | None = None
-    bootlog_dir: 'BootLogDir' | None = None
+    #bootlog_dir: BootLogDir | None = None
 
     @classmethod
     def from_dict(cls, d: dict) -> Self:
-        return BootRecord(idx=d["idx"], id=d["id"], first_dt=d["first_dt"], last_dt=d["last_dt"])
+        return BootRecordBase(idx=d["idx"], id=d["id"], first_dt=d["first_dt"], last_dt=d["last_dt"])
 
     def __repr__(self: Self ) -> str:
         return f'{{"idx":{self.idx}, "id":"{self.id}", "first_dt":"{self.first_dt}", "last_dt":"{self.last_dt}"}}'
@@ -38,7 +38,7 @@ class BootRecord:
         id: str = val_list[1]
         first: str = " ".join(val_list[3:5])
         last: str = " ".join(val_list[7:9])
-        boot_rec = BootRecord(
+        boot_rec = BootRecordBase(
             int(idx),
             id,
             dt.datetime.fromisoformat(first),
@@ -52,7 +52,7 @@ class BootRecord:
             ref_dict = js.loads(json_str.strip())
             first_dt: dt.datetime = dt.datetime.fromisoformat(ref_dict["first_dt"])
             last_dt: dt.datetime = dt.datetime.fromisoformat(ref_dict["last_dt"])
-            boot_rec = BootRecord(
+            boot_rec = BootRecordBase(
                 idx=int(ref_dict["idx"]),
                 id=ref_dict["id"],
                 first_dt=first_dt,
@@ -91,16 +91,16 @@ class BootRecCmd( StrEnum ):
     Init    = "Init"
     ExportKeys  = "ExportKeys"
 
-class BootLogDir:
 
-    def __init__(self: Self, root_dir: str, boot_rec: BootRecord) -> None:
+
+class BootLogDirBase[TSelf: Self]:
+
+    def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
         super().__init__()
         self.boot_rec = boot_rec
         self.root_dir = root_dir
         self.dir_name = self.boot_rec.first_dt.isoformat()
         self.dir_path = os.path.join(self.root_dir, self.dir_name)
-        self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
-        self.journalPipe = PipedToKeys(self.keys_filepath)
 
     @property
     def idx(self: Self) -> int:

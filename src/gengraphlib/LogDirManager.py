@@ -1,15 +1,14 @@
 import subprocess
-
-from progress.bar import Bar
+from abc import abstractmethod
 
 from enum import StrEnum
 
 from typing import Self
 
-from .logs.BootLogDir import BootRecord, BootLogDir
+from .logs.BootLogDir import BootRecord, BootLogDirBase
 
 import datetime as dt
-import asyncio as aio
+#import asyncio as aio
 import io as io
 import os as os
 
@@ -17,11 +16,10 @@ class ManagerCmd( StrEnum ):
     Full    = "Full"
     Refresh = "Refresh"
 
-
 """
     LogDirManager
 """
-class LogDirManager:
+class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
     """
     LogDirManager __init__()
         root_dir - root of all log data
@@ -43,8 +41,8 @@ class LogDirManager:
         self._cmd: ManagerCmd | None = None
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "bootlist.jline" )
-        self._bootrec_list: list[BootRecord ] = list[BootRecord ]()
-        self._bootdir_dict: dict[ dt.datetime, BootLogDir ] = {}
+        self._bootrec_list: list[BootRecord] = list[BootRecord]()
+        self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
         self._journal_cmd = "journalctl -b 0 -o json"
 
 
@@ -59,7 +57,7 @@ class LogDirManager:
         self._cmd = exec_cmd
 
         if self._cmd == ManagerCmd.Full or not self._load_txt():
-            self._log_querylist()
+            self._log_querylist( exec_cmd == ManagerCmd.Full )
 
         if self._load_txt():
             return self.process_dirs( specific_ndx )
@@ -70,12 +68,12 @@ class LogDirManager:
         _log_querylist
             fqueries fresh list of boot records from journalctl --list-boots as text file
     """
-    def _log_querylist( self: Self ) -> bool:
+    def _log_querylist( self: Self, del_existing: bool ) -> bool:
         try:
-            #if os.path.exists( self.bootlist_txtfilepath ):
-            #    os.remove( self.bootlist_txtfilepath )
+            if del_existing and os.path.exists( self.bootlist_txtfilepath ):
+                os.remove( self.bootlist_txtfilepath )
                 
-            journalctl_cmd: str = f"/bin/journalctl --list-boots > bootlist.txt"
+            journalctl_cmd: str = "/bin/journalctl --list-boots > bootlist.txt"
             process = subprocess.run(journalctl_cmd, shell=True, cwd=self.root_dir)
             return process.returncode == 0
 
@@ -96,7 +94,7 @@ class LogDirManager:
                     if not first_line:
                         boot_rec = BootRecord.parse_line(line)
                         self._bootrec_list.append( boot_rec )
-                        boot_rec.bootlog_dir = BootLogDir( self.root_dir, boot_rec )
+                        boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
                         self._bootdir_dict[ boot_rec.first_dt ] = boot_rec.bootlog_dir
                     else:
                         first_line: bool = False
@@ -136,7 +134,7 @@ class LogDirManager:
                     boot_rec = BootRecord.parse_json( line )
                     if boot_rec is not None:
                         self._bootrec_list.append( boot_rec )
-                        boot_rec.bootlog_dir = BootLogDir( self.root_dir, boot_rec )
+                        boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
                         self._bootdir_dict[ boot_rec.first_dt ] = boot_rec.bootlog_dir
             return True
 
@@ -152,7 +150,7 @@ class LogDirManager:
         if specific_idx is not None:
             boot_rec = self.boot_recs[ specific_idx ]
             print(f'LogDirManager.process_dirs: specific_idx: {specific_idx}: {boot_rec.first_dt} ')
-            return self.process_dir( )
+            return self.process_dir( boot_rec)
         else:
             for boot_rec in self._bootrec_list:
                 if not self.process_dir( boot_rec ):
@@ -163,10 +161,11 @@ class LogDirManager:
     """
         process_dir
     """
+    @abstractmethod
     def process_dir( self: Self, boot_rec: BootRecord ) -> bool:
-        boot_rec.bootlog_dir.log_fromquery()
-        return True
+        pass
 
+"""
 if __name__ == "__main__":
     print("[LodDirManager] starting main")
 
@@ -179,6 +178,6 @@ if __name__ == "__main__":
         print(f"[LodDirManager] Exception: {e}")
 
     print("[LodDirManager] done")
-
+"""
 
 

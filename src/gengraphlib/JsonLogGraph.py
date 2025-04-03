@@ -8,6 +8,8 @@ from abc import ABC, abstractmethod
 
 from progress.bar import Bar
 
+from LogDirManager import LogDirManager
+
 KValTypes: type = type[str, int, bool, datetime ]
 
 class KeyType( IntEnum ):
@@ -142,95 +144,6 @@ class KeyGraphRoot( dict[str, AbcKeyDef ] ):
                 result = False
         return result
 
-class JsonLogKeyGraph( KeyGraphRoot ):
-    def __init__( self: Self, log_root: str ) -> None:
-        super( JsonLogKeyGraph, self ).__init__( log_root )
-        self.add_keydefs([
-            StrKeyDef( "sysUnit", "_SYSTEMD_UNIT" ),                                  # id?
-            StrKeyDef( "usrUnit", "UNIT" ),                                           # id?
-            StrKeyDef( "udSName", "_UDEV_SYSNAME" ),                                  # id?
-            StrKeyDef( "udDvNd", "_UDEV_DEVNODE" ),                                   # id?
-            StrKeyDef( "krSubSys", "_KERNEL_SUBSYSTEM" ),                             # id?
-            IntKeyDef( "tID", "TID" ),                                                # id?
-            StrKeyDef( "comm", "_COMM" ),
-            StrKeyDef( "slID", "SYSLOG_IDENTIFIER" ),                                 # id?
-            TmstKeyDef( "srTime", "_SOURCE_REALTIME_TIMESTAMP" ),
-            StrKeyDef( "sysFac", "SYSLOG_FACILITY" ),
-            BoolKeyDef( "lnBk", "_LINE_BREAK" ),
-            StrKeyDef( "cmdLn", "_CMDLINE" ),
-            StrKeyDef( "usrInvID", "USER_INVOCATION_ID" ),                            # id?
-            StrKeyDef( "glbLogApi", "GLIB_OLD_LOG_API" ),
-            StrKeyDef( "nmDev", "NM_DEVICE" ),                                        # id?
-            StrKeyDef( "glbDom", "GLIB_DOMAIN" ),                                     # id?
-            StrKeyDef( "nmLogLev", "NM_LOG_LEVEL" ),
-            StrKeyDef( "jbRes", "JOB_RESULT" ),
-            StrKeyDef( "smTime", "_SOURCE_MONOTONIC_TIMESTAMP" ),
-            StrKeyDef( "jbID", "JOB_ID" ),                                            # id?
-            StrKeyDef( "jbType", "JOB_TYPE" ),
-            StrKeyDef( "invID", "INVOCATION_ID" ),                                    # id?
-            StrKeyDef( "slTime", "SYSLOG_TIMESTAMP" ),
-            StrKeyDef( "msgID", "MESSAGE_ID" ),                                       # id?
-            StrKeyDef( "slPID", "SYSLOG_PID" ),                                       # id?
-            StrKeyDef( "sysdUsrUnit", "_SYSTEMD_USER_UNIT" ),                         # id?
-            StrKeyDef( "ssysdUwnUID", "_SYSTEMD_OWNER_UID" ),                         # id?
-            StrKeyDef( "strmID", "_STREAM_ID" ),                                      # id?
-            StrKeyDef( "audSes", "_AUDIT_SESSION" ),
-            StrKeyDef( "cdFn", "CODE_FUNC" ),
-            StrKeyDef( "cdLn", "CODE_LINE" ),
-            StrKeyDef( "cdFl", "CODE_FILE" ),
-            StrKeyDef( "sysdInvID", "_SYSTEMD_INVOCATION_ID" ),                       # id?
-            StrKeyDef( "exe", "_EXE" ),                                               # id?
-            StrKeyDef( "sysdSLc", "_SYSTEMD_SLICE" ),                                 # id?
-            StrKeyDef( "slnxCtx", "_SELINUX_CONTEXT" ),                               # id?
-            StrKeyDef( "uID", "_UID" ),                                               # id?
-            StrKeyDef( "cur", "__CURSOR" )
-        ])
-        self.new_keygroup_with_keys("ids", [
-            "sysUnit",
-            "usrUnit",
-            "udSName",
-            "udDvNd",
-            "krSubSys",
-            "tID",
-            "slID",
-            "usrInvID",
-            "nmDev"
-            "glbDom"
-            "jbID",
-            "invID",
-            "sunit",
-            "souid",
-            "invID",
-            "msgID",
-            "slPID",
-            "sysdUsrUnit",
-            "ssysdUwnUID",
-            "strmID",
-            "exe",
-            "sysdSLc",
-            "sysdInvID",
-            "slnxCtx",
-            "uID"
-        ])
-
-
-    def read_json(self: Self, filepath: str):
-        #   try:
-
-        line_num: int = 0
-        read_len: int = 0
-        file_size: int = os.path.getsize(filepath)
-        bar = Bar("Processing", max=file_size)
-        with open(filepath) as file:
-            for line in file:
-                read_len += len(line)
-                field_dict = json.loads(line)
-                self.process_fields(field_dict, line_num)
-                bar.next(read_len )
-        bar.finish()
-
-if __name__ == "__main__":
-    key_graph = JsonLogKeyGraph( "/home/richard/jctl-logs/" )
 
 
 

@@ -1,0 +1,140 @@
+import json
+import os
+from typing import Self
+from progress.bar import Bar
+
+from JsonLogGraph import KeyGraphRoot, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
+from LogDirManager import LogDirManagerBase, ManagerCmd
+from fileparse.PipedBases import PipedToFileBase
+from logs.BootLogDir import BootLogDirBase, BootRecordBase
+
+class GraphBootRec(BootRecordBase[Self]):
+
+    def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
+        super(GraphBootRec, self).__init__( root_dir, boot_rec )
+
+class PipedToGraph(PipedToFileBase[Self]):
+    def __init__( self: Self, output_filepath: str ) -> None:
+        super(PipedToGraph, self).__init__("PipedToKeys", output_filepath )
+
+    async def process_line( self: Self, line: str ) -> bool:
+        try:
+            print(line)
+            return True
+
+        except Exception as exc:
+            print(f'[PipedToFile: {self.name}] Exception: {exc}')
+            self.started = False
+            self.error = -3
+            return False
+
+class GraphLogDir( BootLogDirBase[Self] ):
+    def __init__(self: Self, root_dir: str, boot_rec: GraphBootRec) -> None:
+        super( GraphLogDir, self ).__init__( root_dir, boot_rec )
+        self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
+        self.journalPipe = PipedToGraph(self.keys_filepath)
+
+class GraphLogDirManager( LogDirManagerBase[Self] ):
+
+    def __init__( self: Self, root_dir: str ) -> None:
+        super( GraphLogDirManager, self ).__init__( root_dir )
+
+    def process_dir(self: Self, boot_rec: GraphBootRec) -> bool:
+        #boot_rec.bootlog_dir.log_fromquery()
+        return True
+
+
+class LogGraph( KeyGraphRoot ):
+    def __init__( self: Self, log_root: str ) -> None:
+        super( LogGraph, self ).__init__( log_root )
+        self.dir_manager: GraphLogDirManager = GraphLogDirManager( log_root )
+        self.add_keydefs([
+            StrKeyDef( "sysUnit", "_SYSTEMD_UNIT" ),                                  # id?
+            StrKeyDef( "usrUnit", "UNIT" ),                                           # id?
+            StrKeyDef( "udSName", "_UDEV_SYSNAME" ),                                  # id?
+            StrKeyDef( "udDvNd", "_UDEV_DEVNODE" ),                                   # id?
+            StrKeyDef( "krSubSys", "_KERNEL_SUBSYSTEM" ),                             # id?
+            IntKeyDef( "tID", "TID" ),                                                # id?
+            StrKeyDef( "comm", "_COMM" ),
+            StrKeyDef( "slID", "SYSLOG_IDENTIFIER" ),                                 # id?
+            TmstKeyDef( "srTime", "_SOURCE_REALTIME_TIMESTAMP" ),
+            StrKeyDef( "sysFac", "SYSLOG_FACILITY" ),
+            BoolKeyDef( "lnBk", "_LINE_BREAK" ),
+            StrKeyDef( "cmdLn", "_CMDLINE" ),
+            StrKeyDef( "usrInvID", "USER_INVOCATION_ID" ),                            # id?
+            StrKeyDef( "glbLogApi", "GLIB_OLD_LOG_API" ),
+            StrKeyDef( "nmDev", "NM_DEVICE" ),                                        # id?
+            StrKeyDef( "glbDom", "GLIB_DOMAIN" ),                                     # id?
+            StrKeyDef( "nmLogLev", "NM_LOG_LEVEL" ),
+            StrKeyDef( "jbRes", "JOB_RESULT" ),
+            StrKeyDef( "smTime", "_SOURCE_MONOTONIC_TIMESTAMP" ),
+            StrKeyDef( "jbID", "JOB_ID" ),                                            # id?
+            StrKeyDef( "jbType", "JOB_TYPE" ),
+            StrKeyDef( "invID", "INVOCATION_ID" ),                                    # id?
+            StrKeyDef( "slTime", "SYSLOG_TIMESTAMP" ),
+            StrKeyDef( "msgID", "MESSAGE_ID" ),                                       # id?
+            StrKeyDef( "slPID", "SYSLOG_PID" ),                                       # id?
+            StrKeyDef( "sysdUsrUnit", "_SYSTEMD_USER_UNIT" ),                         # id?
+            StrKeyDef( "ssysdUwnUID", "_SYSTEMD_OWNER_UID" ),                         # id?
+            StrKeyDef( "strmID", "_STREAM_ID" ),                                      # id?
+            StrKeyDef( "audSes", "_AUDIT_SESSION" ),
+            StrKeyDef( "cdFn", "CODE_FUNC" ),
+            StrKeyDef( "cdLn", "CODE_LINE" ),
+            StrKeyDef( "cdFl", "CODE_FILE" ),
+            StrKeyDef( "sysdInvID", "_SYSTEMD_INVOCATION_ID" ),                       # id?
+            StrKeyDef( "exe", "_EXE" ),                                               # id?
+            StrKeyDef( "sysdSLc", "_SYSTEMD_SLICE" ),                                 # id?
+            StrKeyDef( "slnxCtx", "_SELINUX_CONTEXT" ),                               # id?
+            StrKeyDef( "uID", "_UID" ),                                               # id?
+            StrKeyDef( "cur", "__CURSOR" )
+        ])
+        self.new_keygroup_with_keys("ids", [
+            "sysUnit",
+            "usrUnit",
+            "udSName",
+            "udDvNd",
+            "krSubSys",
+            "tID",
+            "slID",
+            "usrInvID",
+            "nmDev"
+            "glbDom"
+            "jbID",
+            "invID",
+            "sunit",
+            "souid",
+            "invID",
+            "msgID",
+            "slPID",
+            "sysdUsrUnit",
+            "ssysdUwnUID",
+            "strmID",
+            "exe",
+            "sysdSLc",
+            "sysdInvID",
+            "slnxCtx",
+            "uID"
+        ])
+
+    def read_json(self: Self, filepath: str):
+        try:
+            line_num: int = 0
+            read_len: int = 0
+            file_size: int = os.path.getsize(filepath)
+            bar = Bar("Processing", max=file_size)
+            with open(filepath) as file:
+                for line in file:
+                    read_len += len(line)
+                    field_dict = json.loads(line)
+                    self.process_fields(field_dict, line_num)
+                    bar.next(read_len )
+            bar.finish()
+        except FileNotFoundError as e:
+            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {e} - {filepath}')
+
+    async def exec_query( self: Self ) -> bool:
+        await self.dir_manager.exec( ManagerCmd.Full, specific_ndx=1 )
+        return True
+
+if __name__ == "__main__":
+    key_graph = LogGraph( "/home/richard/jctl-logs/" )
