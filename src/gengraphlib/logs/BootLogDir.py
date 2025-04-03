@@ -9,7 +9,7 @@ import datetime as dt
 import subprocess
 import json as js
 
-from PipedBases import PipedToFileBase
+from src.gengraphlib.fileparse.PipedBases import PipedToFileBase
 
 #import asyncio as aio
 #import asyncio.subprocess as asub

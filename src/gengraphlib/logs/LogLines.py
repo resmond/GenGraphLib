@@ -1,8 +1,8 @@
 from typing import Self
 
-from fileparse.GNodeLib import NodeBase
-from fileparse.ParseTriggers import LineParseResult, ResultState
-from fileparse.RgxCore import RgxLine
+from ..fileparse.GNodeLib import NodeBase
+from ..fileparse.ParseTriggers import LineParseResult, ResultState
+from ..fileparse.RgxCore import RgxLine
 
 class LogLine( NodeBase ):
 
@@ -18,25 +18,25 @@ class LogLine( NodeBase ):
         self.message: str = ""
         #self.values: dict[str, str] | None = None
 
-    def parse_line( self: Self, event_type_id: str, line_values: dict[str, str ] ) -> LineParseResult:
+    def parse_line( self: Self, event_type_id: str, field_values: dict[str, str ] ) -> LineParseResult:
         self.event_type_id = event_type_id
 
         result_state: ResultState = ResultState.NoneFound
         try:
-            self.date_seg = line_values["date_seg"]
-            self.machine = line_values["machine"]
-            self.thread_id = line_values["thread_id"]
-            self.module_type_id = line_values["module_type_id"]
-            self.module_id = line_values["module_id"]
-            self.message = line_values["message"]
+            self.date_seg = field_values[ "date_seg" ]
+            self.machine = field_values[ "machine" ]
+            self.thread_id = field_values[ "thread_id" ]
+            self.module_type_id = field_values[ "module_type_id" ]
+            self.module_id = field_values[ "module_id" ]
+            self.message = field_values[ "message" ]
 
         except Exception as e:
             print(f"error: {self.line_str}")
-            print(f"dict: {line_values}" )
+            print(f"dict: {field_values}" )
             print(f"Eception:{e}")
             result_state = ResultState.Exception
 
-        return LineParseResult( state=result_state, message = line_values["message"] )
+        return LineParseResult( state=result_state, message = field_values[ "message" ] )
 
 class LogLines( NodeBase, list[LogLine ] ):
 

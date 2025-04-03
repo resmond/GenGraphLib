@@ -4,9 +4,9 @@ from fileparse.GNodeLib import NodeBase, TNODE, NodeDict
 from fileparse.ParseTriggers import TParseTestFn, MatchTrigger, ParseTriggers, ResultState
 from fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
 from fileparse.FileIoContext import FileIoContext
-from LogLines import LogLine, LogLines
-from LogModules import Module, Modules, ModuleType, ModuleTypes
-from LogGraph import LogGraph
+from src.gengraphlib.logs.LogLines import LogLine, LogLines
+from src.gengraphlib.logs.LogModules import Module, Modules, ModuleType, ModuleTypes
+from src.gengraphlib.TextLogGraph import LogGraph
 
 __all__ = [
     "NodeBase",

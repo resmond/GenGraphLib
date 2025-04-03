@@ -1,44 +1,25 @@
 import os
 import json
-from src.gengraphlib.logs import KeyGraph as ja
-from progress.bar import Bar
+from src.gengraphlib import JsonLogGraph as ja
 
 def read_json(filepath: str):
 
  #   try:
-        all_keys: dict[str, int] = {}
 
         bar = Bar("Processing", max=125145)
         with open( filepath ) as file:
 
             for line in file:
-                obj = json.loads(line)
-                for key, values_set in obj.items():
-                    if key not in ja.log_to_json:
-                        if key not in all_keys:
-                            all_keys[key] = 1
-                        else:
-                            all_keys[key] += 1
-                    else:
-                        json_name = ja.log_to_json[key]
-                        if json_name and ja.capture_flags[key]:
-                            ja.values_bykeys_set[json_name ].append( values_set )
+                field_dict = json.loads(line)
+
 
                 bar.next()
 
         bar.finish()
 
-        flipped_keys: dict[int, str] = {}
 
-        for key, values_set in all_keys.items():
-            flipped_keys[values_set] = key
-
-        sorted_keys: dict[str,int] = {}
-        for key, values_set in sorted(flipped_keys.items()):
-            sorted_keys[values_set] = key
-
-        data_str  = json.dumps(sorted_keys, indent=4)
-        print(data_str)
+        #data_str  = json.dumps(sorted_keys, indent=4)
+        #print(data_str)
         open( "/home/richard/data/jctl-logs/keys/missedkeys.json", "w" ).write( data_str )
 
         for key, values_set in ja.values_bykeys_set.items():

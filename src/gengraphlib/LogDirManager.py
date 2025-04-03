@@ -6,7 +6,7 @@ from enum import StrEnum
 
 from typing import Self
 
-from BootLogDir import BootRecord, BootLogDir
+from .logs.BootLogDir import BootRecord, BootLogDir
 
 import datetime as dt
 import asyncio as aio

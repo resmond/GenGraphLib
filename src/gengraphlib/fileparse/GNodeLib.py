@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from collections import defaultdict
 
 from typing import Self, TypeVar, Any
@@ -9,9 +9,9 @@ from typing import Self, TypeVar, Any
 """--------------------------------------------------------------
     NodeBase is the root of the hierarchy  
 """
-class NodeBase:
+class NodeBase[ TNode: Self ]( ABC ):
 
-    def __init__(self: Self, id:str, **kwargs):
+    def __init__(self: Self, id:str, *args: dict[str, Any], **kwargs: dict[str, Any]):
         self.id: str = id
 
     def __str__(self: Self) -> str:
@@ -20,10 +20,16 @@ class NodeBase:
     def __repr__(self: Self) -> str:
         return self.__str__()
 
+#    @classmethod
+#    def newnode( cls, id: str = '', **kwargs ) -> NodeBase:
+#        return cls(id=id, kwargs=kwargs)
+
+
 TNODE = TypeVar( 'TNODE', bound = NodeBase )
 
 """--------------------------------------------------------------
     TNode is a genericing layer to keep the fileparse node clean of generics 
+"""
 """
 class TNode[ T: NodeBase ]( NodeBase ):
 
@@ -34,8 +40,9 @@ class TNode[ T: NodeBase ]( NodeBase ):
     @classmethod
     def newnode( cls, id: str = '', **kwargs ) -> NodeBase:
         return cls(id=id, kwargs=kwargs)
+"""
 
-class NodeDict[TNODE]( NodeBase, defaultdict[ str, TNODE ] ):
+class NodeDict[Tnode: NodeBase]( NodeBase[Tnode], defaultdict[ str, Tnode ] ):
 
     def __init__(self: Self, id: str):
         super(NodeDict, self).__init__(id=id)
@@ -50,7 +57,7 @@ class NodeDict[TNODE]( NodeBase, defaultdict[ str, TNODE ] ):
     def __missing__(self, key) -> TNODE:
         pass
 
-class IndexedNodeList[TNODE]( NodeBase, list[TNODE ] ):
+class IndexedNodeList[ TNode: NodeBase ]( NodeBase[TNode ], list[TNode ] ):
     #id: str = Field( None, alias="id" )
     # list: defaultdict[int,T] = []
     def __init__(self: Self, id:str):
