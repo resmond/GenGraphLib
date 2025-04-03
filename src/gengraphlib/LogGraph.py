@@ -3,17 +3,14 @@ import os
 from typing import Self
 from progress.bar import Bar
 
-from JsonLogGraph import KeyGraphRoot, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
+from JsonLogGraph import KeyGraphRootBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
 from LogDirManager import LogDirManagerBase, ManagerCmd
-from fileparse.PipedBases import PipedToFileBase
+from fileparse.PipedBases import PipeFromStdoutBase
 from logs.BootLogDir import BootLogDirBase, BootRecordBase
+from src.gengraphlib.logs.BootLogDir import BootRecCmd
 
-class GraphBootRec(BootRecordBase[Self]):
 
-    def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
-        super(GraphBootRec, self).__init__( root_dir, boot_rec )
-
-class PipedToGraph(PipedToFileBase[Self]):
+class PipedToGraph(PipeFromStdoutBase[Self]):
     def __init__( self: Self, output_filepath: str ) -> None:
         super(PipedToGraph, self).__init__("PipedToKeys", output_filepath )
 
@@ -28,11 +25,36 @@ class PipedToGraph(PipedToFileBase[Self]):
             self.error = -3
             return False
 
+    def run_export( self: Self) -> None:
+        self.run_command( "" )
+
+class GraphBootRec(BootRecordBase[Self]):
+
+    def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
+        super(GraphBootRec, self).__init__( root_dir, boot_rec )
+
 class GraphLogDir( BootLogDirBase[Self] ):
     def __init__(self: Self, root_dir: str, boot_rec: GraphBootRec) -> None:
         super( GraphLogDir, self ).__init__( root_dir, boot_rec )
         self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
         self.journalPipe = PipedToGraph(self.keys_filepath)
+
+    def export_topipe( self: Self ) -> bool:
+        try:
+            boot_id = self.boot_rec.id
+            if self._dir_exists():
+                # list[str] = [f"journalctl -b {boot_id} -o json","| python3 KeyMaps.py", f"> {self.keys_filepath}"]
+                journalctl_cmd: str = f"journalctl -b {boot_id} -o json > {self.keys_filepath}"
+                self.journalPipe.run_command( journalctl_cmd )
+
+            return True
+
+        except Exception as e:
+            print(f'[export_log] Exception: {e}')
+            return False
+
+    def exec_cmd( self: Self, cmd: BootRecCmd ) -> bool:
+        return False
 
 class GraphLogDirManager( LogDirManagerBase[Self] ):
 
@@ -44,7 +66,7 @@ class GraphLogDirManager( LogDirManagerBase[Self] ):
         return True
 
 
-class LogGraph( KeyGraphRoot ):
+class LogGraph( KeyGraphRootBase[Self] ):
     def __init__( self: Self, log_root: str ) -> None:
         super( LogGraph, self ).__init__( log_root )
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( log_root )
@@ -135,6 +157,7 @@ class LogGraph( KeyGraphRoot ):
     async def exec_query( self: Self ) -> bool:
         await self.dir_manager.exec( ManagerCmd.Full, specific_ndx=1 )
         return True
+
 
 if __name__ == "__main__":
     key_graph = LogGraph( "/home/richard/jctl-logs/" )

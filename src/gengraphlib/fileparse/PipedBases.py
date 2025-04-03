@@ -120,7 +120,7 @@ class PipedToFileBase[TSelf: Self](PipedCmdBase[Self]):
 
         return True
 
-class PipeToPipeBase(PipedCmdBase):
+class PipeToPipeBase[TSelf: Self](PipedCmdBase[TSelf]):
 
     def __init__( self: Self, pipe_name: str ) -> None:
         super().__init__(pipe_name)
@@ -137,4 +137,9 @@ class PipeToPipeBase(PipedCmdBase):
             self.error = -3
             return False
 
+class PipeFromStdoutBase[TSelf]( PipedCmdBase[TSelf] ):
+    def __init__( self: Self, pipe_name: str ) -> None:
+        super().__init__(pipe_name)
 
+    def process_line( self: Self, line: str ) -> bool:
+        return True

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from enum import StrEnum
 
 import os
@@ -123,7 +124,8 @@ class BootLogDirBase[TSelf: Self]:
 
     def __str__(self: Self) -> str: return self.__repr__()
 
-    def exec( self: Self, cmd: BootRecCmd ) -> bool:
+    @abstractmethod
+    def exec_cmd( self: Self, cmd: BootRecCmd ) -> bool:
         return True
 
     def _dir_exists( self: Self ) -> bool:

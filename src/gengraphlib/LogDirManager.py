@@ -5,7 +5,7 @@ from enum import StrEnum
 
 from typing import Self
 
-from .logs.BootLogDir import BootRecord, BootLogDirBase
+from .logs.BootLogDir import BootRecordBase, BootLogDirBase
 
 import datetime as dt
 #import asyncio as aio
@@ -41,7 +41,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
         self._cmd: ManagerCmd | None = None
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "bootlist.jline" )
-        self._bootrec_list: list[BootRecord] = list[BootRecord]()
+        self._bootrec_list: list[BootRecordBase] = list[BootRecordBase]()
         self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
         self._journal_cmd = "journalctl -b 0 -o json"
 
@@ -92,7 +92,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
 
                 for line in file:
                     if not first_line:
-                        boot_rec = BootRecord.parse_line(line)
+                        boot_rec = BootRecordBase.parse_line(line)
                         self._bootrec_list.append( boot_rec )
                         boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
                         self._bootdir_dict[ boot_rec.first_dt ] = boot_rec.bootlog_dir
@@ -131,7 +131,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
         try:
             with io.open( self._bootrec_jfilepath ) as file:
                 for line in file:
-                    boot_rec = BootRecord.parse_json( line )
+                    boot_rec = BootRecordBase.parse_json( line )
                     if boot_rec is not None:
                         self._bootrec_list.append( boot_rec )
                         boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
@@ -162,7 +162,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
         process_dir
     """
     @abstractmethod
-    def process_dir( self: Self, boot_rec: BootRecord ) -> bool:
+    def process_dir( self: Self, boot_rec: BootRecordBase ) -> bool:
         pass
 
 """

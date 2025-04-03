@@ -42,7 +42,7 @@ class TextLogFileContext:
     def logwrite( self: Self, text: str ) -> None:
         self.writer.write( text )
 
-class LogGraph:
+class TextLogGraph:
 
     def __init__( self: Self, input_file_name: str, output_file_name: str ) -> None:
 

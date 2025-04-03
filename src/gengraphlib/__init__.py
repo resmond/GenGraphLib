@@ -6,7 +6,7 @@ from fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
 from fileparse.FileIoContext import FileIoContext
 from src.gengraphlib.logs.LogLines import LogLine, LogLines
 from src.gengraphlib.logs.LogModules import Module, Modules, ModuleType, ModuleTypes
-from src.gengraphlib.TextLogGraph import LogGraph
+from src.gengraphlib.TextLogGraph import TextLogGraph
 
 __all__ = [
     "NodeBase",
@@ -39,6 +39,6 @@ __all__ = [
     "ModuleTypes",
 
     #from LogFileGraph
-    "LogGraph"
+    "TextLogGraph"
 
 ]

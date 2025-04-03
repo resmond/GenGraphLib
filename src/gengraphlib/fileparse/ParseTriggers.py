@@ -25,7 +25,7 @@ class LineParseResult:
     exception: Exception | None = None
     #values: dict
 
-TParseTestFn = Callable[ [ str, str], LineParseResult ]
+TParseTestFn = Callable[ [str, str], LineParseResult ]
 
 class MatchTrigger:
 
@@ -36,7 +36,7 @@ class MatchTrigger:
 
     def parseif( self: Self, parse_str: str ) -> LineParseResult | None:
         if parse_str.find(self.match_phrase) != -1:
-            return self.parse_fn( parse_str )
+            return self.parse_fn( "", parse_str )
         else:
             return None
 
@@ -59,7 +59,9 @@ class ParseTriggers( dict[ str, MatchTrigger ] ):
                     if input_str.find( phrase ) != -1:
                         result = self[ key ].parse_fn( "", input_str )
                         result.tag = self[key].tag
+
                 case TriggerType.RegEx:
+                    pass
 
                 case TriggerType.LeadWhitespace:
                     if input_str.startswith( " " ):

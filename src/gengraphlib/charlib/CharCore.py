@@ -27,17 +27,17 @@ class CSeg( IntEnum ):
 
 
 #char_cat_def = tuple[ CharCatagory, int]
-CCharDef: NamedTuple[CSeg, int ] = NamedTuple[CSeg, int ]( "CChar", [ "cat", "val" ] )
+CCharDef: NamedTuple[CSeg, int ] = NamedTuple[CSeg, int ]( "CCharDef")
 
-def intToCatChar(_cint: int) -> CCharDef:
+def int_to_cchar( _cint: int ) -> CCharDef:
     #_seg: CCatSeg = CCatSeg( _cint & 0xc0 >> 5 )
     #_val: int = _cint & 0x1f
     return CSeg( _cint & 0xc0 >> 5 ), _cint & 0x1f
 
-def catCharToInt( cat_char: CCharDef) -> int:
+def cchar_to_int( cat_char: CCharDef ) -> int:
         return (cat_char.cat << 5) | cat_char.val
 
-def catCharToStr(_cint: int) -> str:
+def cchar_to_str( _cint: int ) -> str:
     match _cint:
         case 0:
             return "Null "
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     test_str: str = "abcdefghijklmnopqrstuv"
 
     for cint in range( 0, 256 ):
-        char: str = catCharToStr( cint )
+        char: str = cchar_to_str( cint )
 
         chr_str: str = chr( cint )
 

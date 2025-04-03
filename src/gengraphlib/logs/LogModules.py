@@ -24,7 +24,7 @@ class Modules( NodeDict[ Module ] ):
 
 class ModuleType( NodeDict[ Modules ] ):
 
-    def __init__( self: Self, line_node: LogLine | None = None, id: str = "module_type_node" ) -> None:
+    def __init__( self: Self, id: str = "module_type_node" ) -> None:
         super( ModuleType, self ).__init__( id=id )
         #self.module_nodes = ModuleNodeDict(id="model_node_dict")
         #self.module_nodes[line_node.module_id] = ModuleNode( id=line_node.module_id, module_type_node=self )

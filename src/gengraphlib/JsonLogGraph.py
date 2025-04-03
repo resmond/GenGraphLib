@@ -1,14 +1,10 @@
 import json
-import os.path
+import os
 from typing import Self
 from enum import IntEnum
 from datetime import datetime
 from sortedcontainers import SortedDict
-from abc import ABC, abstractmethod
-
-from progress.bar import Bar
-
-from LogDirManager import LogDirManager
+from abc import abstractmethod
 
 KValTypes: type = type[str, int, bool, datetime ]
 
@@ -26,13 +22,13 @@ class JsonTimestamp:
 class LineNumList(list[int]):
     pass
 
-class AbcKeyValues[T: KValTypes](ABC, SortedDict[T,LineNumList]):
+class KeyValueInstancesBase[T: Self, K: KValTypes ]( SortedDict[K, LineNumList] ):
     def __init__(self: Self) -> None:
         super().__init__()
         self.unique: bool = True
         self._cnt: int = 0
 
-    def add_value(self: Self, new_value: T, line_num: int) -> None:
+    def add_value( self: Self, new_value: K, line_num: int ) -> None:
         if new_value not in self:
             self[new_value] = []
         else:
@@ -41,21 +37,22 @@ class AbcKeyValues[T: KValTypes](ABC, SortedDict[T,LineNumList]):
         self[new_value].append( line_num )
         self._cnt += 1
 
-class AbcKeyDef[T: KValTypes](ABC, AbcKeyValues[T]):
+class KeyDefBase[ T: Self, K: KValTypes ]( KeyValueInstancesBase[T, K] ):
     def __init__( self: Self, _json_key: str, _log_key: str) -> None:
+        super(KeyDefBase, self ).__init__()
         self.json_key: str = _json_key
         self.log_key: str = _log_key
         self.key_type: KeyType = KeyType.KStr
-        self.key_values: AbcKeyValues[T] = AbcKeyValues[T]()
+        self.key_values: KeyValueInstancesBase[T,K] = KeyValueInstancesBase[T,K]()
         
-    def add_value( self: Self, new_value: T, line_num: int ) -> None:
+    def add_value( self: Self, new_value: K, line_num: int ) -> None:
         self.key_values.add_value(new_value, line_num)
 
     @abstractmethod
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         pass
         
-class StrKeyDef( AbcKeyDef[str ] ):
+class StrKeyDef( KeyDefBase[Self, str] ):
     def __init__( self, _json_key: str, _log_key: str ):
         self.key_type = KeyType.KStr
         super( StrKeyDef, self ).__init__( _log_key, _json_key )
@@ -63,7 +60,7 @@ class StrKeyDef( AbcKeyDef[str ] ):
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( str_value, line_num )
 
-class IntKeyDef( AbcKeyDef[int ] ):
+class IntKeyDef( KeyDefBase[Self, int] ):
     def __init__( self, _json_key: str, _log_key: str ):
         self.key_type = KeyType.KInt
         super( IntKeyDef, self ).__init__( _log_key, _json_key )
@@ -71,7 +68,7 @@ class IntKeyDef( AbcKeyDef[int ] ):
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( int(str_value), line_num )
 
-class BoolKeyDef( AbcKeyDef[bool ] ):
+class BoolKeyDef( KeyDefBase[Self, bool] ):
     def __init__( self, _json_key: str, _log_key: str ):
         self.key_type = KeyType.KBool
         super( BoolKeyDef, self ).__init__( _log_key, _json_key )
@@ -79,7 +76,7 @@ class BoolKeyDef( AbcKeyDef[bool ] ):
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( bool(str_value), line_num )
 
-class TmstKeyDef( AbcKeyDef[datetime ] ):
+class TmstKeyDef( KeyDefBase[Self, datetime] ):
     def __init__( self, _json_key: str, _log_key: str ):
         self.key_type = KeyType.KTimeStamp
         super( TmstKeyDef, self ).__init__( _log_key, _json_key )
@@ -91,18 +88,18 @@ class TmstKeyDef( AbcKeyDef[datetime ] ):
         except ValueError as e:
             print(f'[TmstKeyDef.add_str_value] ValueError: {e} - "{str_value}"')
 
-class KeySet[T: KValTypes](list[AbcKeyDef[T]]):
+class KeySet[T: KValTypes]( list[KeyDefBase[T ] ] ):
     pass
 
 class KeyGroups( dict[str, KeySet ] ):
-    def __init__( self: Self, graph_root: dict[str,AbcKeyDef ] ) -> None:
-        self.graph_root: dict[str,AbcKeyDef ] = graph_root
+    def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:
+        self.graph_root: dict[str,KeyDefBase ] = graph_root
         super().__init__()
 
     def add_keygroup( self: Self, keygroup_name: str ) -> None:
-        self[ keygroup_name] = list[AbcKeyDef ]
+        self[ keygroup_name] = list[KeyDefBase ]
 
-    def add_key_to_group( self: Self, _keygroup_name: str, _key_def: AbcKeyDef ) -> None:
+    def add_key_to_group( self: Self, _keygroup_name: str, _key_def: KeyDefBase ) -> None:
         self[_keygroup_name].__setitem__( _key_def.json_key, _key_def )
 
     def add_keys_to_group( self: Self, _keygroup_name: str, keys: iter( str ) ) -> None:
@@ -110,22 +107,25 @@ class KeyGroups( dict[str, KeySet ] ):
             _key_def = self.graph_root[_json_key]
             self.add_key_to_group( _keygroup_name, _key_def )
 
-class KeyGraphRoot( dict[str, AbcKeyDef ] ):
+"""
+    KeyGraphRootBase
+"""
+class KeyGraphRootBase[T: Self]( dict[str, KeyDefBase ] ):
     def __init__(self: Self, root_dir: str) -> None:
-        super().__init__()
+        super(KeyGraphRootBase, self).__init__()
         self._root_dir = root_dir
-        self._log_keys: dict[str,AbcKeyDef ] = dict[str,AbcKeyDef ]()
+        self._log_keys: dict[str,KeyDefBase] = dict[str,KeyDefBase]()
         self.key_groups: KeyGroups = KeyGroups(self)
         self.missing_keys: list[str] = []
 
-    def by_logkey( self: Self, _log_key_str: str ) -> AbcKeyDef:
+    def by_logkey( self: Self, _log_key_str: str ) -> KeyDefBase:
         return self._log_keys[_log_key_str]
 
-    def add_keydef( self: Self, _key_def: AbcKeyDef ) -> None:
+    def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.json_key] = _key_def
         self._log_keys[_key_def.log_key] = _key_def
 
-    def add_keydefs( self: Self, _keydefs: list[AbcKeyDef ] ) -> None:
+    def add_keydefs( self: Self, _keydefs: list[KeyDefBase ] ) -> None:
         for _key_def in _keydefs:
             self.add_keydef(_key_def)
 
@@ -143,6 +143,25 @@ class KeyGraphRoot( dict[str, AbcKeyDef ] ):
                 self.missing_keys.append( log_key )
                 result = False
         return result
+
+    def dump_key_values( self: Self ) -> None:
+        for key, values_set in self.items():
+            if not os.path.exists(f"/home/richard/data/jctl-logs/keys/{key}"):
+                os.mkdir(f"/home/richard/data/jctl-logs/keys/{key}")
+
+            with open(f'/home/richard/data/jctl-logs/keys/{key}/{key}.json', "w") as keyfile:
+                for value_line in values_set:
+                    value_line_json = json.dumps(value_line, indent=4)
+                    keyfile.write(value_line_json)
+                    keyfile.write("\n")
+
+
+
+    def dump_missed_keys( self: Self ) -> None:
+        data_str = json.dumps( self.missing_keys, indent=4 )
+        open( "/home/richard/data/jctl-logs/keys/missedkeys.json", "w" ).write( data_str )
+        pass
+
 
 
 
