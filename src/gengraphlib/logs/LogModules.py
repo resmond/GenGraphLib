@@ -1,7 +1,8 @@
 from typing import Self
 
-from LogLines import LogLine
-from src.gengraphlib import NodeBase, NodeDict
+#from .LogLines import  import LogLine
+from src.gengraphlib import NodeBase, NodeDict, LogLine
+
 
 class Module( NodeBase ):
 

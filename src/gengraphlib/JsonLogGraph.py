@@ -22,7 +22,7 @@ class JsonTimestamp:
 class LineNumList(list[int]):
     pass
 
-class KeyValueInstancesBase[T: Self, K: KValTypes ]( SortedDict[K, LineNumList] ):
+class KeyValueInstancesBase[K: KValTypes ]( SortedDict[K, LineNumList] ):
     def __init__(self: Self) -> None:
         super().__init__()
         self.unique: bool = True
@@ -37,13 +37,13 @@ class KeyValueInstancesBase[T: Self, K: KValTypes ]( SortedDict[K, LineNumList] 
         self[new_value].append( line_num )
         self._cnt += 1
 
-class KeyDefBase[ T: Self, K: KValTypes ]( KeyValueInstancesBase[T, K] ):
-    def __init__( self: Self, _json_key: str, _log_key: str) -> None:
+class KeyDefBase[K: KValTypes ]( KeyValueInstancesBase[K] ):
+    def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType) -> None:
         super(KeyDefBase, self ).__init__()
         self.json_key: str = _json_key
         self.log_key: str = _log_key
-        self.key_type: KeyType = KeyType.KStr
-        self.key_values: KeyValueInstancesBase[T,K] = KeyValueInstancesBase[T,K]()
+        self.key_type: KeyType = _key_type
+        self.key_values: KeyValueInstancesBase[K] = KeyValueInstancesBase[K]()
         
     def add_value( self: Self, new_value: K, line_num: int ) -> None:
         self.key_values.add_value(new_value, line_num)
@@ -52,34 +52,30 @@ class KeyDefBase[ T: Self, K: KValTypes ]( KeyValueInstancesBase[T, K] ):
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         pass
         
-class StrKeyDef( KeyDefBase[Self, str] ):
+class StrKeyDef( KeyDefBase[str] ):
     def __init__( self, _json_key: str, _log_key: str ):
-        self.key_type = KeyType.KStr
-        super( StrKeyDef, self ).__init__( _log_key, _json_key )
+        super( StrKeyDef, self ).__init__( _json_key, _log_key, KeyType.KStr )
 
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( str_value, line_num )
 
-class IntKeyDef( KeyDefBase[Self, int] ):
+class IntKeyDef( KeyDefBase[int] ):
     def __init__( self, _json_key: str, _log_key: str ):
-        self.key_type = KeyType.KInt
-        super( IntKeyDef, self ).__init__( _log_key, _json_key )
+        super( IntKeyDef, self ).__init__( _json_key, _log_key, KeyType.KInt )
 
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( int(str_value), line_num )
 
-class BoolKeyDef( KeyDefBase[Self, bool] ):
+class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self, _json_key: str, _log_key: str ):
-        self.key_type = KeyType.KBool
-        super( BoolKeyDef, self ).__init__( _log_key, _json_key )
+        super( BoolKeyDef, self ).__init__( _json_key, _log_key, KeyType.KBool )
 
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         self.key_values.add_value( bool(str_value), line_num )
 
-class TmstKeyDef( KeyDefBase[Self, datetime] ):
+class TmstKeyDef( KeyDefBase[datetime] ):
     def __init__( self, _json_key: str, _log_key: str ):
-        self.key_type = KeyType.KTimeStamp
-        super( TmstKeyDef, self ).__init__( _log_key, _json_key )
+        super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp )
 
     def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
         try:
@@ -88,21 +84,27 @@ class TmstKeyDef( KeyDefBase[Self, datetime] ):
         except ValueError as e:
             print(f'[TmstKeyDef.add_str_value] ValueError: {e} - "{str_value}"')
 
-class KeySet[T: KValTypes]( list[KeyDefBase[T ] ] ):
-    pass
+class KeyGroup( list[KeyDefBase] ):
+    def __init__( self: Self, keygroup_name: str ) -> None:
+        super( KeyGroup, self ).__init__()
+        self.keygroup_name: str = keygroup_name
 
-class KeyGroups( dict[str, KeySet ] ):
+    def add_keydef(self: Self, other: KeyDefBase) -> None:
+        self.append(other)
+
+class KeyGroups( dict[str, KeyGroup ] ):
     def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:
+        super(KeyGroups, self).__init__()
         self.graph_root: dict[str,KeyDefBase ] = graph_root
-        super().__init__()
 
     def add_keygroup( self: Self, keygroup_name: str ) -> None:
-        self[ keygroup_name] = list[KeyDefBase ]
+        self[keygroup_name] = KeyGroup( keygroup_name )
 
     def add_key_to_group( self: Self, _keygroup_name: str, _key_def: KeyDefBase ) -> None:
-        self[_keygroup_name].__setitem__( _key_def.json_key, _key_def )
+        key_group: KeyGroup = self[_keygroup_name]
+        key_group.add_keydef(_key_def)
 
-    def add_keys_to_group( self: Self, _keygroup_name: str, keys: iter( str ) ) -> None:
+    def add_keys_to_group( self: Self, _keygroup_name: str, keys: list[str]) -> None:
         for _json_key in keys:
             _key_def = self.graph_root[_json_key]
             self.add_key_to_group( _keygroup_name, _key_def )
@@ -110,7 +112,7 @@ class KeyGroups( dict[str, KeySet ] ):
 """
     KeyGraphRootBase
 """
-class KeyGraphRootBase[T: Self]( dict[str, KeyDefBase ] ):
+class KeyGraphRootBase( dict[str, KeyDefBase ] ):
     def __init__(self: Self, root_dir: str) -> None:
         super(KeyGraphRootBase, self).__init__()
         self._root_dir = root_dir
@@ -129,9 +131,15 @@ class KeyGraphRootBase[T: Self]( dict[str, KeyDefBase ] ):
         for _key_def in _keydefs:
             self.add_keydef(_key_def)
 
-    def new_keygroup_with_keys( self: Self, _keygroup_name: str, _keys: iter(str) ) -> None:
+    def add_key_to_group( self: Self, _keygroup_name: str, _key: str ) -> None:
+        key_group = self.key_groups[_keygroup_name]
+        key_def: KeyDefBase = self[_key]
+        key_group.add_keydef(key_def)
+
+    def new_keygroup_with_keys( self: Self, _keygroup_name: str, _keys: list[str] ) -> None:
         self.key_groups.add_keygroup( _keygroup_name )
-        self.key_groups.add_key_to_group( _keygroup_name, _keys )
+        for _key in _keys:
+            self.add_key_to_group( _keygroup_name, _key )
         
     def process_fields( self, fields: dict[str,str], line_num: int ) -> bool:
         result = True

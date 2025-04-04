@@ -17,7 +17,7 @@ from src.gengraphlib.fileparse.PipedBases import PipedToFileBase
 
 
 @dataclass
-class BootRecordBase[TSelf: Self]:
+class BootRecordBase:
     idx: int
     id: str
     first_dt: dt.datetime | None = None
@@ -94,7 +94,7 @@ class BootRecCmd( StrEnum ):
 
 
 
-class BootLogDirBase[TSelf: Self]:
+class BootLogDirBase:
 
     def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
         super().__init__()

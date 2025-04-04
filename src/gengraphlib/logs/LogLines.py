@@ -4,7 +4,7 @@ from ..fileparse.GNodeLib import NodeBase
 from ..fileparse.ParseTriggers import LineParseResult, ResultState
 from ..fileparse.RgxCore import RgxLine
 
-class LogLine( NodeBase[ Self ] ):
+class LogLine( NodeBase ):
 
     def __init__(self: Self, line_str: str, line_num: int) -> None:
         super( LogLine, self ).__init__( line_str = line_str, line_num = line_num )
@@ -38,7 +38,7 @@ class LogLine( NodeBase[ Self ] ):
 
         return LineParseResult( state=result_state, message = field_values[ "message" ] )
 
-class LogLines( NodeBase[Self], list[LogLine ] ):
+class LogLines( NodeBase, list[LogLine] ):
 
     def __init__( self: Self ) -> None:
         #self.log_file_graph: LogFileGraph

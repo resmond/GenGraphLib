@@ -2,6 +2,7 @@ import json
 import os
 from typing import Self
 from progress.bar import Bar
+import asyncio as aio
 
 from JsonLogGraph import KeyGraphRootBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
 from LogDirManager import LogDirManagerBase, ManagerCmd
@@ -28,12 +29,12 @@ class PipedToGraph(PipeFromStdoutBase[Self]):
     def run_export( self: Self) -> None:
         self.run_command( "" )
 
-class GraphBootRec(BootRecordBase[Self]):
+class GraphBootRec(BootRecordBase):
 
     def __init__(self: Self, root_dir: str, boot_rec: BootRecordBase) -> None:
         super(GraphBootRec, self).__init__( root_dir, boot_rec )
 
-class GraphLogDir( BootLogDirBase[Self] ):
+class GraphLogDir( BootLogDirBase ):
     def __init__(self: Self, root_dir: str, boot_rec: GraphBootRec) -> None:
         super( GraphLogDir, self ).__init__( root_dir, boot_rec )
         self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
@@ -49,14 +50,14 @@ class GraphLogDir( BootLogDirBase[Self] ):
 
             return True
 
-        except Exception as e:
-            print(f'[export_log] Exception: {e}')
+        except Exception as ext:
+            print(f'[export_log] Exception: {ext}')
             return False
 
     def exec_cmd( self: Self, cmd: BootRecCmd ) -> bool:
         return False
 
-class GraphLogDirManager( LogDirManagerBase[Self] ):
+class GraphLogDirManager( LogDirManagerBase ):
 
     def __init__( self: Self, root_dir: str ) -> None:
         super( GraphLogDirManager, self ).__init__( root_dir )
@@ -66,10 +67,10 @@ class GraphLogDirManager( LogDirManagerBase[Self] ):
         return True
 
 
-class LogGraph( KeyGraphRootBase[Self] ):
-    def __init__( self: Self, log_root: str ) -> None:
-        super( LogGraph, self ).__init__( log_root )
-        self.dir_manager: GraphLogDirManager = GraphLogDirManager( log_root )
+class LogGraph( KeyGraphRootBase ):
+    def __init__( self: Self, _log_root: str ) -> None:
+        super( LogGraph, self ).__init__( _log_root )
+        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root )
         self.add_keydefs([
             StrKeyDef( "sysUnit", "_SYSTEMD_UNIT" ),                                  # id?
             StrKeyDef( "usrUnit", "UNIT" ),                                           # id?
@@ -119,12 +120,9 @@ class LogGraph( KeyGraphRootBase[Self] ):
             "tID",
             "slID",
             "usrInvID",
-            "nmDev"
-            "glbDom"
+            "nmDev",
+            "glbDom",
             "jbID",
-            "invID",
-            "sunit",
-            "souid",
             "invID",
             "msgID",
             "slPID",
@@ -151,13 +149,22 @@ class LogGraph( KeyGraphRootBase[Self] ):
                     self.process_fields(field_dict, line_num)
                     bar.next(read_len )
             bar.finish()
-        except FileNotFoundError as e:
-            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {e} - {filepath}')
+        except FileNotFoundError as ext:
+            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
 
-    async def exec_query( self: Self ) -> bool:
-        await self.dir_manager.exec( ManagerCmd.Full, specific_ndx=1 )
+    async def exec_query( self: Self, exec_cmd: ManagerCmd, specific_ndx: int ) -> bool:
+        await self.dir_manager.exec( exec_cmd, specific_ndx )
         return True
 
-
 if __name__ == "__main__":
-    key_graph = LogGraph( "/home/richard/jctl-logs/" )
+    print("[LogGraph] starting main")
+
+#    try:
+    log_root: str = "/home/richard/data/jctl-logs"
+    key_graph = LogGraph( log_root )
+    aio.run( key_graph.exec_query( ManagerCmd.Full, 1 ) )
+
+#    except Exception as e:
+#        print(f"[LodDirManager] Exception: {e}")
+
+    print("[LogGraph] done")

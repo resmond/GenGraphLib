@@ -4,11 +4,11 @@ from __future__ import annotations
 from typing import TextIO, Self
 from collections.abc import Callable
 
-LINE_CALLBACK = Callable[ str, bool ]
+#LINE_CALLBACK: type = Callable[ str, bool ]()
 
 class FileIoContext:
 
-    def __init__( self: Self, input_file_name: str, output_file_name: str, line_fn: LINE_CALLBACK ) -> None:
+    def __init__( self: Self, input_file_name: str, output_file_name: str, line_fn: Callable[ str, bool ] ) -> None:
         self.inputfn = input_file_name
         self.outputfn = output_file_name
         self.line_fn: Callable[str, bool] = line_fn

@@ -5,7 +5,8 @@ from enum import StrEnum
 
 from typing import Self
 
-from .logs.BootLogDir import BootRecordBase, BootLogDirBase
+from logs.BootLogDir import BootRecordBase
+from logs.BootLogDir import BootLogDirBase
 
 import datetime as dt
 #import asyncio as aio
@@ -19,7 +20,7 @@ class ManagerCmd( StrEnum ):
 """
     LogDirManager
 """
-class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
+class LogDirManagerBase:
     """
     LogDirManager __init__()
         root_dir - root of all log data
@@ -94,7 +95,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
                     if not first_line:
                         boot_rec = BootRecordBase.parse_line(line)
                         self._bootrec_list.append( boot_rec )
-                        boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
+                        boot_rec.bootlog_dir = BootLogDirBase( self.root_dir, boot_rec )
                         self._bootdir_dict[ boot_rec.first_dt ] = boot_rec.bootlog_dir
                     else:
                         first_line: bool = False
@@ -134,7 +135,7 @@ class LogDirManagerBase[TLogDir: BootLogDirBase, ABC]:
                     boot_rec = BootRecordBase.parse_json( line )
                     if boot_rec is not None:
                         self._bootrec_list.append( boot_rec )
-                        boot_rec.bootlog_dir = BootLogDirBase[TLogDir]( self.root_dir, boot_rec )
+                        boot_rec.bootlog_dir = BootLogDirBase( self.root_dir, boot_rec )
                         self._bootdir_dict[ boot_rec.first_dt ] = boot_rec.bootlog_dir
             return True
 

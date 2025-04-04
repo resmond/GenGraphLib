@@ -1,14 +1,13 @@
 import json
 
 from typing import Self, TextIO
-from collections.abc import Callable
 
 from fileparse.RgxCore import RgxLine, TRgxField
 from fileparse.ParseTriggers import ParseTriggers, LineParseResult
 from src.gengraphlib.logs.LogLines import LogLine, LogLines
 from src.gengraphlib.logs.LogModules import ModuleTypes
 
-LINE_CALLBACK = Callable[ str, bool ]
+#LINE_CALLBACK = Callable[ str, bool ]
 
 class TextLogFileContext:
 
@@ -26,7 +25,7 @@ class TextLogFileContext:
         self.rgx_line: RgxLine = RgxLine( field_defs = TextLogFileContext.fields )
         self.writer: TextIO
 
-    def parse_file( self: Self, input_file_name: str, line_fn: LINE_CALLBACK ) -> None:
+    def parse_file( self: Self, input_file_name: str, line_fn: callable ) -> None:
 
         try:
             with open( self.output_file_name, 'w', encoding='utf-8-sig' ) as self.writer:
