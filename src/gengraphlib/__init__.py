@@ -1,6 +1,6 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
-from fileparse.GNodeLib import NodeBase, TNODE, NodeDict
+from fileparse.NodeLib import NodeBase, TNode, NodeDict
 from fileparse.ParseTriggers import TParseTestFn, MatchTrigger, ParseTriggers, ResultState
 from fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
 from fileparse.FileIoContext import FileIoContext
@@ -10,7 +10,7 @@ from src.gengraphlib.TextLogGraph import TextLogGraph
 
 __all__ = [
     "NodeBase",
-    "TNODE",
+    "TNode",
     "NodeDict",
 
     # from ParseTriggers

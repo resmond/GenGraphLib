@@ -19,7 +19,7 @@ class CommResultKind(IntEnum):
     CoroutineAndStreams = 1
     StreamsOnly = 2
 
-class PipedCmdBase[TSelf: Self]:
+class PipedCmdBase:
     def __init__(self: Self, pipe_name: str  ) -> None:
         self.cmd: str | None = None
         self.name: str = pipe_name
@@ -89,7 +89,7 @@ class PipedCmdBase[TSelf: Self]:
     def process_line( self: Self, line: str ) -> bool:
         return True
 
-class PipedToFileBase[TSelf: Self](PipedCmdBase[Self]):
+class PipedToFileBase(PipedCmdBase):
 
     def __init__( self: Self, pipe_name: str, output_filename: str ) -> None:
         super().__init__(pipe_name)
@@ -120,7 +120,7 @@ class PipedToFileBase[TSelf: Self](PipedCmdBase[Self]):
 
         return True
 
-class PipeToPipeBase[TSelf: Self](PipedCmdBase[TSelf]):
+class PipeToPipeBase(PipedCmdBase):
 
     def __init__( self: Self, pipe_name: str ) -> None:
         super().__init__(pipe_name)
@@ -137,7 +137,7 @@ class PipeToPipeBase[TSelf: Self](PipedCmdBase[TSelf]):
             self.error = -3
             return False
 
-class PipeFromStdoutBase[TSelf]( PipedCmdBase[TSelf] ):
+class PipeFromStdoutBase( PipedCmdBase ):
     def __init__( self: Self, pipe_name: str ) -> None:
         super().__init__(pipe_name)
 

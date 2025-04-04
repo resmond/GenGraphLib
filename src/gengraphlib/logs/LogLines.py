@@ -1,6 +1,6 @@
 from typing import Self
 
-from ..fileparse.GNodeLib import NodeBase
+from ..fileparse.NodeLib import NodeBase
 from ..fileparse.ParseTriggers import LineParseResult, ResultState
 from ..fileparse.RgxCore import RgxLine
 

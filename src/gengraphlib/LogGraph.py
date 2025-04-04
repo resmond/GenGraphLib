@@ -11,7 +11,7 @@ from logs.BootLogDir import BootLogDirBase, BootRecordBase
 from src.gengraphlib.logs.BootLogDir import BootRecCmd
 
 
-class PipedToGraph(PipeFromStdoutBase[Self]):
+class PipedToGraph(PipeFromStdoutBase):
     def __init__( self: Self, output_filepath: str ) -> None:
         super(PipedToGraph, self).__init__("PipedToKeys", output_filepath )
 
@@ -25,6 +25,9 @@ class PipedToGraph(PipeFromStdoutBase[Self]):
             self.started = False
             self.error = -3
             return False
+
+    def __getitem__(self, item) -> tuple[bytes,bytes] | None:
+        return self.proc_result
 
     def run_export( self: Self) -> None:
         self.run_command( "" )

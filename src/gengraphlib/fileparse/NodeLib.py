@@ -1,17 +1,15 @@
-from __future__ import annotations
+from abc import abstractmethod
+from typing import Self, TypeVar
+from sortedcontainers import SortedList
 
-from abc import abstractmethod, ABC
-from collections import defaultdict
-
-from typing import Self, TypeVar, Any
 
 
 """--------------------------------------------------------------
     NodeBase is the root of the hierarchy  
 """
-class NodeBase[ TNode: Self ]( ABC ):
+class NodeBase:
 
-    def __init__(self: Self, id:str, *args: dict[str, Any], **kwargs: dict[str, Any]):
+    def __init__(self: Self, id:str):
         self.id: str = id
 
     def __str__(self: Self) -> str:
@@ -25,7 +23,7 @@ class NodeBase[ TNode: Self ]( ABC ):
 #        return cls(id=id, kwargs=kwargs)
 
 
-TNODE = TypeVar( 'TNODE', bound = NodeBase )
+TNode = TypeVar( 'TNode', bound = NodeBase )
 
 """--------------------------------------------------------------
     TNode is a genericing layer to keep the fileparse node clean of generics 
@@ -42,22 +40,25 @@ class TNode[ T: NodeBase ]( NodeBase ):
         return cls(id=id, kwargs=kwargs)
 """
 
-class NodeDict[Tnode: NodeBase]( NodeBase[Tnode], defaultdict[ str, Tnode ] ):
+class NodeDict[Tnode: NodeBase]( NodeBase, dict[ str, Tnode ] ):
 
     def __init__(self: Self, id: str):
         super(NodeDict, self).__init__(id=id)
 
-    def add( self: Self, item: TNODE ) -> None:
+    def add( self: Self, item: TNode ) -> None:
         self[ item.id ] = item
 
-    def __add__(self: Self, other: TNODE) -> None:
+    def __add__( self: Self, other: TNode ) -> None:
         self[ other.id ] = other
 
     @abstractmethod
-    def __missing__(self, key) -> TNODE:
-        pass
+    def __missing__(self, key: str) -> TNode:
+        new_node: TNode = TNode.__new__(TNode)
+        self[key] = new_node
+        return new_node
 
-class IndexedNodeList[ TNode: NodeBase ]( NodeBase[TNode ], list[TNode ] ):
+
+class IndexedNodeList[ TNode: NodeBase ]( NodeBase, SortedList[TNode] ):
     #id: str = Field( None, alias="id" )
     # list: defaultdict[int,T] = []
     def __init__(self: Self, id:str):

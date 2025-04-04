@@ -12,7 +12,9 @@ class Module( NodeBase ):
         self.events: NodeDict[NodeBase] | None = None
 
     def add_event( self: Self, event_node: NodeBase  ) -> None:
-        self.events.append(event_node)
+        if self.events is None:
+            self.events = NodeDict[NodeBase]( id="event_node_dict" )
+        self.events[event_node.id] = event_node
 
 class Modules( NodeDict[ Module ] ):
 
