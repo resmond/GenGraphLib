@@ -1,6 +1,6 @@
 from typing import Self
 
-from GraphNodeLib import GraphNodeBase
+from .GraphNodeLib import GraphNodeBase
 
 class GraphLineBase( GraphNodeBase ):
 

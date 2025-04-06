@@ -2,7 +2,7 @@ from typing import Self
 
 #from .LogLines import  import LogLine
 from ..graph.GraphNodeLib import GraphNodeBase, NodeDict
-from TextBootLogLines import TextBootLogLine
+from .TextBootLogLines import TextBootLogLine
 
 class TextLogModule( GraphNodeBase ):
 

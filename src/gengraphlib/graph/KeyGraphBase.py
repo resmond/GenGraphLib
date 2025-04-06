@@ -193,12 +193,12 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
                     case "bool":
                         self[json_key].add_jvalue( value, line_num )
                     case _:
-                        print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] type: {type(value)} unhandeled valuetype" )
+                        print(f"[KeyGraphBase.process_field ({log_key}:{json_key}={value})] type: {type(value)} unhandeled valuetype" )
 
                 result = True
 
             except Exception as valexc:
-                print( f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] type: {type(value)} ValueError: {valexc}" )
+                print( f"[KeyGraphBase.process_field ({log_key}:{json_key}={value})] type: {type(value)} ValueError: {valexc}" )
                 result = False
                 
         else:
@@ -220,17 +220,22 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
                     keyfile.write(value_line_json)
                     keyfile.write("\n")
 
-    def dump_missed_keys( self: Self ) -> None:
-        data_str = json.dumps( self.missing_keys, indent=4 )
-        open( "/missedkeys.json", "w" ).write( data_str )
+    def dump_key_groups( self: Self ) -> None:
+        try:
+            data_str = json.dumps( self.missing_keys, indent=4 )
+            file_path = os.path.join( self._root_dir, "missedkeys.json" )
+            open( file_path, "w" ).write( data_str )
 
-    def dump_none_values( self ) -> None:
-        data_str = json.dumps( self.none_values, indent=4 )
-        open( "/none_values.json", "w" ).write( data_str )
+            data_str = json.dumps( self.none_values, indent=4 )
+            file_path = os.path.join( self._root_dir, "none_values.json" )
+            open( file_path, "w" ).write( data_str )
 
-    def dump_message_fields( self ) -> None:
-        data_str = json.dumps( self.message_fields, indent=4 )
-        open( "/message_fields.json", "w" ).write( data_str )
+            data_str = json.dumps( self.message_fields, indent=4 )
+            file_path = os.path.join( self._root_dir, "message_fields.json" )
+            open( file_path, "w" ).write( data_str )
+
+        except Exception as exc:
+            print(f'KeyGraphBase.dump_key_groups: Exception: {exc}')
 
 
 
