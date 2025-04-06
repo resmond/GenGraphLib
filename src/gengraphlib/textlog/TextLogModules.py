@@ -1,54 +1,54 @@
 from typing import Self
 
 #from .LogLines import  import LogLine
-from ..fileparse.NodeLib import NodeBase, NodeDict
-from .LogLines import LogLine
+from ..graph.GraphNodeLib import GraphNodeBase, NodeDict
+from TextBootLogLines import TextBootLogLine
 
-class Module( NodeBase ):
+class TextLogModule( GraphNodeBase ):
 
     def __init__(self: Self, id: str) -> None:
-        super( Module, self ).__init__( id=id )
-        self.module_type_node: NodeBase | None = None
-        self.events: NodeDict[NodeBase] | None = None
+        super( TextLogModule, self ).__init__( id=id )
+        self.module_type_node: GraphNodeBase | None = None
+        self.events: NodeDict[GraphNodeBase ] | None = None
 
-    def add_event( self: Self, event_node: NodeBase  ) -> None:
+    def add_event( self: Self, event_node: GraphNodeBase ) -> None:
         if self.events is None:
-            self.events = NodeDict[NodeBase]( id="event_node_dict" )
+            self.events = NodeDict[GraphNodeBase ]( id= "event_node_dict" )
         self.events[event_node.id] = event_node
 
-class Modules( NodeDict[ Module ] ):
+class TextLogModules( NodeDict[ TextLogModule ] ):
 
     def __init__(self: Self, id: str = "module_node_dict") -> None:
-        super( Modules, self ).__init__( id=id )
+        super( TextLogModules, self ).__init__( id=id )
 
-    def __missing__(self, key) -> Module:
-        self[key] = new_node = Module( id=key )
+    def __missing__(self, key) -> TextLogModule:
+        self[key] = new_node = TextLogModule( id=key )
         return new_node
 
-class ModuleType( NodeDict[ Modules ] ):
+class TextLogModuleType( NodeDict[ TextLogModules ] ):
 
     def __init__( self: Self, id: str = "module_type_node" ) -> None:
-        super( ModuleType, self ).__init__( id=id )
+        super( TextLogModuleType, self ).__init__( id=id )
         #self.module_nodes = ModuleNodeDict(id="model_node_dict")
         #self.module_nodes[line_node.module_id] = ModuleNode( id=line_node.module_id, module_type_node=self )
 
-    def __missing__(self, key) -> Modules:
-        self[key] = new_node = Modules( id=key )
+    def __missing__(self, key) -> TextLogModules:
+        self[key] = new_node = TextLogModules( id=key )
         return new_node
 
-class ModuleTypes( NodeDict[ ModuleType ] ):
+class TextLogModuleTypes( NodeDict[ TextLogModuleType ] ):
 
     def __init__( self: Self ) -> None:
-        super( ModuleTypes, self ).__init__( id= "module_type_dict" )
+        super( TextLogModuleTypes, self ).__init__( id= "module_type_dict" )
 
-    def __missing__(self, key) -> ModuleType:
-        self[key] = new_node = ModuleType( id=key )
+    def __missing__(self, key) -> TextLogModuleType:
+        self[key] = new_node = TextLogModuleType( id=key )
         return new_node
 
-    def accept_line_node( self: Self, line_node: LogLine ) -> None:
+    def accept_line_node( self: Self, line_node: TextBootLogLine ) -> None:
         self[ line_node.module_type_id ][ line_node.module_id ] = line_node
 
-    def __add__( self, other: LogLine ) -> None:
+    def __add__( self, other: TextBootLogLine ) -> None:
         self.accept_line_node(other)
 
 #    def add_node( self: Self, line_node: ModuleTypeNode ) -> None:

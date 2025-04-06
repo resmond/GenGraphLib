@@ -77,18 +77,6 @@ class BoolKeyDef( KeyDefBase[bool] ):
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> None:
         self.key_values.add_value( bool( jvalue ), line_num )
 
-"""
-class TmstKeyDef( KeyDefBase[datetime] ):
-    def __init__( self, _json_key: str, _log_key: str ):
-        super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp )
-
-    def add_jvalue( self: Self, jvalue: datetime, line_num: int ) -> None:
-        try:
-            #datetime_value = datetimemat( jvalue )
-            self.key_values.add_value( jvalue, line_num )
-        except ValueError as e:
-            print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
-"""
 class TmstKeyDef( KeyDefBase[datetime ] ):
     def __init__( self, _json_key: str, _log_key: str ):
         super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp )
@@ -184,7 +172,6 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
 
         if value is None:
             self.none_values.add_entry( log_key, log_line )
-            result = False
         elif log_key == "MESSAGE":
             log_str = f"[{value}]"
             self.message_fields.add_entry( log_key, log_str )
@@ -235,15 +222,15 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
 
     def dump_missed_keys( self: Self ) -> None:
         data_str = json.dumps( self.missing_keys, indent=4 )
-        open( "/home/richard/data/jctl-logs/missedkeys.json", "w" ).write( data_str )
+        open( "/missedkeys.json", "w" ).write( data_str )
 
     def dump_none_values( self ) -> None:
         data_str = json.dumps( self.none_values, indent=4 )
-        open( "/home/richard/data/jctl-logs/none_values.json", "w" ).write( data_str )
+        open( "/none_values.json", "w" ).write( data_str )
 
     def dump_message_fields( self ) -> None:
         data_str = json.dumps( self.message_fields, indent=4 )
-        open( "/home/richard/data/jctl-logs/message_fields.json", "w" ).write( data_str )
+        open( "/message_fields.json", "w" ).write( data_str )
 
 
 

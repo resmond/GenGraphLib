@@ -6,7 +6,7 @@ from sortedcontainers import SortedList
     NodeBase is the root of the hierarchy
       
 """
-class NodeBase:
+class GraphNodeBase:
 
     def __init__(self: Self, id:str):
         self.id: str = id
@@ -22,7 +22,7 @@ class NodeBase:
 #        return cls(id=id, kwargs=kwargs)
 
 
-TNode = TypeVar( 'TNode', bound = NodeBase )
+TGraphNode = TypeVar( 'TGraphNode', bound = GraphNodeBase )
 
 """--------------------------------------------------------------
     TNode is a genericing layer to keep the fileparse node clean of generics 
@@ -39,25 +39,25 @@ class TNode[ T: NodeBase ]( NodeBase ):
         return cls(id=id, kwargs=kwargs)
 """
 
-class NodeDict[Tnode: NodeBase]( NodeBase, dict[ str, Tnode ] ):
+class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
 
     def __init__(self: Self, id: str):
         super(NodeDict, self).__init__(id=id)
 
-    def add( self: Self, item: TNode ) -> None:
+    def add( self: Self, item: TGraphNode ) -> None:
         self[ item.id ] = item
 
-    def __add__( self: Self, other: TNode ) -> None:
+    def __add__( self: Self, other: TGraphNode ) -> None:
         self[ other.id ] = other
 
     @abstractmethod
-    def __missing__(self, key: str) -> TNode:
-        new_node: TNode = TNode.__new__(TNode)
+    def __missing__(self, key: str) -> TGraphNode:
+        new_node: TGraphNode = TGraphNode.__new__( TGraphNode )
         self[key] = new_node
         return new_node
 
 
-class IndexedNodeList[ TNode: NodeBase ]( NodeBase, SortedList[TNode] ):
+class IndexedNodeList[ TNode: GraphNodeBase ]( GraphNodeBase, SortedList[TNode ] ):
     #id: str = Field( None, alias="id" )
     # list: defaultdict[int,T] = []
     def __init__(self: Self, id:str):

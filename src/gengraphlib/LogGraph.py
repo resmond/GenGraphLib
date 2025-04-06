@@ -5,13 +5,13 @@ import os
 
 from progress.bar import Bar
 
-from .logs.KeyGraphBase import KeyGraphBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
+from .graph.KeyGraphBase import KeyGraphBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
 from .logs.BootLogDirBase import BootLogDirBase
 from .logs.LogDirManagerBase import LogDirManagerBase, GraphCmd
 
 class GraphLogDir( BootLogDirBase ):
-    def __init__(self: Self, root_dir: str, log_line: str, fields_fn: process_fields_fn ) -> None:
-        super( GraphLogDir, self ).__init__( root_dir, log_line )
+    def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
+        super( GraphLogDir, self ).__init__( root_dir, log_rec )
 
 class GraphLogDirManager( LogDirManagerBase ):
 

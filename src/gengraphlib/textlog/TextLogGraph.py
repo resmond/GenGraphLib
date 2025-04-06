@@ -2,14 +2,14 @@ import json
 
 from typing import Self, TextIO
 
-from fileparse.RgxCore import RgxLine, TRgxField
-from fileparse.ParseTriggers import ParseTriggers, LineParseResult
-from src.gengraphlib.logs.LogLines import LogLine, LogLines
-from src.gengraphlib.logs.LogModules import ModuleTypes
+from ..fileparse.RgxCore import RgxLine, TRgxField
+from ..fileparse.ParseTriggers import ParseTriggers, LineParseResult
+from TextBootLogLines import TextBootLogLine, TextBootLogLines
+from TextLogModules import TextLogModuleTypes
 
 #LINE_CALLBACK = Callable[ str, bool ]
 
-class TextLogFileContext:
+class TextLogParseContext:
 
     fields: dict[str, TRgxField ] = {
         "date_seg": TRgxField(r"^\w*\s\w*\s\w*:\w*:\w*", tail=" "),
@@ -22,7 +22,7 @@ class TextLogFileContext:
 
     def __init__( self: Self) -> None:
         self.parse_triggers: ParseTriggers = ParseTriggers()
-        self.rgx_line: RgxLine = RgxLine( field_defs = TextLogFileContext.fields )
+        self.rgx_line: RgxLine = RgxLine( field_defs = TextLogParseContext.fields )
         self.writer: TextIO
 
     def parse_file( self: Self, input_file_name: str, line_fn: callable ) -> None:
@@ -48,8 +48,8 @@ class TextLogGraph:
         self._input_file_name = input_file_name
         self._output_file_name = output_file_name
         self.next_line_number: int = 0
-        self.lines: LogLines = LogLines()
-        self.module_types: ModuleTypes = ModuleTypes()
+        self.lines: TextBootLogLines = TextBootLogLines()
+        self.module_types: TextLogModuleTypes = TextLogModuleTypes()
 
         #self.event_types: EventTypes = EventTypes()
 #        self.event_types["unmet"] = EventTypeBase( id= "unmet", match_phrase = "unmet condition" )
@@ -65,7 +65,7 @@ class TextLogGraph:
 
 #        if parse_test_result is not None and parse_test_result[ "state" ] == ResultState.Found:
         line_values: dict[str,str] = self.rgx_line.process_line( new_line_str )
-        new_line_node: LogLine = LogLine( line_str= new_line_str, line_num=self.next_line_number )
+        new_line_node: TextBootLogLine = TextBootLogLine( line_str= new_line_str, line_num=self.next_line_number )
         parse_test_result = new_line_node.parse_line( event_type_id=event_type_id, field_values =line_values )
 
 #        self.module_types.add_node(new_line_node)
