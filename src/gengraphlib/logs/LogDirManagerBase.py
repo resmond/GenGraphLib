@@ -6,14 +6,14 @@ import datetime as dt
 import os as os
 
 from .BootLogDirBase import BootLogDirBase
-from ..graph.KeyGraphBase import process_fields_fn, KeyValTypes
+from ..graph.GraphKeys import process_fields_fn, KeyValTypes
 
 #class GraphCmd( StrEnum ):
 #    Full    = "Full"
 #    Refresh = "Refresh"
 
 """--------------------------------------------------------
-    LogDirManager __init__()
+    LogDirManagerBase __init__()
         root_dir - root of all log data
             root_dir/boots/{fulldate}/ files - being primary log data for a single boot history
             root_dir/keys - being primary key analysis data for ALL boots
@@ -28,16 +28,18 @@ from ..graph.KeyGraphBase import process_fields_fn, KeyValTypes
 
 
 --------------------------------------------------------"""
+
 class LogDirManagerBase:
     def __init__(self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
         super().__init__()
         self.root_dir: str = root_dir
         self.full_reparse: bool = True
-        self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "bootlist.txt" )
-        self._bootrec_jfilepath: str = os.path.join( self.root_dir, "bootlist.jline" )
+        self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
+        self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.txt" )
+        self._bootrec_jfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.jline" )
         self._bootdir_list: list[BootLogDirBase] = list[BootLogDirBase]()
         self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
-        self._journal_cmd = "journalctl -b 0 -o json"
+        self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
         self._fields_fn = fields_fn
 
     """
@@ -67,8 +69,7 @@ class LogDirManagerBase:
             if self.full_reparse and os.path.exists( self._bootlist_txtfilepath ):
                 os.remove( self._bootlist_txtfilepath )
                 
-            journalctl_cmd: str = "/bin/journalctl --list-boots > bootlist.txt"
-            process = subprocess.run(journalctl_cmd, shell=True, cwd=self.root_dir)
+            process = subprocess.run(self._journal_cmd, shell=True, cwd=self._bootdir_path)
             return process.returncode == 0
 
         except Exception as ext:

@@ -26,7 +26,7 @@ class BootLogDirBase:
             self.first_dt: dt.datetime = dt.datetime.fromisoformat(_first_dt)
             self.last_dt: dt.datetime = dt.datetime.fromisoformat(_last_dt)
             self.dir_name = self.first_dt.isoformat()
-            self.dir_path = os.path.join(self.root_dir, self.dir_name)
+            self.dir_path = os.path.join(self.root_dir, "boots", self.dir_name)
 
             self.exec_process: asub.Process | None = None
             self.cmd: str = f"journalctl -b {self.id} -o json"
@@ -61,52 +61,3 @@ class BootLogDirBase:
             async for line in self.CmdStream.run_command(self.cmd, self.dir_path):
                 yield line
 
-"""
-    async def stream( self: Self ) -> AsyncGenerator[ str, None ]:
-        try:
-            cmd: str = f"journalctl -b {self.id} -o json"
-            if self._dir_exists():
-                self.exec_process: asub.Process = await aio.create_subprocess_shell(
-                    cmd,
-                    cwd=self.dir_path,
-                    stdout=aio.subprocess.PIPE,
-                )
-
-                while True:
-                    try:
-                        line = await self.exec_process.stdout.readline()
-                    except aio.exceptions.TimeoutError as aioerr:
-                        print(f'[BootLogDirBase.stream] Exception: {aioerr}')
-                        break
-                    else:
-                        if line:
-                            try:
-                                yield line.decode().strip()
-                            except Exception as decode_err:
-                                print(f'[BootLogDirBase.stream] Exception: {decode_err}')
-                        else:
-                            break
-
-        except Exception as e:
-            print(f"[BootLogDirBase.stream] Exception: {e}")
-
-    async def run_command( self: Self, cmd: str, exec_dir: str ) -> AsyncGenerator[str, None]:
-        try:
-            self.exec_process: asub.Process = await aio.create_subprocess_shell(
-                cmd,
-                cwd=exec_dir,
-                stdout=aio.subprocess.PIPE,
-            )
-
-            while True:
-                line = await self.exec_process.stdout.readline()
-                if line:
-                    yield line.decode().strip()
-                else:
-                    break
-
-        except Exception as exc:
-            print(f"[BootLogDirBase.run_command]: {exc}")
-            self.exc = exc
-            self.error = -1
-"""

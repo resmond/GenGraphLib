@@ -5,7 +5,8 @@ import os
 
 from progress.bar import Bar
 
-from .graph.KeyGraphBase import KeyGraphBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
+from .graph.GraphKeys import StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
+from .graph.KeyGraphBase import KeyGraphBase
 from .logs.BootLogDirBase import BootLogDirBase
 from .logs.LogDirManagerBase import LogDirManagerBase
 
