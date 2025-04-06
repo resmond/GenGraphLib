@@ -1,32 +1,23 @@
 import json
 import subprocess
 
-from enum import StrEnum
-
 from typing import Self
-
-from .BootLogDirBase import BootLogDirBase
-
 import datetime as dt
-#import asyncio as aio
 import os as os
 
-from src.gengraphlib.graph.KeyGraphBase import process_fields_fn, KeyValTypes
+from .BootLogDirBase import BootLogDirBase
+from ..graph.KeyGraphBase import process_fields_fn, KeyValTypes
 
-class GraphCmd( StrEnum ):
-    Full    = "Full"
-    Refresh = "Refresh"
+#class GraphCmd( StrEnum ):
+#    Full    = "Full"
+#    Refresh = "Refresh"
 
-"""
-    LogDirManager
-"""
-class LogDirManagerBase:
-    """
+"""--------------------------------------------------------
     LogDirManager __init__()
         root_dir - root of all log data
             root_dir/boots/{fulldate}/ files - being primary log data for a single boot history
             root_dir/keys - being primary key analysis data for ALL boots
-
+    
         self.root_dir = rot_dir
         self._cmd - last command executed
         self._bootlist_txtfilepath - path to "bootlist.txt" from 'journalctl --list-boots'
@@ -35,11 +26,13 @@ class LogDirManagerBase:
         self._bootdir_dict: dict[ dt.datetime, BootLogDir ] = dict of BootLogDir boot manager objects
         self._journal_cmd = "journalctl -b 0 -o json" = basic journalctl command for a single boot export to json
 
-    """
+
+--------------------------------------------------------"""
+class LogDirManagerBase:
     def __init__(self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
         super().__init__()
         self.root_dir: str = root_dir
-        self._cmd: GraphCmd | None = None
+        self.full_reparse: bool = True
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "bootlist.jline" )
         self._bootdir_list: list[BootLogDirBase] = list[BootLogDirBase]()
@@ -54,11 +47,11 @@ class LogDirManagerBase:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    async def exec( self, exec_cmd: GraphCmd, specific_ndx: int | None ) -> bool:
-        self._cmd = exec_cmd
+    async def exec( self, specific_ndx: int | None, full_reparse: bool = True  ) -> bool:
+        self.full_reparse = full_reparse
 
-        if self._cmd == GraphCmd.Full or not self._load_txt():
-            self._query_bootlist( exec_cmd == GraphCmd.Full )
+        if self.full_reparse or not self._load_txt():
+            self._query_bootlist()
 
         if self._load_txt():
             return await self.process_dirs( specific_ndx )
@@ -69,9 +62,9 @@ class LogDirManagerBase:
         _log_querylist
             fqueries fresh list of boot records from journalctl --list-boots as text file
     """
-    def _query_bootlist( self: Self, del_existing: bool ) -> bool:
+    def _query_bootlist( self: Self) -> bool:
         try:
-            if del_existing and os.path.exists( self._bootlist_txtfilepath ):
+            if self.full_reparse and os.path.exists( self._bootlist_txtfilepath ):
                 os.remove( self._bootlist_txtfilepath )
                 
             journalctl_cmd: str = "/bin/journalctl --list-boots > bootlist.txt"

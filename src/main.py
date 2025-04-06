@@ -1,10 +1,10 @@
 import asyncio as aio
 
-from src.gengraphlib.LogGraph import LogGraph, GraphCmd
+from src.gengraphlib.LogGraph import LogGraph
 
 async def main() -> bool:
     log_graph = LogGraph("/home/richard/data/jctl-logs")
-    await log_graph.exec_query( GraphCmd.Full, -5 )
+    await log_graph.exec_query( specific_ndx=-5 )
     log_graph.dump_missed_keys()
     log_graph.dump_none_values()
     log_graph.dump_message_fields()

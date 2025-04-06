@@ -7,7 +7,7 @@ from progress.bar import Bar
 
 from .graph.KeyGraphBase import KeyGraphBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
 from .logs.BootLogDirBase import BootLogDirBase
-from .logs.LogDirManagerBase import LogDirManagerBase, GraphCmd
+from .logs.LogDirManagerBase import LogDirManagerBase
 
 class GraphLogDir( BootLogDirBase ):
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
@@ -201,6 +201,6 @@ class LogGraph( KeyGraphBase ):
         except FileNotFoundError as ext:
             print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
 
-    async def exec_query( self: Self, exec_cmd: GraphCmd, specific_ndx: int ) -> bool:
-        await self.dir_manager.exec( exec_cmd, specific_ndx )
+    async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
+        await self.dir_manager.exec( specific_ndx, full_reparse )
         return True
