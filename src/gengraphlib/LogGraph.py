@@ -5,7 +5,7 @@ import os
 
 from progress.bar import Bar
 
-from .graph.GraphKeys import StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
+from .graph.GraphKeyDefs import StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, process_fields_fn
 from .graph.KeyGraphBase import KeyGraphBase
 from .logs.BootLogDirBase import BootLogDirBase
 from .logs.LogDirManagerBase import LogDirManagerBase
@@ -30,56 +30,56 @@ class LogGraph( KeyGraphBase ):
                 StrKeyDef("seqNum", "__SEQNUM"),
                 StrKeyDef("mID", "_MACHINE_ID"),
                 StrKeyDef("hstName", "_HOSTNAME"),
-                StrKeyDef("trns", "_TRANSPORT"),
+                StrKeyDef("trns", "_TRANSPORT", "hdr"),
                 StrKeyDef("mTime", "__MONOTONIC_TIMESTAMP"),
-                StrKeyDef("priority", "PRIORITY"),
+                StrKeyDef("priority", "PRIORITY", "hdr"),
                 StrKeyDef("msg", "MESSAGE"),
-                StrKeyDef("rtScope", "_RUNTIME_SCOPE"),
-                StrKeyDef("krnDev", "_KERNEL_DEVICE"),
-                StrKeyDef("snID", "__SEQNUM_ID"),  # id
-                StrKeyDef("rtTime", "__REALTIME_TIMESTAMP"),  # id
-                StrKeyDef("sysUnit", "_SYSTEMD_UNIT"),  # id?
-                StrKeyDef("usrUnit", "UNIT"),  # id?
-                StrKeyDef("udSName", "_UDEV_SYSNAME"),  # id?
-                StrKeyDef("udDvNd", "_UDEV_DEVNODE"),  # id?
-                StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM"),  # id?
-                IntKeyDef("tID", "TID"),  # id?
-                StrKeyDef("comm", "_COMM"),
-                StrKeyDef("slID", "SYSLOG_IDENTIFIER"),  # id?
+                StrKeyDef("rtScope", "_RUNTIME_SCOPE", "hdr"),
+                StrKeyDef("krnDev", "_KERNEL_DEVICE", "id"),
+                StrKeyDef("snID", "__SEQNUM_ID", "id"),
+                StrKeyDef("rtTime", "__REALTIME_TIMESTAMP"),
+                StrKeyDef("sysUnit", "_SYSTEMD_UNIT", "id"),
+                StrKeyDef("usrUnit", "UNIT", "id"),
+                StrKeyDef("udSName", "_UDEV_SYSNAME", "id"),
+                StrKeyDef("udDvNd", "_UDEV_DEVNODE", "id"),
+                StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM", "id"),
+                IntKeyDef("tID", "TID", "id"),
+                StrKeyDef("comm", "_COMM", "hdr"),
+                StrKeyDef("slID", "SYSLOG_IDENTIFIER", "id"),
                 TmstKeyDef("srTime", "_SOURCE_REALTIME_TIMESTAMP"),
-                StrKeyDef("sysFac", "SYSLOG_FACILITY"),
+                StrKeyDef("sysFac", "SYSLOG_FACILITY", "hdr"),
                 BoolKeyDef("lnBk", "_LINE_BREAK"),
                 StrKeyDef("cmdLn", "_CMDLINE"),
-                StrKeyDef("usrInvID", "USER_INVOCATION_ID"),  # id?
+                StrKeyDef("usrInvID", "USER_INVOCATION_ID", "id"),
                 StrKeyDef("glbLogApi", "GLIB_OLD_LOG_API"),
-                StrKeyDef("nmDev", "NM_DEVICE"),  # id?
-                StrKeyDef("glbDom", "GLIB_DOMAIN"),  # id?
+                StrKeyDef("nmDev", "NM_DEVICE", "id"),
+                StrKeyDef("glbDom", "GLIB_DOMAIN", "id"),
                 StrKeyDef("nmLogLev", "NM_LOG_LEVEL"),
                 StrKeyDef("jbRes", "JOB_RESULT"),
                 StrKeyDef("smTime", "_SOURCE_MONOTONIC_TIMESTAMP"),
-                StrKeyDef("jbID", "JOB_ID"),  # id?
+                StrKeyDef("jbID", "JOB_ID", "id"),
                 StrKeyDef("jbType", "JOB_TYPE"),
-                StrKeyDef("invID", "INVOCATION_ID"),  # id?
+                StrKeyDef("invID", "INVOCATION_ID", "id"),
                 StrKeyDef("slTime", "SYSLOG_TIMESTAMP"),
-                StrKeyDef("msgID", "MESSAGE_ID"),  # id?
-                StrKeyDef("slPID", "SYSLOG_PID"),  # id?
-                StrKeyDef("sysdUsrUnit", "_SYSTEMD_USER_UNIT"),  # id?
-                StrKeyDef("ssysdUwnUID", "_SYSTEMD_OWNER_UID"),  # id?
-                StrKeyDef("strmID", "_STREAM_ID"),  # id?
+                StrKeyDef("msgID", "MESSAGE_ID", "id"),
+                StrKeyDef("slPID", "SYSLOG_PID", "id"),
+                StrKeyDef("sysdUsrUnit", "_SYSTEMD_USER_UNIT", "id"),
+                StrKeyDef("ssysdUwnUID", "_SYSTEMD_OWNER_UID", "id"),
+                StrKeyDef("strmID", "_STREAM_ID", "id"),
                 StrKeyDef("audSes", "_AUDIT_SESSION"),
                 StrKeyDef("cdFn", "CODE_FUNC"),
                 StrKeyDef("cdLn", "CODE_LINE"),
                 StrKeyDef("cdFl", "CODE_FILE"),
-                StrKeyDef("sysdInvID", "_SYSTEMD_INVOCATION_ID"),  # id?
-                StrKeyDef("exe", "_EXE"),  # id?
-                StrKeyDef("sysdSLc", "_SYSTEMD_SLICE"),  # id?
-                StrKeyDef("slnxCtx", "_SELINUX_CONTEXT"),  # id?
-                StrKeyDef("uID", "_UID"),  # id?
+                StrKeyDef("sysdInvID", "_SYSTEMD_INVOCATION_ID", "id"),
+                StrKeyDef("exe", "_EXE", "id"),
+                StrKeyDef("sysdSLc", "_SYSTEMD_SLICE", "id"),
+                StrKeyDef("slnxCtx", "_SELINUX_CONTEXT", "id"),
+                StrKeyDef("uID", "_UID", "id"),
                 StrKeyDef("cur", "__CURSOR"),
                 StrKeyDef("cap_eff", "_CAP_EFFECTIVE"),
-                StrKeyDef("pID", "_PID"),  # id
-                StrKeyDef("sysdCgrp", "_SYSTEMD_CGROUP"),  # id
-                StrKeyDef("gID", "_GID"),  # id
+                StrKeyDef("pID", "_PID", "id"),
+                StrKeyDef("sysdCgrp", "_SYSTEMD_CGROUP", "id"),
+                StrKeyDef("gID", "_GID", "id"),
                 StrKeyDef("avPrty", "AVAILABLE_PRETTY"),
                 StrKeyDef("muPrty", "MAX_USE_PRETTY"),
                 StrKeyDef("dskKpfree", "DISK_KEEP_FREE"),
@@ -95,16 +95,16 @@ class LogGraph( KeyGraphBase ):
                 StrKeyDef("", "CURRENT_USE_PRETTY"),
                 StrKeyDef("dskKpFrPrty", "DISK_KEEP_FREE_PRETTY"),
                 StrKeyDef("where", "WHERE"),
-                StrKeyDef("dev", "DEVICE"),  # id
+                StrKeyDef("dev", "DEVICE", "id"),  # id
                 StrKeyDef("sysdRaw", "SYSLOG_RAW"),
                 StrKeyDef("cfgLine", "CONFIG_LINE"),
-                StrKeyDef("cfgFile", "CONFIG_FILE"),
+                StrKeyDef("cfgFile", "CONFIG_FILE", "hdr"),
                 StrKeyDef("taint","TAINT" ),
                 StrKeyDef("thID","THREAD_ID" ),
                 StrKeyDef("tmstBoot","TIMESTAMP_BOOTTIME" ),
                 StrKeyDef("nmLogDom","NM_LOG_DOMAINS" ),
                 StrKeyDef("tmstMon","TIMESTAMP_MONOTONIC" ),
-                StrKeyDef("seatID","SEAT_ID" ), # id
+                StrKeyDef("seatID","SEAT_ID", "id" ),
                 StrKeyDef("boltVer","BOLT_VERSION" ),
                 StrKeyDef("boltLogCtx","BOLT_LOG_CONTEXT" ),
                 StrKeyDef("boltTopic","BOLT_TOPIC" ),
@@ -116,18 +116,18 @@ class LogGraph( KeyGraphBase ):
                 StrKeyDef("boltDevNm","BOLT_DEVICE_NAME" ),
                 StrKeyDef("boltDevSt","BOLT_DEVICE_STATE" ),
                 StrKeyDef("boltDevUid","BOLT_DEVICE_UID" ),
-                StrKeyDef("interface","INTERFACE" ),
+                StrKeyDef("interface","INTERFACE", "hdr" ),
                 StrKeyDef("krnUSec","KERNEL_USEC" ),
                 StrKeyDef("usrUSec","USERSPACE_USEC" ),
-                StrKeyDef("sesID","SESSION_ID" ), # id
+                StrKeyDef("sesID","SESSION_ID", "id" ),
                 StrKeyDef("leader","LEADER" ),
-                StrKeyDef("usrID","USER_ID" ), # id
+                StrKeyDef("usrID","USER_ID", "id" ),
                 StrKeyDef("audLogUid","_AUDIT_LOGINUID" ),
-                StrKeyDef("sysdUsrSlice","_SYSTEMD_USER_SLICE" ), # id
+                StrKeyDef("sysdUsrSlice","_SYSTEMD_USER_SLICE", "id" ),
                 StrKeyDef("errNo","ERRNO" ),
-                StrKeyDef("usrUnit","USER_UNIT" ), # id
-                StrKeyDef("sysdSess","_SYSTEMD_SESSION" ), # id
-                StrKeyDef("topic","TOPIC" ),
+                StrKeyDef("usrUnit","USER_UNIT", "id" ),
+                StrKeyDef("sysdSess","_SYSTEMD_SESSION", "id" ),
+                StrKeyDef("topic","TOPIC", "hdr" ),
                 StrKeyDef("command","COMMAND" ),
                 StrKeyDef("exitCd","EXIT_CODE" ),
                 StrKeyDef("exitSt","EXIT_STATUS" ),
@@ -145,6 +145,29 @@ class LogGraph( KeyGraphBase ):
                 StrKeyDef("nmConn","NM_CONNECTION" )
             ]
         )
+        self.init_repository()
+
+    def read_json(self: Self, filepath: str):
+        try:
+            line_num: int = 0
+            read_len: int = 0
+            file_size: int = os.path.getsize(filepath)
+            bar = Bar("Processing", max=file_size)
+            with open(filepath) as file:
+                for line in file:
+                    read_len += len(line)
+                    field_dict = json.loads(line)
+                    self.process_fields(field_dict, line_num)
+                    bar.next(read_len )
+            bar.finish()
+        except FileNotFoundError as ext:
+            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
+
+    async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
+        await self.dir_manager.exec( specific_ndx, full_reparse )
+        return True
+
+"""
         self.new_keygroup_with_keys("ids", [
             "sysdUsrSlice",
             "usrUnit",
@@ -186,22 +209,4 @@ class LogGraph( KeyGraphBase ):
             "uID"
         ])
 
-    def read_json(self: Self, filepath: str):
-        try:
-            line_num: int = 0
-            read_len: int = 0
-            file_size: int = os.path.getsize(filepath)
-            bar = Bar("Processing", max=file_size)
-            with open(filepath) as file:
-                for line in file:
-                    read_len += len(line)
-                    field_dict = json.loads(line)
-                    self.process_fields(field_dict, line_num)
-                    bar.next(read_len )
-            bar.finish()
-        except FileNotFoundError as ext:
-            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
-
-    async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
-        await self.dir_manager.exec( specific_ndx, full_reparse )
-        return True
+"""

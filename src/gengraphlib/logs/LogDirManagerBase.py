@@ -6,7 +6,7 @@ import datetime as dt
 import os as os
 
 from .BootLogDirBase import BootLogDirBase
-from ..graph.GraphKeys import process_fields_fn, KeyValTypes
+from ..graph.GraphKeyDefs import process_fields_fn, KeyValTypes
 
 #class GraphCmd( StrEnum ):
 #    Full    = "Full"
@@ -147,6 +147,7 @@ class LogDirManagerBase:
 
                 try:
                     fields = json.loads(line)
+
                 except json.decoder.JSONDecodeError as jserr:
                     print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
                     print(f"    line:  {line}")
@@ -154,9 +155,12 @@ class LogDirManagerBase:
                 else:
                     try:
                         self._fields_fn(fields, cnt, line)
+
                     except Exception as fnexc:
                         print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
-                    cnt += 1
+
+                    finally:
+                        cnt += 1
 
             return True
 
