@@ -1,7 +1,5 @@
 from typing import Self
 
-import asyncio as aio
-
 import json
 import os
 
@@ -25,82 +23,134 @@ class LogGraph( KeyGraphBase ):
     def __init__( self: Self, _log_root: str ) -> None:
         super( LogGraph, self ).__init__( _log_root )
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
-        self.add_keydefs([
-            StrKeyDef( "bootID", "_BOOT_ID"),
-            StrKeyDef( "seqNum", "__SEQNUM" ),
-            StrKeyDef( "mID", "_MACHINE_ID" ),
-            StrKeyDef( "hstName", "_HOSTNAME" ),
-            StrKeyDef( "trns", "_TRANSPORT" ),
-            StrKeyDef( "mTime", "__MONOTONIC_TIMESTAMP" ),
-            StrKeyDef( "priority", "PRIORITY" ),
-            StrKeyDef( "msg", "MESSAGE" ),
-            StrKeyDef( "rtScope", "_RUNTIME_SCOPE" ),
-            StrKeyDef( "krnDev", "_KERNEL_DEVICE" ),
-            StrKeyDef( "snID", "__SEQNUM_ID" ),                                       # id
-            StrKeyDef( "rtTime", "__REALTIME_TIMESTAMP"),                             # id
-            StrKeyDef( "sysUnit", "_SYSTEMD_UNIT" ),                                  # id?
-            StrKeyDef( "usrUnit", "UNIT" ),                                           # id?
-            StrKeyDef( "udSName", "_UDEV_SYSNAME" ),                                  # id?
-            StrKeyDef( "udDvNd", "_UDEV_DEVNODE" ),                                   # id?
-            StrKeyDef( "krSubSys", "_KERNEL_SUBSYSTEM" ),                             # id?
-            IntKeyDef( "tID", "TID" ),                                                # id?
-            StrKeyDef( "comm", "_COMM" ),
-            StrKeyDef( "slID", "SYSLOG_IDENTIFIER" ),                                 # id?
-            TmstKeyDef( "srTime", "_SOURCE_REALTIME_TIMESTAMP" ),
-            StrKeyDef( "sysFac", "SYSLOG_FACILITY" ),
-            BoolKeyDef( "lnBk", "_LINE_BREAK" ),
-            StrKeyDef( "cmdLn", "_CMDLINE" ),
-            StrKeyDef( "usrInvID", "USER_INVOCATION_ID" ),                            # id?
-            StrKeyDef( "glbLogApi", "GLIB_OLD_LOG_API" ),
-            StrKeyDef( "nmDev", "NM_DEVICE" ),                                        # id?
-            StrKeyDef( "glbDom", "GLIB_DOMAIN" ),                                     # id?
-            StrKeyDef( "nmLogLev", "NM_LOG_LEVEL" ),
-            StrKeyDef( "jbRes", "JOB_RESULT" ),
-            StrKeyDef( "smTime", "_SOURCE_MONOTONIC_TIMESTAMP" ),
-            StrKeyDef( "jbID", "JOB_ID" ),                                            # id?
-            StrKeyDef( "jbType", "JOB_TYPE" ),
-            StrKeyDef( "invID", "INVOCATION_ID" ),                                    # id?
-            StrKeyDef( "slTime", "SYSLOG_TIMESTAMP" ),
-            StrKeyDef( "msgID", "MESSAGE_ID" ),                                       # id?
-            StrKeyDef( "slPID", "SYSLOG_PID" ),                                       # id?
-            StrKeyDef( "sysdUsrUnit", "_SYSTEMD_USER_UNIT" ),                         # id?
-            StrKeyDef( "ssysdUwnUID", "_SYSTEMD_OWNER_UID" ),                         # id?
-            StrKeyDef( "strmID", "_STREAM_ID" ),                                      # id?
-            StrKeyDef( "audSes", "_AUDIT_SESSION" ),
-            StrKeyDef( "cdFn", "CODE_FUNC" ),
-            StrKeyDef( "cdLn", "CODE_LINE" ),
-            StrKeyDef( "cdFl", "CODE_FILE" ),
-            StrKeyDef( "sysdInvID", "_SYSTEMD_INVOCATION_ID" ),                       # id?
-            StrKeyDef( "exe", "_EXE" ),                                               # id?
-            StrKeyDef( "sysdSLc", "_SYSTEMD_SLICE" ),                                 # id?
-            StrKeyDef( "slnxCtx", "_SELINUX_CONTEXT" ),                               # id?
-            StrKeyDef( "uID", "_UID" ),                                               # id?
-            StrKeyDef( "cur", "__CURSOR" ),
-            StrKeyDef( "cap_eff", "_CAP_EFFECTIVE" ),
-            StrKeyDef( "pID", "_PID" ),                                               # id
-            StrKeyDef( "sysdCgrp","_SYSTEMD_CGROUP" ),                                # id
-            StrKeyDef( "gID","_GID" ),                                                # id
-            StrKeyDef( "avPrty","AVAILABLE_PRETTY" ),
-            StrKeyDef( "muPrty","MAX_USE_PRETTY" ),
-            StrKeyDef( "dskKpfree","DISK_KEEP_FREE" ),
-            StrKeyDef( "dskAvlPrty","DISK_AVAILABLE_PRETTY" ),
-            StrKeyDef( "maxUse","MAX_USE" ),
-            StrKeyDef( "curUse","CURRENT_USE" ),
-            StrKeyDef( "limit","LIMIT" ),
-            StrKeyDef( "limPrty","LIMIT_PRETTY" ),
-            StrKeyDef( "jrnlPath","JOURNAL_PATH" ),
-            StrKeyDef( "jrnlName","JOURNAL_NAME" ),
-            StrKeyDef( "avail","AVAILABLE" ),
-            StrKeyDef( "dslAvail","DISK_AVAILABLE" ),
-            StrKeyDef( "","CURRENT_USE_PRETTY" ),
-            StrKeyDef( "dskKpFrPrty","DISK_KEEP_FREE_PRETTY" ),
-            StrKeyDef( "where","WHERE" ),
-            StrKeyDef( "dev","DEVICE" ),                                             # id
-            StrKeyDef( "sysdRaw","SYSLOG_RAW" ),
-            StrKeyDef( "cfgLine","CONFIG_LINE" ),
-            StrKeyDef( "cfgFile","CONFIG_FILE" )
-        ])
+        self.add_keydefs(
+            [
+                StrKeyDef("bootID", "_BOOT_ID"),
+                StrKeyDef("seqNum", "__SEQNUM"),
+                StrKeyDef("mID", "_MACHINE_ID"),
+                StrKeyDef("hstName", "_HOSTNAME"),
+                StrKeyDef("trns", "_TRANSPORT"),
+                StrKeyDef("mTime", "__MONOTONIC_TIMESTAMP"),
+                StrKeyDef("priority", "PRIORITY"),
+                StrKeyDef("msg", "MESSAGE"),
+                StrKeyDef("rtScope", "_RUNTIME_SCOPE"),
+                StrKeyDef("krnDev", "_KERNEL_DEVICE"),
+                StrKeyDef("snID", "__SEQNUM_ID"),  # id
+                StrKeyDef("rtTime", "__REALTIME_TIMESTAMP"),  # id
+                StrKeyDef("sysUnit", "_SYSTEMD_UNIT"),  # id?
+                StrKeyDef("usrUnit", "UNIT"),  # id?
+                StrKeyDef("udSName", "_UDEV_SYSNAME"),  # id?
+                StrKeyDef("udDvNd", "_UDEV_DEVNODE"),  # id?
+                StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM"),  # id?
+                IntKeyDef("tID", "TID"),  # id?
+                StrKeyDef("comm", "_COMM"),
+                StrKeyDef("slID", "SYSLOG_IDENTIFIER"),  # id?
+                TmstKeyDef("srTime", "_SOURCE_REALTIME_TIMESTAMP"),
+                StrKeyDef("sysFac", "SYSLOG_FACILITY"),
+                BoolKeyDef("lnBk", "_LINE_BREAK"),
+                StrKeyDef("cmdLn", "_CMDLINE"),
+                StrKeyDef("usrInvID", "USER_INVOCATION_ID"),  # id?
+                StrKeyDef("glbLogApi", "GLIB_OLD_LOG_API"),
+                StrKeyDef("nmDev", "NM_DEVICE"),  # id?
+                StrKeyDef("glbDom", "GLIB_DOMAIN"),  # id?
+                StrKeyDef("nmLogLev", "NM_LOG_LEVEL"),
+                StrKeyDef("jbRes", "JOB_RESULT"),
+                StrKeyDef("smTime", "_SOURCE_MONOTONIC_TIMESTAMP"),
+                StrKeyDef("jbID", "JOB_ID"),  # id?
+                StrKeyDef("jbType", "JOB_TYPE"),
+                StrKeyDef("invID", "INVOCATION_ID"),  # id?
+                StrKeyDef("slTime", "SYSLOG_TIMESTAMP"),
+                StrKeyDef("msgID", "MESSAGE_ID"),  # id?
+                StrKeyDef("slPID", "SYSLOG_PID"),  # id?
+                StrKeyDef("sysdUsrUnit", "_SYSTEMD_USER_UNIT"),  # id?
+                StrKeyDef("ssysdUwnUID", "_SYSTEMD_OWNER_UID"),  # id?
+                StrKeyDef("strmID", "_STREAM_ID"),  # id?
+                StrKeyDef("audSes", "_AUDIT_SESSION"),
+                StrKeyDef("cdFn", "CODE_FUNC"),
+                StrKeyDef("cdLn", "CODE_LINE"),
+                StrKeyDef("cdFl", "CODE_FILE"),
+                StrKeyDef("sysdInvID", "_SYSTEMD_INVOCATION_ID"),  # id?
+                StrKeyDef("exe", "_EXE"),  # id?
+                StrKeyDef("sysdSLc", "_SYSTEMD_SLICE"),  # id?
+                StrKeyDef("slnxCtx", "_SELINUX_CONTEXT"),  # id?
+                StrKeyDef("uID", "_UID"),  # id?
+                StrKeyDef("cur", "__CURSOR"),
+                StrKeyDef("cap_eff", "_CAP_EFFECTIVE"),
+                StrKeyDef("pID", "_PID"),  # id
+                StrKeyDef("sysdCgrp", "_SYSTEMD_CGROUP"),  # id
+                StrKeyDef("gID", "_GID"),  # id
+                StrKeyDef("avPrty", "AVAILABLE_PRETTY"),
+                StrKeyDef("muPrty", "MAX_USE_PRETTY"),
+                StrKeyDef("dskKpfree", "DISK_KEEP_FREE"),
+                StrKeyDef("dskAvlPrty", "DISK_AVAILABLE_PRETTY"),
+                StrKeyDef("maxUse", "MAX_USE"),
+                StrKeyDef("curUse", "CURRENT_USE"),
+                StrKeyDef("limit", "LIMIT"),
+                StrKeyDef("limPrty", "LIMIT_PRETTY"),
+                StrKeyDef("jrnlPath", "JOURNAL_PATH"),
+                StrKeyDef("jrnlName", "JOURNAL_NAME"),
+                StrKeyDef("avail", "AVAILABLE"),
+                StrKeyDef("dslAvail", "DISK_AVAILABLE"),
+                StrKeyDef("", "CURRENT_USE_PRETTY"),
+                StrKeyDef("dskKpFrPrty", "DISK_KEEP_FREE_PRETTY"),
+                StrKeyDef("where", "WHERE"),
+                StrKeyDef("dev", "DEVICE"),  # id
+                StrKeyDef("sysdRaw", "SYSLOG_RAW"),
+                StrKeyDef("cfgLine", "CONFIG_LINE"),
+                StrKeyDef("cfgFile", "CONFIG_FILE"),
+                StrKeyDef("taint","TAINT" ),
+                StrKeyDef("thID","THREAD_ID" ),
+                StrKeyDef("tmstBoot","TIMESTAMP_BOOTTIME" ),
+                StrKeyDef("nmLogDom","NM_LOG_DOMAINS" ),
+                StrKeyDef("tmstMon","TIMESTAMP_MONOTONIC" ),
+                StrKeyDef("seatID","SEAT_ID" ), # id
+                StrKeyDef("boltVer","BOLT_VERSION" ),
+                StrKeyDef("boltLogCtx","BOLT_LOG_CONTEXT" ),
+                StrKeyDef("boltTopic","BOLT_TOPIC" ),
+                StrKeyDef("boltDomUid","BOLT_DOMAIN_UID" ),
+                StrKeyDef("boltDomNm","BOLT_DOMAIN_NAME" ),
+                StrKeyDef("errMsg","ERROR_MESSAGE" ),
+                StrKeyDef("errCode","ERROR_CODE" ),
+                StrKeyDef("errDom","ERROR_DOMAIN" ),
+                StrKeyDef("boltDevNm","BOLT_DEVICE_NAME" ),
+                StrKeyDef("boltDevSt","BOLT_DEVICE_STATE" ),
+                StrKeyDef("boltDevUid","BOLT_DEVICE_UID" ),
+                StrKeyDef("interface","INTERFACE" ),
+                StrKeyDef("krnUSec","KERNEL_USEC" ),
+                StrKeyDef("usrUSec","USERSPACE_USEC" ),
+                StrKeyDef("sesID","SESSION_ID" ), # id
+                StrKeyDef("leader","LEADER" ),
+                StrKeyDef("usrID","USER_ID" ), # id
+                StrKeyDef("audLogUid","_AUDIT_LOGINUID" ),
+                StrKeyDef("sysdUsrSlice","_SYSTEMD_USER_SLICE" ), # id
+                StrKeyDef("errNo","ERRNO" ),
+                StrKeyDef("usrUnit","USER_UNIT" ), # id
+                StrKeyDef("sysdSess","_SYSTEMD_SESSION" ), # id
+                StrKeyDef("topic","TOPIC" ),
+                StrKeyDef("command","COMMAND" ),
+                StrKeyDef("exitCd","EXIT_CODE" ),
+                StrKeyDef("exitSt","EXIT_STATUS" ),
+                StrKeyDef("unitRes","UNIT_RESULT" ),
+                StrKeyDef("cpuUseNsec","CPU_USAGE_NSEC" ),
+                StrKeyDef("memSwapPk","MEMORY_SWAP_PEAK" ),
+                StrKeyDef("memPk","MEMORY_PEAK" ),
+                StrKeyDef("bootUSec","BOOTTIME_USEC" ),
+                StrKeyDef("rtUSec","REALTIME_USEC" ),
+                StrKeyDef("monUSec","MONOTONIC_USEC" ),
+                StrKeyDef("nRestarts","N_RESTARTS" ),
+                StrKeyDef("operator","OPERATOR" ),
+                StrKeyDef("action","ACTION" ),
+                StrKeyDef("shutdown","SHUTDOWN" ),
+                StrKeyDef("nmConn","NM_CONNECTION" )
+            ]
+        )
         self.new_keygroup_with_keys("ids", [
+            "sysdUsrSlice",
+            "usrUnit",
+            "sysdSess",
+            "usrID",
+            "sesID",
+            "seatID",
             "cfgLine",
             "cfgFile",
             "dev",
@@ -154,38 +204,3 @@ class LogGraph( KeyGraphBase ):
     async def exec_query( self: Self, exec_cmd: GraphCmd, specific_ndx: int ) -> bool:
         await self.dir_manager.exec( exec_cmd, specific_ndx )
         return True
-
-"""
-    def read_json(self: Self, filepath: str):
-        try:
-            line_num: int = 0
-            read_len: int = 0
-            file_size: int = os.path.getsize(filepath)
-            bar = Bar("Processing", max=file_size)
-            with open(filepath) as file:
-                for line in file:
-                    read_len += len(line)
-                    field_dict = json.loads(line)
-                    self.process_fields(field_dict, line_num)
-                    bar.next(read_len )
-            bar.finish()
-        except FileNotFoundError as ext:
-            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
-
-    async def parse_stream( self: Self ) -> bool:
-
-        return True
-"""
-
-if __name__ == "__main__":
-    print("[LogGraph] starting main")
-
-#    try:
-    log_root: str = "/home/richard/data/jctl-logs"
-    key_graph = LogGraph( log_root )
-    aio.run( key_graph.exec_query( GraphCmd.Full, 1 ) )
-
-#    except Exception as e:
-#        print(f"[LodDirManager] Exception: {e}")
-
-    print("[LogGraph] done")

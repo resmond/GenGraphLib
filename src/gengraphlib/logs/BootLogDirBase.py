@@ -6,13 +6,13 @@ from dataclasses import dataclass
 import datetime as dt
 import json as js
 
-from src.gengraphlib.GrabBag.PipedBases import PipedToFileBase
 
 from collections.abc import AsyncGenerator
 import asyncio as aio
 import asyncio.subprocess as asub
 
-from src.gengraphlib.logs.KeyGraphBase import process_fields_fn
+#from src.gengraphlib.GrabBag.PipedBases import PipedToFileBase
+#from .KeyGraphBase import process_fields_fn
 
 
 #import asyncio as aio
@@ -73,12 +73,6 @@ class BootRecordBase:
             print(f'[BootRecord.parse_json] Exception: {ext}')
             return None
 
-class PipedToKeys(PipedToFileBase):
-    def __init__( self: Self, output_filepath: str ) -> None:
-        super().__init__("PipedToKeys", output_filepath )
-
-    def process_line( self: Self, line: str ) -> bool:
-        return True
 """
     BootRecCmd
         Init - 
@@ -132,13 +126,8 @@ class BootLogDirBase:
     def from_dict(cls, d: dict) -> Self:
         return BootRecordBase(idx=d["idx"], id=d["id"], first_dt=d["first_dt"], last_dt=d["last_dt"])
 
-    def __repr__(self: Self ) -> str:
-        return f'{{"idx":{self.idx}, "id":"{self.id}", "first_dt":"{self.first_dt}", "last_dt":"{self.last_dt}"}}'
-
-    def __str__(self) -> str: return self.__repr__()
-
     def __repr__(self: Self) -> str:
-        return f'{{"dir_name":"{self.dir_name}", "dir_path":"{self.dir_path}", "keys_filepath":"{self.keys_filepath}"}}'
+        return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'
 
     def __str__(self: Self) -> str: return self.__repr__()
 
@@ -168,7 +157,7 @@ class BootLogDirBase:
                         line = await self.exec_process.stdout.readline()
                     except aio.exceptions.TimeoutError as aioerr:
                         print(f'[BootLogDirBase.stream] Exception: {aioerr}')
-                        break;
+                        break
                     else:
                         if line:
                             try:

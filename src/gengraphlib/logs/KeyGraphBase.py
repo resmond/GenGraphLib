@@ -1,7 +1,7 @@
 import json
 import os
 from collections.abc import Callable
-from typing import Self
+from typing import Self, Any
 from enum import IntEnum
 from datetime import datetime
 from sortedcontainers import SortedDict
@@ -9,7 +9,7 @@ from abc import abstractmethod
 
 KeyValTypes: type = type[str, int, bool, datetime ]
 
-process_fields_fn = Callable[ [ dict[str,KeyValTypes], int], int ]
+process_fields_fn = Callable[ [ dict[str,KeyValTypes], int, str | None], int ]
 
 class KeyType( IntEnum ):
     KStr         = 1
@@ -125,6 +125,18 @@ class KeyGroups( dict[str, KeyGroup ] ):
             _key_def = self.graph_root[_json_key]
             self.add_key_to_group( _keygroup_name, _key_def )
 
+class DefaultDictOfLists(dict[str, list[str] ]):
+
+    def __init__( self: Self ) -> None:
+        super(DefaultDictOfLists, self).__init__()
+
+    def add_entry( self: Self, key: str, value: str ) -> None:
+
+        if key not in self:
+            self[key] = []
+
+        self[key].append( value )
+
 """
     KeyGraphRootBase
 """
@@ -135,6 +147,8 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
         self._log_keys: dict[str,KeyDefBase] = dict[str,KeyDefBase]()
         self.key_groups: KeyGroups = KeyGroups(self)
         self.missing_keys: list[str] = []
+        self.none_values: DefaultDictOfLists = DefaultDictOfLists()
+        self.message_fields: DefaultDictOfLists = DefaultDictOfLists()
 
     def by_logkey( self: Self, _log_key_str: str ) -> KeyDefBase:
         return self._log_keys[_log_key_str]
@@ -157,30 +171,55 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
         for _key in _keys:
             self.add_key_to_group( _keygroup_name, _key )
         
-    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int ) -> bool:
-        result = True
+    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str = "" ) -> bool:
 
-        log_key: str = ""
-        json_key: str = ""
-        value: KeyValTypes | None = None
-        try:
-            for log_key, value in fields.items():
-                if log_key in self._log_keys and value is not None:
-                    json_key = self._log_keys[log_key].json_key
-                    self[json_key].add_jvalue( value, line_num )
-                else:
-                    if log_key not in self.missing_keys:
-                        self.missing_keys.append( log_key )
-                    result = False
+        for log_key, value in fields.items():
+            self.process_field( log_key, value, line_num, log_line )
 
-        except ValueError as valexc:
-            print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] ValueError: {valexc}")
+        return True
+
+    def process_field( self: Self, log_key: str, value: Any, line_num: int, log_line: str = "" ) -> bool:
+
+        json_key = self._log_keys[log_key].json_key
+
+        if value is None:
+            self.none_values.add_entry( log_key, log_line )
+            result = False
+        elif log_key == "MESSAGE":
+            log_str = f"[{value}]"
+            self.message_fields.add_entry( log_key, log_str )
+
+        if log_key in self._log_keys:
+            try:
+                match type(value).__name__:
+                    case "list":
+                        str_val = str(value)
+                        self[json_key].add_jvalue( str_val, line_num )
+                    case "datetime":
+                        self[json_key].add_jvalue( value, line_num )
+                    case "int":
+                        self[json_key].add_jvalue( value, line_num )
+                    case "float":
+                        self[json_key].add_jvalue( value, line_num )
+                    case "str":
+                        self[json_key].add_jvalue( value, line_num )
+                    case "bool":
+                        self[json_key].add_jvalue( value, line_num )
+                    case _:
+                        print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] type: {type(value)} unhandeled valuetype" )
+
+                result = True
+
+            except Exception as valexc:
+                print( f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] type: {type(value)} ValueError: {valexc}" )
+                result = False
+                
+        else:
+            if log_key not in self.missing_keys:
+                self.missing_keys.append( log_key )
+
             result = False
 
-        except Exception as exc:
-            print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] ValueError: {exc}")
-            result = False
-            
         return result
 
     def dump_key_values( self: Self ) -> None:
@@ -198,6 +237,13 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
         data_str = json.dumps( self.missing_keys, indent=4 )
         open( "/home/richard/data/jctl-logs/missedkeys.json", "w" ).write( data_str )
 
+    def dump_none_values( self ) -> None:
+        data_str = json.dumps( self.none_values, indent=4 )
+        open( "/home/richard/data/jctl-logs/none_values.json", "w" ).write( data_str )
+
+    def dump_message_fields( self ) -> None:
+        data_str = json.dumps( self.message_fields, indent=4 )
+        open( "/home/richard/data/jctl-logs/message_fields.json", "w" ).write( data_str )
 
 
 

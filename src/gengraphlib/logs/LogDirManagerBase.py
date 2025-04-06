@@ -1,6 +1,5 @@
 import json
 import subprocess
-from abc import abstractmethod
 
 from enum import StrEnum
 
@@ -155,38 +154,68 @@ class LogDirManagerBase:
                 try:
                     fields = json.loads(line)
                 except json.decoder.JSONDecodeError as jserr:
-                    print(f"[LogDirManagerBase.process_bootlog] Exception: {jserr}")
+                    print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
                     print(f"    line:  {line}")
                     print(f"  fields:  {fields}")
                 else:
                     try:
-                        self._fields_fn(fields, cnt)
+                        self._fields_fn(fields, cnt, line)
                     except Exception as fnexc:
-                        print(f"[LogDirManagerBase.process_bootlog] Exception: {fnexc}")
+                        print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
                     cnt += 1
 
             return True
 
         except Exception as exc:
-            print(f"[LogDirManagerBase.process_bootlog] Exception: {exc}")
+            print(f"[LogDirManagerBase.process_bootlog] boot_log_dir.streams() Exception: {exc}")
             print(f"    line:  {line}")
             print(f"  fields:  {fields}")
             return False
 
 
 """
-if __name__ == "__main__":
-    print("[LodDirManager] starting main")
+{
+    "_COMM":"boltd",
+    "GLIB_DOMAIN":"bolt",
+    "_CMDLINE":"/usr/libexec/boltd",
+    "_EXE":"/usr/libexec/boltd",
+    "_SYSTEMD_CGROUP":"/system.slice/bolt.service",
+    "_SYSTEMD_SLICE":"system.slice",
+    "_RUNTIME_SCOPE":"system",
+    "_SYSTEMD_UNIT":"bolt.service",
+    "MESSAGE":"[724a8780-5097-domain0                    ] udev: failed to determine if uid is stable: unknown NHI PCI id '0xa73e'",
 
-    try:
-        data_root: str = "/home/richard/data/jctl-logs"
-        logdir_manager = LogDirManager(data_root)
-        aio.run( logdir_manager.exec( ManagerCmd.Full, 0 ) )
+    "CODE_FILE":"../boltd/bolt-manager.c",
+    "CODE_FUNC":"domain_has_stable_uuid",
+    "CODE_LINE":"848",
+    "BOLT_TOPIC":"udev",
+    "BOLT_DOMAIN_NAME":"domain0",
 
-    except Exception as e:
-        print(f"[LodDirManager] Exception: {e}")
-
-    print("[LodDirManager] done")
+    "BOLT_DOMAIN_UID":"724a8780-5097-f718-ffff-ffffffffffff",
+    "BOLT_LOG_CONTEXT":"6c5c8cc37340f897f432fcc65273837c",
+    
+    "_CAP_EFFECTIVE":"1000",
+    "_SYSTEMD_INVOCATION_ID":"7617e99b7b7a4e71ab0841756193d81c",
+    "__MONOTONIC_TIMESTAMP":"7561770",
+    "_PID":"2208",
+    "ERROR_DOMAIN":"g-io-error-quark",
+    "__REALTIME_TIMESTAMP":"1733701443806721",
+    "_SELINUX_CONTEXT":"unconfined\n",
+    "_HOSTNAME":"gernby-NUC13ANHi7",
+    "ERROR_MESSAGE":"unknown NHI PCI id '0xa73e'",
+    "ERROR_CODE":[1,0,0,0],
+    "_SOURCE_REALTIME_TIMESTAMP":"1733701443806586",
+    "__SEQNUM":"1694542",
+    "_BOOT_ID":"2f3305b85b1442e28c7e9345d5263630",
+    "__SEQNUM_ID":"7d0971a098e24097a784ffa07ef8d85f",
+    "_MACHINE_ID":"4395b976dd294dd58d7b1ecc1f066791",
+    "_TRANSPORT":"journal",
+    
+    "PRIORITY":"4",
+    "_GID":"0",
+    "__CURSOR":"s=7d0971a098e24097a784ffa07ef8d85f;i=19db4e;b=2f3305b85b1442e28c7e9345d5263630;m=73622a;t=628cad2b46601;x=8377ee22970e0ebf",
+    "_UID":"0"
+}    
 """
 
 
