@@ -12,10 +12,6 @@ class TRgxField:
         self.pre: str = pre
         self.tail: str = tail
 
-class XDict( dict[str, TRgxField] ):
-    def __init__(self: Self) -> None:
-        super(XDict, self).__init__()
-
 class RgxField:
 
     @overload

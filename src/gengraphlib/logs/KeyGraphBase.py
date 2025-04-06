@@ -9,13 +9,14 @@ from abc import abstractmethod
 
 KeyValTypes: type = type[str, int, bool, datetime ]
 
-process_fields_fn = Callable[ [ dict[str,str], int], int ]
+process_fields_fn = Callable[ [ dict[str,KeyValTypes], int], int ]
 
 class KeyType( IntEnum ):
     KStr         = 1
     KInt         = 2
     KBool        = 3
-    KTimeStamp   = 4
+    #KTimeStamp   = 4
+    KTimeStamp  = 4
 
 class LogTimestamp:
     def __init__(self: Self, dt_str: str ) -> None:
@@ -40,7 +41,7 @@ class KeyValueInstancesBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
         self[new_value].append( line_num )
         self._cnt += 1
 
-class KeyDefBase[ T: KeyValTypes ]( KeyValueInstancesBase[T ] ):
+class KeyDefBase[ T: KeyValTypes ]( KeyValueInstancesBase[T] ):
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType) -> None:
         super(KeyDefBase, self ).__init__()
         self.json_key: str = _json_key
@@ -52,40 +53,52 @@ class KeyDefBase[ T: KeyValTypes ]( KeyValueInstancesBase[T ] ):
         self.key_values.add_value(new_value, line_num)
 
     @abstractmethod
-    def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
+    def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> None:
         pass
         
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self, _json_key: str, _log_key: str ):
         super( StrKeyDef, self ).__init__( _json_key, _log_key, KeyType.KStr )
 
-    def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
-        self.key_values.add_value( str_value, line_num )
+    def add_jvalue( self: Self, jvalue: str, line_num: int ) -> None:
+        self.key_values.add_value( jvalue, line_num )
 
 class IntKeyDef( KeyDefBase[int] ):
     def __init__( self, _json_key: str, _log_key: str ):
         super( IntKeyDef, self ).__init__( _json_key, _log_key, KeyType.KInt )
 
-    def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
-        self.key_values.add_value( int(str_value), line_num )
+    def add_jvalue( self: Self, jvalue: str, line_num: int ) -> None:
+        self.key_values.add_value( int( jvalue ), line_num )
 
 class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self, _json_key: str, _log_key: str ):
         super( BoolKeyDef, self ).__init__( _json_key, _log_key, KeyType.KBool )
 
-    def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
-        self.key_values.add_value( bool(str_value), line_num )
+    def add_jvalue( self: Self, jvalue: str, line_num: int ) -> None:
+        self.key_values.add_value( bool( jvalue ), line_num )
 
+"""
 class TmstKeyDef( KeyDefBase[datetime] ):
     def __init__( self, _json_key: str, _log_key: str ):
         super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp )
 
-    def add_str_value( self: Self, str_value: str, line_num: int ) -> None:
+    def add_jvalue( self: Self, jvalue: datetime, line_num: int ) -> None:
         try:
-            datetime_value = datetime.fromisoformat(str_value)
-            self.key_values.add_value( datetime_value, line_num )
+            #datetime_value = datetimemat( jvalue )
+            self.key_values.add_value( jvalue, line_num )
         except ValueError as e:
-            print(f'[TmstKeyDef.add_str_value] ValueError: {e} - "{str_value}"')
+            print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
+"""
+class TmstKeyDef( KeyDefBase[datetime ] ):
+    def __init__( self, _json_key: str, _log_key: str ):
+        super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp )
+
+    def add_jvalue( self: Self, jvalue: datetime, line_num: int ) -> None:
+        try:
+#            datetime_value = datetime( jvalue )
+            self.key_values.add_value( jvalue, line_num )
+        except ValueError as e:
+            print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
 
 class KeyGroup( list[KeyDefBase] ):
     def __init__( self: Self, keygroup_name: str ) -> None:
@@ -144,15 +157,30 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
         for _key in _keys:
             self.add_key_to_group( _keygroup_name, _key )
         
-    def process_fields( self, fields: dict[str,str], line_num: int ) -> bool:
+    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int ) -> bool:
         result = True
-        for log_key, value in fields.items():
-            if log_key in self._log_keys:
-                json_key = self._log_keys[log_key].json_key
-                self[json_key].add_str_value( value, line_num )
-            else:
-                self.missing_keys.append( log_key )
-                result = False
+
+        log_key: str = ""
+        json_key: str = ""
+        value: KeyValTypes | None = None
+        try:
+            for log_key, value in fields.items():
+                if log_key in self._log_keys and value is not None:
+                    json_key = self._log_keys[log_key].json_key
+                    self[json_key].add_jvalue( value, line_num )
+                else:
+                    if log_key not in self.missing_keys:
+                        self.missing_keys.append( log_key )
+                    result = False
+
+        except ValueError as valexc:
+            print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] ValueError: {valexc}")
+            result = False
+
+        except Exception as exc:
+            print(f"[TmstKeyDef.process_fields ({log_key}:{json_key}={value})] ValueError: {exc}")
+            result = False
+            
         return result
 
     def dump_key_values( self: Self ) -> None:
@@ -168,8 +196,7 @@ class KeyGraphBase( dict[str, KeyDefBase ] ):
 
     def dump_missed_keys( self: Self ) -> None:
         data_str = json.dumps( self.missing_keys, indent=4 )
-        open( "/home/richard/data/jctl-logs/keys/missedkeys.json", "w" ).write( data_str )
-        pass
+        open( "/home/richard/data/jctl-logs/missedkeys.json", "w" ).write( data_str )
 
 
 

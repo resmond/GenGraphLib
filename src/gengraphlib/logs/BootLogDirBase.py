@@ -103,23 +103,30 @@ class BootLogDirBase:
         super().__init__()
         self.root_dir = root_dir
 
-        val_list: list[str] = line.split()
-        self.idx: int = int(val_list[0])
-        self.id: str = val_list[1]
+        try:
+            val_list: list[str] = log_line.split()
+            self.idx: int = int(val_list[0])
+            self.id: str = val_list[1]
 
-        _first_dt: str = " ".join(val_list[3:5])
-        _last_dt: str = " ".join(val_list[7:9])
+            _first_dt: str = " ".join(val_list[3:5])
+            _last_dt: str = " ".join(val_list[7:9])
 
-        self.first_dt: dt.datetime = dt.datetime.fromisoformat(_first_dt)
-        self.last_dt: dt.datetime = dt.datetime.fromisoformat(_last_dt)
-        self.dir_name = self.first_dt.isoformat()
-        self.dir_path = os.path.join(self.root_dir, self.dir_name)
+            self.first_dt: dt.datetime = dt.datetime.fromisoformat(_first_dt)
+            self.last_dt: dt.datetime = dt.datetime.fromisoformat(_last_dt)
+            self.dir_name = self.first_dt.isoformat()
+            self.dir_path = os.path.join(self.root_dir, self.dir_name)
 
-        self.exec_process: asub.Process | None = None
-        self.cmd: str | None = None
-        self.started: bool = False
-        self.error: int = 0
-        self.exc: Exception | None = None
+            self.exec_process: asub.Process | None = None
+            self.cmd: str | None = None
+            self.started: bool = False
+            self.error: int = 0
+            self.exc: Exception | None = None
+
+        except Exception as _ect:
+            print(f'[BootLogDirBase.__init__] Exception: {_ect}')
+            self.error = -1
+            self.exc = _ect
+            return
 
     @classmethod
     def from_dict(cls, d: dict) -> Self:
@@ -137,19 +144,18 @@ class BootLogDirBase:
 
     def _dir_exists( self: Self ) -> bool:
         try:
-            dir_name = self.boot_rec.first_dt.isoformat()
-            dir_path = os.path.join(self.root_dir, dir_name)
-            os.makedirs( dir_path, exist_ok=True )
+            #dir_name = self.first_dt.isoformat()
+            #dir_path = os.path.join(self.root_dir, dir_name)
+            os.makedirs( self.dir_path, exist_ok=True )
             return True
 
         except Exception as e:
-            print(f'[make_dir] Exception: {e}')
+            print(f'[BootLogDirBase._dir_exists] Exception: {e}')
             return False
 
     async def stream( self: Self ) -> AsyncGenerator[ str, None ]:
         try:
-            boot_id = self.boot_rec.id
-            cmd: str = f"journalctl -b {boot_id} -o json"
+            cmd: str = f"journalctl -b {self.id} -o json"
             if self._dir_exists():
                 self.exec_process: asub.Process = await aio.create_subprocess_shell(
                     cmd,
@@ -158,15 +164,22 @@ class BootLogDirBase:
                 )
 
                 while True:
-                    cnt: int = 0
-                    line = await self.exec_process.stdout.readline()
-                    if line:
-                        yield line.decode().strip()
+                    try:
+                        line = await self.exec_process.stdout.readline()
+                    except aio.exceptions.TimeoutError as aioerr:
+                        print(f'[BootLogDirBase.stream] Exception: {aioerr}')
+                        break;
                     else:
-                        break
+                        if line:
+                            try:
+                                yield line.decode().strip()
+                            except Exception as decode_err:
+                                print(f'[BootLogDirBase.stream] Exception: {decode_err}')
+                        else:
+                            break
 
         except Exception as e:
-            print(f"[export_log] Exception: {e}")
+            print(f"[BootLogDirBase.stream] Exception: {e}")
 
     async def run_command(
         self: Self, cmd: str, exec_dir: str
@@ -186,6 +199,6 @@ class BootLogDirBase:
                     break
 
         except Exception as exc:
-            print(f"SubprocessExec.run_command: {exc}")
+            print(f"[BootLogDirBase.run_command]: {exc}")
             self.exc = exc
             self.error = -1

@@ -6,18 +6,15 @@ from enum import StrEnum
 
 from typing import Self
 
-from logs.BootLogDir import BootRecordBase
-from logs.BootLogDir import BootLogDirBase
+from .BootLogDirBase import BootLogDirBase
 
 import datetime as dt
 #import asyncio as aio
-import io as io
 import os as os
 
-from src.gengraphlib.logs.KeyGraphBase import process_fields_fn
+from .KeyGraphBase import process_fields_fn, KeyValTypes
 
-
-class ManagerCmd( StrEnum ):
+class GraphCmd( StrEnum ):
     Full    = "Full"
     Refresh = "Refresh"
 
@@ -43,7 +40,7 @@ class LogDirManagerBase:
     def __init__(self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
         super().__init__()
         self.root_dir: str = root_dir
-        self._cmd: ManagerCmd | None = None
+        self._cmd: GraphCmd | None = None
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "bootlist.jline" )
         self._bootdir_list: list[BootLogDirBase] = list[BootLogDirBase]()
@@ -58,14 +55,14 @@ class LogDirManagerBase:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    async def exec( self, exec_cmd: ManagerCmd, specific_ndx: int | None ) -> bool:
+    async def exec( self, exec_cmd: GraphCmd, specific_ndx: int | None ) -> bool:
         self._cmd = exec_cmd
 
-        if self._cmd == ManagerCmd.Full or not self._load_txt():
-            self._log_querylist( exec_cmd == ManagerCmd.Full )
+        if self._cmd == GraphCmd.Full or not self._load_txt():
+            self._query_bootlist( exec_cmd == GraphCmd.Full )
 
         if self._load_txt():
-            return self.process_dirs( specific_ndx )
+            return await self.process_dirs( specific_ndx )
         else:
             return False
 
@@ -73,17 +70,17 @@ class LogDirManagerBase:
         _log_querylist
             fqueries fresh list of boot records from journalctl --list-boots as text file
     """
-    def _log_querylist( self: Self, del_existing: bool ) -> bool:
+    def _query_bootlist( self: Self, del_existing: bool ) -> bool:
         try:
-            if del_existing and os.path.exists( self.bootlist_txtfilepath ):
-                os.remove( self.bootlist_txtfilepath )
+            if del_existing and os.path.exists( self._bootlist_txtfilepath ):
+                os.remove( self._bootlist_txtfilepath )
                 
             journalctl_cmd: str = "/bin/journalctl --list-boots > bootlist.txt"
             process = subprocess.run(journalctl_cmd, shell=True, cwd=self.root_dir)
             return process.returncode == 0
 
         except Exception as ext:
-            print(f'[export_log] Exception: {ext}')
+            print(f'[LogDirManagerBase._query_bootlist] Exception: {ext}')
             return False
 
     """
@@ -107,7 +104,7 @@ class LogDirManagerBase:
             return True
 
         except Exception as exc:
-            print(f"[LogDirManager._load_txt] Exception: {exc}")
+            print(f"[LogDirManagerBase._load_txt] Exception: {exc}")
 
         return False
 
@@ -124,21 +121,21 @@ class LogDirManagerBase:
             return True
 
         except Exception as exc:
-            print(f"[LogDirManager._write_jfile] Exception: {exc}")
+            print(f"[LogDirManagerBase._write_jfile] Exception: {exc}")
             return False
 
     """
         process_dirs
             either selects a specific boot record to loops through them all and calls BootRecDir.exec() on each
     """
-    def process_dirs( self: Self, specific_idx: int | None = None ) -> bool:
+    async def process_dirs( self: Self, specific_idx: int | None = None ) -> bool:
         if specific_idx is not None:
             boot_log_dir = self._bootdir_list[ specific_idx ]
             print(f'LogDirManager.process_dirs: specific_idx: {specific_idx}: {boot_log_dir.first_dt} ')
-            return self.process_dir( boot_log_dir)
+            return await self.process_bootlog( boot_log_dir )
         else:
             for bool_log_dir in self._bootdir_list:
-                if not self.process_dir( bool_log_dir ):
+                if not await self.process_bootlog( bool_log_dir ):
                     print(f'LogDirManager.process_dirs: failed: {bool_log_dir.id}:{bool_log_dir.first_dt}')
                     return False
         return True
@@ -146,14 +143,35 @@ class LogDirManagerBase:
     """
         process_dir
     """
-    @abstractmethod
-    def process_dir( self: Self, boot_log_dir: BootLogDirBase ) -> bool:
-        cnt: int = 0
+    async def process_bootlog( self: Self, boot_log_dir: BootLogDirBase ) -> bool:
 
-        async for line in boot_log_dir.stream():
-            fields : dict[str, str] = json.loads(line)
-            self._fields_fn(fields, cnt)
-        return True;
+        cnt: int = 0
+        fields: dict[str, KeyValTypes] = {}
+        line: str = ""
+        try:
+
+            async for line in boot_log_dir.stream():
+
+                try:
+                    fields = json.loads(line)
+                except json.decoder.JSONDecodeError as jserr:
+                    print(f"[LogDirManagerBase.process_bootlog] Exception: {jserr}")
+                    print(f"    line:  {line}")
+                    print(f"  fields:  {fields}")
+                else:
+                    try:
+                        self._fields_fn(fields, cnt)
+                    except Exception as fnexc:
+                        print(f"[LogDirManagerBase.process_bootlog] Exception: {fnexc}")
+                    cnt += 1
+
+            return True
+
+        except Exception as exc:
+            print(f"[LogDirManagerBase.process_bootlog] Exception: {exc}")
+            print(f"    line:  {line}")
+            print(f"  fields:  {fields}")
+            return False
 
 
 """
