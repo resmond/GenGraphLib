@@ -2,10 +2,9 @@ from abc import abstractmethod
 from typing import Self, TypeVar
 from sortedcontainers import SortedList
 
-
-
-"""--------------------------------------------------------------
-    NodeBase is the root of the hierarchy  
+"""
+    NodeBase is the root of the hierarchy
+      
 """
 class NodeBase:
 

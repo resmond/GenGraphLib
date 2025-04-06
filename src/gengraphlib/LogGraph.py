@@ -1,36 +1,15 @@
 import json
 import os
 from typing import Self
+
+from numba import ContextManager
 from progress.bar import Bar
 import asyncio as aio
 
-from JsonLogGraph import KeyGraphRootBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
+from src.gengraphlib.logs.KeyGraphBase import KeyGraphBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, \
+    process_fields_fn
 from LogDirManager import LogDirManagerBase, ManagerCmd
-from fileparse.PipedBases import PipeFromStdoutBase
 from logs.BootLogDir import BootLogDirBase, BootRecordBase
-from src.gengraphlib.logs.BootLogDir import BootRecCmd
-
-
-class PipedToGraph(PipeFromStdoutBase):
-    def __init__( self: Self, output_filepath: str ) -> None:
-        super(PipedToGraph, self).__init__("PipedToKeys", output_filepath )
-
-    async def process_line( self: Self, line: str ) -> bool:
-        try:
-            print(line)
-            return True
-
-        except Exception as exc:
-            print(f'[PipedToFile: {self.name}] Exception: {exc}')
-            self.started = False
-            self.error = -3
-            return False
-
-    def __getitem__(self, item) -> tuple[bytes,bytes] | None:
-        return self.proc_result
-
-    def run_export( self: Self) -> None:
-        self.run_command( "" )
 
 class GraphBootRec(BootRecordBase):
 
@@ -38,42 +17,23 @@ class GraphBootRec(BootRecordBase):
         super(GraphBootRec, self).__init__( root_dir, boot_rec )
 
 class GraphLogDir( BootLogDirBase ):
-    def __init__(self: Self, root_dir: str, boot_rec: GraphBootRec) -> None:
-        super( GraphLogDir, self ).__init__( root_dir, boot_rec )
-        self.keys_filepath = os.path.join( self.dir_path, "dirkeys.json" )
-        self.journalPipe = PipedToGraph(self.keys_filepath)
-
-    def export_topipe( self: Self ) -> bool:
-        try:
-            boot_id = self.boot_rec.id
-            if self._dir_exists():
-                # list[str] = [f"journalctl -b {boot_id} -o json","| python3 KeyMaps.py", f"> {self.keys_filepath}"]
-                journalctl_cmd: str = f"journalctl -b {boot_id} -o json > {self.keys_filepath}"
-                self.journalPipe.run_command( journalctl_cmd )
-
-            return True
-
-        except Exception as ext:
-            print(f'[export_log] Exception: {ext}')
-            return False
-
-    def exec_cmd( self: Self, cmd: BootRecCmd ) -> bool:
-        return False
+    def __init__(self: Self, root_dir: str, log_line: str, fields_fn: process_fields_fn ) -> None:
+        super( GraphLogDir, self ).__init__( root_dir, log_line )
 
 class GraphLogDirManager( LogDirManagerBase ):
 
-    def __init__( self: Self, root_dir: str ) -> None:
+    def __init__( self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
+        self._fields_fn = process_fields_fn
         super( GraphLogDirManager, self ).__init__( root_dir )
 
-    def process_dir(self: Self, boot_rec: GraphBootRec) -> bool:
-        #boot_rec.bootlog_dir.log_fromquery()
-        return True
 
 
-class LogGraph( KeyGraphRootBase ):
+
+
+class LogGraph( KeyGraphBase ):
     def __init__( self: Self, _log_root: str ) -> None:
         super( LogGraph, self ).__init__( _log_root )
-        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root )
+        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
         self.add_keydefs([
             StrKeyDef( "sysUnit", "_SYSTEMD_UNIT" ),                                  # id?
             StrKeyDef( "usrUnit", "UNIT" ),                                           # id?
@@ -157,7 +117,30 @@ class LogGraph( KeyGraphRootBase ):
 
     async def exec_query( self: Self, exec_cmd: ManagerCmd, specific_ndx: int ) -> bool:
         await self.dir_manager.exec( exec_cmd, specific_ndx )
+
         return True
+
+"""
+    def read_json(self: Self, filepath: str):
+        try:
+            line_num: int = 0
+            read_len: int = 0
+            file_size: int = os.path.getsize(filepath)
+            bar = Bar("Processing", max=file_size)
+            with open(filepath) as file:
+                for line in file:
+                    read_len += len(line)
+                    field_dict = json.loads(line)
+                    self.process_fields(field_dict, line_num)
+                    bar.next(read_len )
+            bar.finish()
+        except FileNotFoundError as ext:
+            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
+
+    async def parse_stream( self: Self ) -> bool:
+
+        return True
+"""
 
 if __name__ == "__main__":
     print("[LogGraph] starting main")

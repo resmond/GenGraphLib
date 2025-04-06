@@ -1,28 +1,24 @@
+from __future__ import annotations
+
 from abc import abstractmethod
+from collections.abc import Iterable
 from enum import IntEnum
+#from importlib.metadata import always_iterable
 from typing import Self, TextIO
 import collections.abc as abc
-from typing_extensions import NamedTuple
+
+from numpy.f2py.auxfuncs import throw_error
 
 from progress.bar import Bar
 
-class ParseErrType(IntEnum):
-    Success      = 0
-    Unknown      = -1
+class ParseState( IntEnum ):
+    Working      =  0
+    UnknownErr   = -1
     OpenErr      = -2
     StdException = -3
 
-class PrsReslt(NamedTuple):
-    err: ParseErrType = ParseErrType.Success
-    clsnm: str | None = None
-    exc: Exception | None = None
-    msg: str | None = None
 
-    def __bool__(self) -> bool:
-        return self.err != ParseErrType.Success
-
-LineRef = NamedTuple("LineRef", [ ("file_id", int),("line_num", int), ("line", str) ] )
-LineParseFn: type = abc.Callable[ LineRef , bool ]
+#LineRef = NamedTuple("LineRef", [ ("file_id", int),("line_num", int), ("line", str) ] )
 
 def test_print( line_ref: LineRef ) -> bool:
     file_id = line_ref.file_id
@@ -31,13 +27,51 @@ def test_print( line_ref: LineRef ) -> bool:
     print(f'[test_print: ({file_id}:{line_num})]  {line}' )
     return True
 
+class LineRef:
 
+    def __init__(self):
+        self.file_id: int | None = None
+        self.line_num: int | None = None
+        self.line: str | None = None
+
+class ParseContextBase( Iterable[LineRef]  ):
+
+    def __iter__( self ):
+        pass
+
+    def __init__(self: Self) -> None:
+        self.state: ParseState = ParseState.Working
+        self.pipe_name: str | None = None
+        self.last_exception: Exception | None = None
+        self.message: str | None = None
+        self.upstream: ParseContextBase | None = None
+        self.downstream: ParseContextBase | None = None
+        self.pipe_id: int | None = None
+
+    def __bool__(self) -> bool:
+        return self.state != ParseState.Working
+
+    async def pull_fileref( self ) -> Self:
+        if self.upstream:
+            return await self.upstream.pull_fileref()
+        else:
+            throw_error("No upstream context available")
+
+    async def accept_fileref( self, fileref: LineRef ) -> None:
+        pass
+
+    async def push_fileref( self, fileref: LineRef ) -> None:
+        if self.downstream:
+            await self.downstream.accept_fileref(fileref)
+
+
+LineParseFn: type = abc.Callable[ ParseContextBase , ParseContextBase ]
 
 class ExecOpBase:
 
-    def __init__( self: Self, name: str, _parse_fn: LineParseFn | None, bar: Bar | None ) -> None:
+    def __init__( self: Self, name: str, _exec_fn: LineParseFn | None, bar: Bar | None ) -> None:
         self.name: str = name
-        self._parse_fn: LineParseFn = _parse_fn or ExecOpBase.null_fn
+        self._parse_fn: LineParseFn = _exec_fn or ExecOpBase.null_fn
         self.bar: Bar = bar or Bar(name)
 
     @property
@@ -48,8 +82,8 @@ class ExecOpBase:
     def parse_fn( self: Self, fn: LineParseFn ) -> None:
         self._parse_fn = fn
 
-    def run( self: Self, line_ref: LineRef ) -> bool:
-        return self._parse_fn( line_ref )
+#    def run( self: Self, line_ref: LineRef ) -> ParseResult:
+#        return self._parse_fn( line_ref )
 
     def next( self: Self, val: int | None ) -> None:
         if val is not None:
@@ -58,9 +92,9 @@ class ExecOpBase:
             self.bar.next()
 
     @staticmethod
-    def null_fn(line_ref: LineRef) -> bool:
+    def null_fn(line_ref: LineRef) -> tuple[ParseState, str | None, Exception | None, str | None ]:
         print(f"[null_fn]  {line_ref}  ")
-        return False
+        return ParseState.UnknownErr, "", None, None
 
 class StreamSourceOpBase(ExecOpBase):
     def __init__(self: Self, name: str, filepath: str) -> None:
@@ -137,11 +171,13 @@ class ExecCtxBase:
         self.op_list.append(op)
 
     def run(self: Self, line: str, line_nun: int) -> bool:
-        for op in self.op_list:
-            if not op.run((0, line_nun, line )):
-                return False
+#        for op in self.op_list:
+#            if not op.run((0, line_nun, line )):
+#                return False
 
         return True
+
+
 
 
 if __name__ == "__main__":

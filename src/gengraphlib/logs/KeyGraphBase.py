@@ -1,12 +1,15 @@
 import json
 import os
+from collections.abc import Callable
 from typing import Self
 from enum import IntEnum
 from datetime import datetime
 from sortedcontainers import SortedDict
 from abc import abstractmethod
 
-KValTypes: type = type[str, int, bool, datetime ]
+KeyValTypes: type = type[str, int, bool, datetime ]
+
+process_fields_fn = Callable[ [ dict[str,str], int], int ]
 
 class KeyType( IntEnum ):
     KStr         = 1
@@ -14,21 +17,21 @@ class KeyType( IntEnum ):
     KBool        = 3
     KTimeStamp   = 4
 
-class JsonTimestamp:
+class LogTimestamp:
     def __init__(self: Self, dt_str: str ) -> None:
         dt_val = datetime.fromisoformat(dt_str)
-        super(JsonTimestamp, self).__init__(dt_val)
+        super( LogTimestamp, self ).__init__( dt_val )
 
-class LineNumList(list[int]):
+class LineRefList( list[ (str, int) ] ):
     pass
 
-class KeyValueInstancesBase[K: KValTypes ]( SortedDict[K, LineNumList] ):
+class KeyValueInstancesBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
     def __init__(self: Self) -> None:
         super().__init__()
         self.unique: bool = True
         self._cnt: int = 0
 
-    def add_value( self: Self, new_value: K, line_num: int ) -> None:
+    def add_value( self: Self, new_value: T, line_num: int ) -> None:
         if new_value not in self:
             self[new_value] = []
         else:
@@ -37,15 +40,15 @@ class KeyValueInstancesBase[K: KValTypes ]( SortedDict[K, LineNumList] ):
         self[new_value].append( line_num )
         self._cnt += 1
 
-class KeyDefBase[K: KValTypes ]( KeyValueInstancesBase[K] ):
+class KeyDefBase[ T: KeyValTypes ]( KeyValueInstancesBase[T ] ):
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType) -> None:
         super(KeyDefBase, self ).__init__()
         self.json_key: str = _json_key
         self.log_key: str = _log_key
         self.key_type: KeyType = _key_type
-        self.key_values: KeyValueInstancesBase[K] = KeyValueInstancesBase[K]()
+        self.key_values: KeyValueInstancesBase[T] = KeyValueInstancesBase[T]()
         
-    def add_value( self: Self, new_value: K, line_num: int ) -> None:
+    def add_value( self: Self, new_value: T, line_num: int ) -> None:
         self.key_values.add_value(new_value, line_num)
 
     @abstractmethod
@@ -112,9 +115,9 @@ class KeyGroups( dict[str, KeyGroup ] ):
 """
     KeyGraphRootBase
 """
-class KeyGraphRootBase( dict[str, KeyDefBase ] ):
+class KeyGraphBase( dict[str, KeyDefBase ] ):
     def __init__(self: Self, root_dir: str) -> None:
-        super(KeyGraphRootBase, self).__init__()
+        super( KeyGraphBase, self ).__init__()
         self._root_dir = root_dir
         self._log_keys: dict[str,KeyDefBase] = dict[str,KeyDefBase]()
         self.key_groups: KeyGroups = KeyGroups(self)
@@ -162,8 +165,6 @@ class KeyGraphRootBase( dict[str, KeyDefBase ] ):
                     value_line_json = json.dumps(value_line, indent=4)
                     keyfile.write(value_line_json)
                     keyfile.write("\n")
-
-
 
     def dump_missed_keys( self: Self ) -> None:
         data_str = json.dumps( self.missing_keys, indent=4 )

@@ -34,10 +34,12 @@ class PipedCmdBase:
         try:
             self.cmd = cmd
             self.exec_process: asub.Process = await aio.create_subprocess_exec(
-                self.cmd,
+                executable = self.cmd,
+                shell=True,
                 stdin=aio.subprocess.PIPE,
                 stdout=aio.subprocess.PIPE,
                 stderr=aio.subprocess.PIPE
+
             )
             if self.exec_process is None:
                 self.error = -1
@@ -143,3 +145,25 @@ class PipeFromStdoutBase( PipedCmdBase ):
 
     def process_line( self: Self, line: str ) -> bool:
         return True
+
+class PipedToGraph(PipeFromStdoutBase):
+    def __init__( self: Self, output_filepath: str ) -> None:
+        super(PipedToGraph, self).__init__("PipedToKeys", output_filepath )
+
+    async def process_line( self: Self, line: str ) -> bool:
+        try:
+            print(line)
+            return True
+
+        except Exception as exc:
+            print(f'[PipedToFile: {self.name}] Exception: {exc}')
+            self.started = False
+            self.error = -3
+            return False
+
+    def __getitem__(self, item) -> tuple[bytes,bytes] | None:
+        return self.proc_result
+
+    def run_export( self: Self) -> None:
+        self.run_command( "" )
+

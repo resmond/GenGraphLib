@@ -1,6 +1,7 @@
 [project]
 name = "GenGraphLib"
 description = "Node graph framework for journalctl logs."
+version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.13.2"
 license = {file = "LICENSE.md"}
@@ -24,6 +25,9 @@ classifiers = [
 ]
 dynamic = [
 
+]
+dependencies = [
+    "objgraph>=3.6.2",
 ]
 
 
