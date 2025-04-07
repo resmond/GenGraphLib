@@ -5,8 +5,9 @@ from typing import Self
 import datetime as dt
 import os as os
 
+from .. import process_fields_fn, KeyValTypes
+
 from .BootLogDirBase import BootLogDirBase
-from ..graph.KeyDefs import process_fields_fn, KeyValTypes
 
 #class GraphCmd( StrEnum ):
 #    Full    = "Full"
@@ -40,7 +41,7 @@ class BootLogManagerBase:
         self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
         self._fields_fn = fields_fn
-        super(BootLogManagerBase, self).__init__()
+#        super(BootLogManagerBase, self).__init__()
 
     """
         exec - starts LogDirManager execution

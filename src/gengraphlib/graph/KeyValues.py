@@ -2,8 +2,7 @@ from typing import Self
 
 from sortedcontainers import SortedDict
 
-from .KeyDefs import KeyValTypes
-
+from .. import KeyValTypes
 
 class LineRefList( list[ int ] ):
     pass

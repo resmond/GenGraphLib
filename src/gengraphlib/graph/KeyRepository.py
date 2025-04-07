@@ -58,9 +58,12 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
 
     def init_repository( self ):
         for key, keydef in self.items():
-            if keydef.groups is not None:
-                for group_id in keydef.groups:
-                    self.add_key_to_group( group_id, key )
+            match keydef.groups:
+                case str():
+                    self.add_key_to_group(keydef.groups, key)
+                case list():
+                    for group_id in keydef.groups:
+                        self.add_key_to_group(group_id, key)
 
     def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str = "" ) -> bool:
 

@@ -1,16 +1,11 @@
 from typing import Self
 
 import datetime as dt
-
 from abc import abstractmethod, ABC
 from enum import IntEnum
-from collections.abc import Callable
 
+from .. import KeyValTypes
 from .KeyValues import KeyValueBase
-
-KeyValTypes: type = type[str, int, bool, dt.datetime]
-
-process_fields_fn = Callable[ [ dict[str,KeyValTypes], int, str | None], int ]
 
 class KeyType( IntEnum ):
     KStr         = 1

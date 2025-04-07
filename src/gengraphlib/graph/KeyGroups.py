@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
 
-from KeyDefs import KeyDefBase
+from .KeyDefs import KeyDefBase
 
 keygroup_rec = tuple[str, str, str | None, list[str] | None]
 
@@ -39,9 +39,17 @@ class KeyGroups( dict[str, KeyGroup ] ):
     def define_keygroups( self: Self, recs: Iterable[keygroup_rec] ) -> None:
         for rec in recs:
             group_id: str = rec[0]
-            group_name: str = rec[1] or group_id
-            group_desc: str = rec[2] or ""
-            self.def_keygroup( (group_id, group_name, group_desc, None) )
+            group_name: str = group_id
+            group_desc: str = ""
 
-            if len(rec) == 4:
-                self.add_keys_to_group( group_id, rec[3] )
+            match len(rec):
+                case 2:
+                    group_name = rec[1]
+                case 3:
+                    group_name = rec[1]
+                    group_desc = rec[2]
+
+            self.add_keygroup( group_id, group_name, group_desc )
+
+            if len(rec) > 3:
+                self.add_keys_to_group( group_id, rec[3])

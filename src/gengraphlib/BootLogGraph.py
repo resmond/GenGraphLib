@@ -5,14 +5,12 @@ import os
 
 from progress.bar import Bar
 
-from .graph.KeyDefs import (
-    KeyDefBase,
-    StrKeyDef,
-    IntKeyDef,
-    BoolKeyDef,
-    TmstKeyDef,
-    process_fields_fn,
-)
+from .graph.KeyDefs import KeyDefBase
+from .graph.KeyDefs import StrKeyDef
+from .graph.KeyDefs import IntKeyDef
+from .graph.KeyDefs import BoolKeyDef
+from .graph.KeyDefs import TmstKeyDef
+from . import process_fields_fn
 
 from .bootlog.BootLogDirBase import BootLogDirBase
 from .bootlog.BootLogManagerBase import BootLogManagerBase
@@ -67,7 +65,7 @@ class BootLogGraph( KeyRepository ):
             StrKeyDef("usrInvID", "USER_INVOCATION_ID", "id"),
             StrKeyDef("glbLogApi", "GLIB_OLD_LOG_API","glib"),
             StrKeyDef("nmDev", "NM_DEVICE", "nm"),
-            StrKeyDef("glbDom", "GLIB_DOMAIN", "glb"),
+            StrKeyDef("glbDom", "GLIB_DOMAIN", "glib"),
             StrKeyDef("nmLogLev", "NM_LOG_LEVEL", "nm"),
             StrKeyDef("jbRes", "JOB_RESULT", "job"),
             StrKeyDef("smTime", "_SOURCE_MONOTONIC_TIMESTAMP","tm"),
@@ -160,7 +158,8 @@ class BootLogGraph( KeyRepository ):
         ])
 
         self.define_keygroups([
-            ("id", "ID"),
+            ("sid", "SystemIDs"),
+            ("id", "UsefulIDs"),
             ("tm", "Time"),
             ("hdr", "Header"),
             ("evt", "Event"),
