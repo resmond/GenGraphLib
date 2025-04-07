@@ -71,7 +71,7 @@ class CmdStreamBase:
 async def main():
 
     subprocess = CmdStreamBase()
-    async for line in subprocess.run_command("journalctl -b -1 -o json", "/home/richard/data/jctl-logs"):
+    async for line in subprocess.run_command("journalctl -b -1 -o json", "/home/richard/data/jctl-bootlog"):
         print(line)
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import datetime as dt
 import os as os
 
 from .BootLogDirBase import BootLogDirBase
-from ..graph.GraphKeyDefs import process_fields_fn, KeyValTypes
+from ..graph.KeyDefs import process_fields_fn, KeyValTypes
 
 #class GraphCmd( StrEnum ):
 #    Full    = "Full"
@@ -29,9 +29,8 @@ from ..graph.GraphKeyDefs import process_fields_fn, KeyValTypes
 
 --------------------------------------------------------"""
 
-class LogDirManagerBase:
+class BootLogManagerBase:
     def __init__(self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
-        super().__init__()
         self.root_dir: str = root_dir
         self.full_reparse: bool = True
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
@@ -41,6 +40,7 @@ class LogDirManagerBase:
         self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
         self._fields_fn = fields_fn
+        super(BootLogManagerBase, self).__init__()
 
     """
         exec - starts LogDirManager execution
@@ -161,6 +161,10 @@ class LogDirManagerBase:
 
                     finally:
                         cnt += 1
+                        return True
+
+                finally:
+                    return True
 
             return True
 
