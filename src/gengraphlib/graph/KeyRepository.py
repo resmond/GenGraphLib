@@ -4,9 +4,9 @@ from typing import Self, Any
 import json
 import os
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
-from .KeyDefs import KeyDefBase, KeyValTypes
+from .KeyDefs import KeyDefBase, KeyValTypes, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
 from .KeyGroups import KeyGroups, keygroup_rec
 
 """
@@ -43,6 +43,8 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
             self.add_keydef(_key_def)
 
     def add_key_to_group( self: Self, _group_id: str, _key: str ) -> None:
+        if _group_id == "":
+            _group_id = "skip"
         key_group = self.key_groups[_group_id ]
         key_def: KeyDefBase = self[_key]
         key_group.add_keydef(key_def)
@@ -64,6 +66,29 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
                 case list():
                     for group_id in keydef.groups:
                         self.add_key_to_group(group_id, key)
+
+        self.final_init()
+
+    @abstractmethod
+    def final_init( self ):
+        pass
+
+    def _get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
+        if self.__contains__( key ):
+            key_def: KeyDefBase = self[key]
+            match type(key_def):
+                case StrKeyDef():
+                    return key_def
+                case IntKeyDef():
+                    return key_def
+                case BoolKeyDef():
+                    return key_def
+                case TmstKeyDef():
+                    return key_def
+                case _:
+                    return None
+
+        return None
 
     def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str = "" ) -> bool:
 
@@ -90,22 +115,26 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
 
         elif key_def.dologing:
             try:
+                val_result: EventTriggerDef | None = None
                 match type(value).__name__:
                     case "list":
                         str_val = str(value)
-                        self[json_key].add_jvalue( str_val, line_num )
+                        val_result = self[json_key].add_jvalue( str_val, line_num )
                     case "datetime":
-                        self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "int":
-                        self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "float":
-                        self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "str":
-                        self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "bool":
-                        self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case _:
                         print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
+
+                if val_result is not None:
+                    self.keyvalue_trigger( val_result.source, json_key, val_result.value, val_result.trigger_msg, line_num, log_line )
 
                 result = True
 
@@ -117,6 +146,11 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
                 self.missing_keys.append( json_key )
 
         return result
+
+    @abstractmethod
+    def keyvalue_trigger( self: Self, source: str, key: str, value: str, trigger_msg: str, line_num: int, log_line: str = "" ) -> None:
+        print(f"[Trigger]: src: {source}  key: {key}  value: {value}  trigger: {trigger_msg}  line: {line_num}")
+        pass
 
     def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
 

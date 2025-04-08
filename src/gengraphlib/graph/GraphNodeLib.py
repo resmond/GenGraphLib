@@ -6,20 +6,14 @@ from sortedcontainers import SortedList
     NodeBase is the root of the hierarchy
       
 """
+
+
 class GraphNodeBase:
 
-    def __init__(self: Self, id:str):
+    def __init__(self: Self, id: str ):
         self.id: str = id
 
-    def __str__(self: Self) -> str:
-        return f'{self.__class__.__name__}: {self.id}'
 
-    def __repr__(self: Self) -> str:
-        return self.__str__()
-
-#    @classmethod
-#    def newnode( cls, id: str = '', **kwargs ) -> NodeBase:
-#        return cls(id=id, kwargs=kwargs)
 
 
 TGraphNode = TypeVar( 'TGraphNode', bound = GraphNodeBase )

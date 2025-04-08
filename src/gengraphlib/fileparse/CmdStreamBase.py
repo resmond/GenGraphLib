@@ -33,28 +33,14 @@ class CmdStreamBase:
                     )
 
                 while True:
-                    try:
-                        line = await self.exec_process.stdout.readline()
 
-                    except aio.exceptions.TimeoutError as aioerr:
-                        print(f'[BootLogDirBase.stream] Exception: {aioerr}')
-                        self.started = False
-                        self.exc = aioerr
-                        self.error = -3
-                        break
-
+                    line = await self.exec_process.stdout.readline()
+                    if len(line) > 0:
+                        line_str = line.decode().strip()
+                        #print(line_str)
+                        yield line_str
                     else:
-                        if line:
-                            try:
-                                yield line.decode().strip()
-
-                            except Exception as decode_err:
-                                print(f'[BootLogDirBase.stream] Exception: {decode_err}')
-                                self.started = False
-                                self.exc = decode_err
-                                self.error = -2
-                        else:
-                            break
+                        break
 
             except Exception as exc:
                 print(f"CmdStreamBase.run_command: {exc}")
