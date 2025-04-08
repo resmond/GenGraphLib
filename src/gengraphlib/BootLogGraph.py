@@ -5,7 +5,12 @@ import os
 
 from progress.bar import Bar
 
-from .graph.KeyDefs import KeyDefBase, StrKeyProp
+from .graph.KeyDefs import (
+    KeyDefBase,
+    StrKeyProp,
+    KeyPropClassSurface,
+    KeyPropBase,
+)
 from .graph.KeyDefs import StrKeyDef
 from .graph.KeyDefs import IntKeyDef
 from .graph.KeyDefs import BoolKeyDef
@@ -31,22 +36,22 @@ class GraphLogDirManager( BootLogManagerBase ):
 class PriorityValueTrigger( KeyValueTriggerBase[str] ):
 
     def eval( self, value: str ) -> bool:
-        if value is not None and value != '':
+        if value in ["3", "4", "5", "6", "7"]:
             return True
         else:
             return False
 
-class BootLogGraph( KeyRepository ):
+class BootLogGraph( KeyRepository, KeyPropClassSurface ):
     keydefs: list[KeyDefBase] = [
     ]
 
     def __init__( self: Self, _log_root: str ) -> None:
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
         self._log_keys: KeyDefIndex = KeyDefIndex()
-
-        self.priority = StrKeyProp(host=self, _json_key = "priority", _log_key = "PRIORITY", groups=["evt"])
-
         super( BootLogGraph, self ).__init__( _log_root )
+
+        self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
+
 
         self.add_keydefs(
             [
@@ -181,9 +186,12 @@ class BootLogGraph( KeyRepository ):
 
         super().init_repository()
 
+    def keyprops_init( self ):
+        super().keyprops_init()
+
     def final_init( self ):
 
-        priority_keydef: KeyDefBase[str] = self.get_typed_keydef("priority")
+        priority_keydef: KeyPropBase[str] = self.get_typed_keyprop("priority")
 
         if priority_keydef is not None:
             value_trigger = PriorityValueTrigger()

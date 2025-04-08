@@ -13,7 +13,8 @@ from .KeyDefs import (
     IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
-    KeyPropHost,
+    KeyPropRepository,
+    KeyPropBase,
 )
 from .KeyGroups import KeyGroups, keygroup_rec
 from .KeyValues import AddValueResult, KeyValueTriggerBase
@@ -35,24 +36,17 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
         super(KeyDefIndex, self).__init__()
 
-class KeyRepository( dict[str, KeyDefBase ], KeyPropHost, ABC ):
+class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
     def __init__( self: Self, root_dir: str ) -> None:
         self._root_dir = root_dir
-        self.keyprops: list[KeyDefBase] = list[KeyDefBase]()
         self.key_groups: KeyGroups = KeyGroups(self)
         self.none_values: DefaultDictOfLists = DefaultDictOfLists()
         self.missing_keys: list[str] = []
         super(KeyRepository, self).__init__()
+        super(KeyPropRepository, self).__init__()
 
-    @property
-    def keyprops( self ) -> list[KeyDefBase]:
-        return self.keyprops
-
-    def add_keyprop( self, key_prop: KeyDefBase ) -> None:
-        self.keyprops.append( key_prop )
-
-    def keyprops_init( self ):
-        pass
+    def __init_subclass__( cls ):
+        super().__init_subclass__( cls )
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.json_key] = _key_def
@@ -96,6 +90,23 @@ class KeyRepository( dict[str, KeyDefBase ], KeyPropHost, ABC ):
 
     def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
         if self.__contains__( key ):
+            key_def: KeyDefBase = self[key]
+            match type(key_def):
+                case StrKeyDef():
+                    return key_def
+                case IntKeyDef():
+                    return key_def
+                case BoolKeyDef():
+                    return key_def
+                case TmstKeyDef():
+                    return key_def
+                case _:
+                    return None
+
+        return None
+
+    def get_typed_keyprop[T: KeyValTypes]( self, key: str ) -> KeyPropBase[T] | None:
+        if self.keyprops_list.__contains__( key ):
             key_def: KeyDefBase = self[key]
             match type(key_def):
                 case StrKeyDef():
