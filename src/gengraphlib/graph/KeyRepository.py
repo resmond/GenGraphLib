@@ -6,8 +6,17 @@ import os
 
 from abc import ABC, abstractmethod
 
-from .KeyDefs import KeyDefBase, KeyValTypes, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
+from .KeyDefs import (
+    KeyDefBase,
+    KeyValTypes,
+    StrKeyDef,
+    IntKeyDef,
+    BoolKeyDef,
+    TmstKeyDef,
+    KeyPropHost,
+)
 from .KeyGroups import KeyGroups, keygroup_rec
+from .KeyValues import AddValueResult, KeyValueTriggerBase
 
 """
     DefaultDictOfLists
@@ -26,13 +35,24 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
         super(KeyDefIndex, self).__init__()
 
-class KeyRepository( dict[str, KeyDefBase ], ABC ):
+class KeyRepository( dict[str, KeyDefBase ], KeyPropHost, ABC ):
     def __init__( self: Self, root_dir: str ) -> None:
         self._root_dir = root_dir
+        self.keyprops: list[KeyDefBase] = list[KeyDefBase]()
         self.key_groups: KeyGroups = KeyGroups(self)
         self.none_values: DefaultDictOfLists = DefaultDictOfLists()
         self.missing_keys: list[str] = []
         super(KeyRepository, self).__init__()
+
+    @property
+    def keyprops( self ) -> list[KeyDefBase]:
+        return self.keyprops
+
+    def add_keyprop( self, key_prop: KeyDefBase ) -> None:
+        self.keyprops.append( key_prop )
+
+    def keyprops_init( self ):
+        pass
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.json_key] = _key_def
@@ -71,9 +91,10 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
 
     @abstractmethod
     def final_init( self ):
+        self.keyprops_init()
         pass
 
-    def _get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
+    def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
         if self.__contains__( key ):
             key_def: KeyDefBase = self[key]
             match type(key_def):
@@ -115,7 +136,7 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
 
         elif key_def.dologing:
             try:
-                val_result: EventTriggerDef | None = None
+                val_result: AddValueResult | None = None
                 match type(value).__name__:
                     case "list":
                         str_val = str(value)
@@ -134,7 +155,7 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
                         print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
 
                 if val_result is not None:
-                    self.keyvalue_trigger( val_result.source, json_key, val_result.value, val_result.trigger_msg, line_num, log_line )
+                    self.keyvalue_trigger( val_result )
 
                 result = True
 
@@ -148,9 +169,9 @@ class KeyRepository( dict[str, KeyDefBase ], ABC ):
         return result
 
     @abstractmethod
-    def keyvalue_trigger( self: Self, source: str, key: str, value: str, trigger_msg: str, line_num: int, log_line: str = "" ) -> None:
-        print(f"[Trigger]: src: {source}  key: {key}  value: {value}  trigger: {trigger_msg}  line: {line_num}")
-        pass
+    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
+        print(f"[Trigger]: {val_result}")
+        return val_result
 
     def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
 

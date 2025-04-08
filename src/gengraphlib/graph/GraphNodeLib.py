@@ -12,6 +12,7 @@ class GraphNodeBase:
 
     def __init__(self: Self, id: str ):
         self.id: str = id
+        super(GraphNodeBase, self).__init__()
 
 
 

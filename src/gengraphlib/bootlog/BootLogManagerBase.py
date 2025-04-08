@@ -137,7 +137,7 @@ class BootLogManagerBase:
     """
         process_dir
     """
-    async def process_bootlog( self: Self, boot_log_dir: BootLogDirBase ) -> None:
+    async def process_bootlog( self: Self, boot_log_dir: BootLogDirBase ) -> bool:
 
         cnt: int = -1
         fields: dict[str, KeyValTypes] = {}
@@ -168,3 +168,4 @@ class BootLogManagerBase:
             print(f"    line:  {line}")
             print(f"  fields:  {fields}")
 
+        return True

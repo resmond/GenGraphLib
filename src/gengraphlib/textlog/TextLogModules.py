@@ -7,13 +7,14 @@ from .TextBootLogLines import TextBootLogLine
 class TextLogModule( GraphNodeBase ):
 
     def __init__(self: Self, id: str) -> None:
-        super( TextLogModule, self ).__init__( id=id )
         self.module_type_node: GraphNodeBase | None = None
         self.events: NodeDict[GraphNodeBase ] | None = None
+        super( TextLogModule, self ).__init__( id=id )
 
     def add_event( self: Self, event_node: GraphNodeBase ) -> None:
         if self.events is None:
-            self.events = NodeDict[GraphNodeBase ]( id= "event_node_dict" )
+            self.events = NodeDict[GraphNodeBase]( id= "event_node_dict" )
+
         self.events[event_node.id] = event_node
 
 class TextLogModules( NodeDict[ TextLogModule ] ):

@@ -5,7 +5,7 @@ import os
 
 from progress.bar import Bar
 
-from .graph.KeyDefs import KeyDefBase
+from .graph.KeyDefs import KeyDefBase, StrKeyProp
 from .graph.KeyDefs import StrKeyDef
 from .graph.KeyDefs import IntKeyDef
 from .graph.KeyDefs import BoolKeyDef
@@ -14,8 +14,8 @@ from . import process_fields_fn
 
 from .bootlog.BootLogDirBase import BootLogDirBase
 from .bootlog.BootLogManagerBase import BootLogManagerBase
-from .graph.KeyRepository import KeyDefIndex, KeyRepository, DefaultDictOfLists
-from .graph.KeyValues import KeyValueTestBase
+from .graph.KeyRepository import KeyDefIndex, KeyRepository
+from .graph.KeyValues import KeyValueTriggerBase, AddValueResult
 
 
 class GraphLogDir( BootLogDirBase ):
@@ -28,7 +28,7 @@ class GraphLogDirManager( BootLogManagerBase ):
         self._fields_fn = process_fields_fn
         super( GraphLogDirManager, self ).__init__( root_dir, fields_fn )
 
-class PriorityValueTrigger( KeyValueTestBase[str] ):
+class PriorityValueTrigger( KeyValueTriggerBase[str] ):
 
     def eval( self, value: str ) -> bool:
         if value is not None and value != '':
@@ -43,6 +43,9 @@ class BootLogGraph( KeyRepository ):
     def __init__( self: Self, _log_root: str ) -> None:
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
         self._log_keys: KeyDefIndex = KeyDefIndex()
+
+        self.priority = StrKeyProp(host=self, _json_key = "priority", _log_key = "PRIORITY", groups=["evt"])
+
         super( BootLogGraph, self ).__init__( _log_root )
 
         self.add_keydefs(
@@ -53,7 +56,7 @@ class BootLogGraph( KeyRepository ):
                 StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM", "evt"),
                 StrKeyDef("msg", "MESSAGE", "evt"),
                 StrKeyDef("pID", "_PID", "evt"),
-                StrKeyDef("priority", "PRIORITY", ["evt", "priority"]),
+#                StrKeyDef("priority", "PRIORITY", ["evt", "priority"]),
                 StrKeyDef("slID", "SYSLOG_IDENTIFIER", "evt"),
                 StrKeyDef("slnxCtx", "_SELINUX_CONTEXT", "evt"),
                 StrKeyDef("slPID", "SYSLOG_PID", "evt"),
@@ -170,7 +173,6 @@ class BootLogGraph( KeyRepository ):
         self.define_keygroups(
             [
                 ("evt", "Tracked Events"),
-                ("priority", "EvtTrigger", "[priority] is the event trigger 3-7 severity"),
                 ("skip", "Ignore")
                 #("int", "Interesting"),
                 #("tm", "Time"),
@@ -180,10 +182,15 @@ class BootLogGraph( KeyRepository ):
         super().init_repository()
 
     def final_init( self ):
-        priority_keydef: StrKeyDef = self._get_typed_keydef[str]("priority")
+
+        priority_keydef: KeyDefBase[str] = self.get_typed_keydef("priority")
+
         if priority_keydef is not None:
             value_trigger = PriorityValueTrigger()
             priority_keydef.add_trigger( value_trigger )
+
+    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
+        return val_result
 
     def by_logkey(self: Self, _log_key_str: str) -> KeyDefBase:
         return self._log_keys[_log_key_str]

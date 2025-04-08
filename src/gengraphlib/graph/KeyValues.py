@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from typing import Self, Union
 
 from sortedcontainers import SortedDict
@@ -9,28 +8,28 @@ from .. import KeyValTypes
 class LineRefList( list[ int ] ):
     pass
 
-class KeyValueTestBase[ T: KeyValTypes ]( ABC ):
+class KeyValueTriggerBase[ T: KeyValTypes ]( ABC ):
 
     def __init__( self ):
-        super(KeyValueTestBase, self).__init__()
+        super( KeyValueTriggerBase, self ).__init__()
 
     @abstractmethod
     def eval( self, value: T ) -> Self:
         pass
 
-AddValueResult: type = Union[ KeyValueTestBase | None ]
+AddValueResult: type = Union[ KeyValueTriggerBase | None ]
 
 class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
 
     def __init__( self: Self, parent_key: str ) -> None:
         super(KeyValueBase, self).__init__()
-        self.triggers: list[KeyValueTestBase[T]] | None = None
+        self.triggers: list[KeyValueTriggerBase[T ] ] | None = None
         self.parent_key = parent_key
         self.unique: bool = True
 
-    def add_trigger( self: Self, trigger: KeyValueTestBase[T] ) ->  None:
+    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T ] ) ->  None:
         if self.triggers is None:
-            self.triggers = list[KeyValueTestBase[T]]
+            self.triggers = list[KeyValueTriggerBase[T ] ]
 
         self.triggers.append( trigger )
 

@@ -1,11 +1,11 @@
-from typing import Self
+from typing import Self, Protocol
 
 import datetime as dt
 from abc import abstractmethod, ABC
 from enum import IntEnum
 
 from .. import KeyValTypes
-from .KeyValues import KeyValueBase, AddValueResult, KeyValueTestBase
+from .KeyValues import KeyValueBase, AddValueResult, KeyValueTriggerBase
 
 
 class KeyType( IntEnum ):
@@ -37,12 +37,16 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
 
         super(KeyDefBase, self).__init__()
 
-    def add_trigger( self: Self, trigger: KeyValueTestBase[T]) -> None:
+    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
         self.key_values.add_trigger( trigger )
         self.event_trigger = True
 
     def add_value( self: Self, new_value: T, line_num: int ) -> AddValueResult:
-        return self.key_values.add_value(new_value, line_num)
+        addval_result: AddValueResult = self.key_values.add_value(new_value, line_num)
+        if addval_result is None:
+            return addval_result
+        else:
+            return addval_result
 
     @property
     def dologing( self ) -> bool:
@@ -51,6 +55,8 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
     @abstractmethod
     def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
         pass
+
+
 
 """--------------------------------------------------------
     StrKeyDef
@@ -62,6 +68,7 @@ class StrKeyDef( KeyDefBase[str] ):
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( jvalue, line_num )
+
 
 """--------------------------------------------------------
 
@@ -90,17 +97,74 @@ class BoolKeyDef( KeyDefBase[bool] ):
     TmstKeyDef
 
 """
-class TmstKeyDef( KeyDefBase[dt.datetime ] ):
+class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
         super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         try:
-            datetime_value = dt.datetime( jvalue )
+            datetime_value: dt.datetime = dt.datetime.fromordinal(int(jvalue))
             return self.key_values.add_value( datetime_value, line_num )
         except ValueError as e:
             print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
             return False
 
 
+##################################### KeyDefProps #########################################
+"""
+    KeyRepositoryProtocol
+
+"""
+class KeyPropHost(Protocol):
+
+    @abstractmethod
+    @property
+    def keyprops( self ) -> list[KeyDefBase]:
+        pass
+
+    @abstractmethod
+    def add_keyprop( self, key_prop: KeyDefBase ) -> None:
+        pass
+
+    @abstractmethod
+    def keyprops_init( self ):
+        pass
+
+
+"""
+    KeyDefPropBase
+
+"""
+class KeyPropBase[ T: KeyValTypes ]( KeyDefBase[T ], ABC ):
+
+    def __init__( self, host: KeyPropHost, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | None = None ):
+        self.host = host
+        super( KeyPropBase, self ).__init__( _json_key, _log_key, _key_type, groups )
+        self.host.add_keyprop(self)
+
+"""
+    StrKeyProp
+
+"""
+class StrKeyProp( KeyPropBase[str] ):
+    def __init__( self, host: KeyPropHost, _json_key: str, _log_key: str, groups: list[str] | str | None = None ):
+        super( StrKeyProp, self ).__init__(  host=host, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
+        if self == self.host:
+            print("self is same")
+
+
+    def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
+        val_result: AddValueResult = self.key_values.add_value( jvalue, line_num )
+        if val_result is None:
+            return val_result
+        else:
+            return self.on_trigger(self.host, val_result)
+
+    def on_trigger( self: Self, host: KeyPropHost, val_result: AddValueResult ) -> AddValueResult:
+
+        if ( host == self.host ):
+            print("host same again")
+
+        print(f"[StrKeyProp.on_trigger] {self.json_key}")
+        return val_result
 
