@@ -9,7 +9,7 @@ class TextLogModule( GraphNodeBase ):
     def __init__(self: Self, id: str) -> None:
         self.module_type_node: GraphNodeBase | None = None
         self.events: NodeDict[GraphNodeBase ] | None = None
-        super( TextLogModule, self ).__init__( id=id )
+        super().__init__( id=id )
 
     def add_event( self: Self, event_node: GraphNodeBase ) -> None:
         if self.events is None:
@@ -20,7 +20,7 @@ class TextLogModule( GraphNodeBase ):
 class TextLogModules( NodeDict[ TextLogModule ] ):
 
     def __init__(self: Self, id: str = "module_node_dict") -> None:
-        super( TextLogModules, self ).__init__( id=id )
+        super().__init__( id=id )
 
     def __missing__(self, key) -> TextLogModule:
         self[key] = new_node = TextLogModule( id=key )
@@ -29,7 +29,7 @@ class TextLogModules( NodeDict[ TextLogModule ] ):
 class TextLogModuleType( NodeDict[ TextLogModules ] ):
 
     def __init__( self: Self, id: str = "module_type_node" ) -> None:
-        super( TextLogModuleType, self ).__init__( id=id )
+        super().__init__( id=id )
         #self.module_nodes = ModuleNodeDict(id="model_node_dict")
         #self.module_nodes[line_node.module_id] = ModuleNode( id=line_node.module_id, module_type_node=self )
 
@@ -40,7 +40,7 @@ class TextLogModuleType( NodeDict[ TextLogModules ] ):
 class TextLogModuleTypes( NodeDict[ TextLogModuleType ] ):
 
     def __init__( self: Self ) -> None:
-        super( TextLogModuleTypes, self ).__init__( id= "module_type_dict" )
+        super().__init__( id= "module_type_dict" )
 
     def __missing__(self, key) -> TextLogModuleType:
         self[key] = new_node = TextLogModuleType( id=key )

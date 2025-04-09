@@ -26,13 +26,13 @@ from .graph.KeyValues import KeyValueTriggerBase, AddValueResult
 
 class GraphLogDir( BootLogDirBase ):
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
-        super( GraphLogDir, self ).__init__( root_dir, log_rec )
+        super().__init__( root_dir, log_rec )
 
 class GraphLogDirManager( BootLogManagerBase ):
 
     def __init__( self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
         self._fields_fn = process_fields_fn
-        super( GraphLogDirManager, self ).__init__( root_dir, fields_fn )
+        super().__init__( root_dir, fields_fn )
 
 class PriorityValueTrigger( KeyValueTriggerBase[str] ):
 
@@ -49,7 +49,7 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
     def __init__( self: Self, _log_root: str ) -> None:
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
         self._log_keys: KeyDefIndex = KeyDefIndex()
-        super( BootLogGraph, self ).__init__( _log_root )
+        super().__init__( _log_root )
 
         self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
 

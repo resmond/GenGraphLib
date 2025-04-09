@@ -8,7 +8,7 @@ from ..fileparse.RgxCore import RgxLine
 class TextBootLogLine( GraphLineBase ):
 
     def __init__(self: Self, line_str: str, line_num: int) -> None:
-        super( TextBootLogLine, self ).__init__( line_str = line_str, line_num = line_num )
+        super().__init__( line_str = line_str, line_num = line_num )
         self.rgx_line: RgxLine = RgxLine()
         self.event_type_id: str = ""
         self.date_seg: str = ""
@@ -44,7 +44,7 @@ class TextBootLogLines( GraphNodeBase, list[TextBootLogLine ] ):
     def __init__( self: Self ) -> None:
         #self.log_file_graph: LogFileGraph
         self.cnt: int = 0
-        super( TextBootLogLines, self ).__init__( id= "lineNodeIndex" )
+        super().__init__( id= "lineNodeIndex" )
 
     def new_line( self: Self, line_str: str, line_num: int ) -> TextBootLogLine:
         new_line: TextBootLogLine =  TextBootLogLine( line_str=line_str, line_num=line_num )

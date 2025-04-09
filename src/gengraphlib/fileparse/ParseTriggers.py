@@ -47,7 +47,7 @@ class MatchTrigger:
 class ParseTriggers( dict[ str, MatchTrigger ] ):
 
     def __init__( self: Self ) -> None:
-        super(ParseTriggers, self).__init__()
+        super().__init__()
 
     def execute( self: Self, input_str: str ) -> LineParseResult:
         result: LineParseResult = LineParseResult( state=ResultState.NoneFound, message=input_str )

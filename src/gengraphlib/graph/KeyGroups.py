@@ -10,14 +10,14 @@ class KeyGroup( list[KeyDefBase] ):
         self.group_id: str = group_id
         self.group_name: str = group_name or group_id
         self.group_desc: str = group_desc
-        super( KeyGroup, self ).__init__()
+        super().__init__()
 
     def add_keydef(self: Self, other: KeyDefBase) -> None:
         self.append(other)
 
 class KeyGroups( dict[str, KeyGroup ] ):
     def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:
-        super(KeyGroups, self).__init__()
+        super().__init__()
         self.graph_root: dict[str,KeyDefBase ] = graph_root
 
     def add_keygroup( self: Self, group_id: str, group_name: str = "", group_desc = "" ) -> None:

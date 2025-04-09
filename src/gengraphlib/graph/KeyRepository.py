@@ -25,7 +25,7 @@ from .KeyValues import AddValueResult, KeyValueTriggerBase
 class DefaultDictOfLists(dict[str, list[str]]):
 
     def __init__( self: Self ) -> None:
-        super(DefaultDictOfLists, self).__init__()
+        super().__init__()
 
     def add_entry( self: Self, key: str, value: str ) -> None:
         if key not in self:
@@ -34,7 +34,7 @@ class DefaultDictOfLists(dict[str, list[str]]):
 
 class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
-        super(KeyDefIndex, self).__init__()
+        super().__init__()
 
 class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
     def __init__( self: Self, root_dir: str ) -> None:
@@ -42,8 +42,8 @@ class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
         self.key_groups: KeyGroups = KeyGroups(self)
         self.none_values: DefaultDictOfLists = DefaultDictOfLists()
         self.missing_keys: list[str] = []
-        super(KeyRepository, self).__init__()
-        super(KeyPropRepository, self).__init__()
+        super().__init__()
+        #super(KeyPropRepository, self).__init__()
 
     def __init_subclass__( cls ):
         super().__init_subclass__()

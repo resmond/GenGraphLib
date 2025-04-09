@@ -36,7 +36,7 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
         else:
             self.groups = None
 
-        super(KeyDefBase, self).__init__()
+        super().__init__()
 
     def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
         self.key_values.add_trigger( trigger )
@@ -65,7 +65,7 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
 """
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str | None = None ):
-        super( StrKeyDef, self ).__init__( _json_key, _log_key, KeyType.KStr, groups )
+        super().__init__( _json_key, _log_key, KeyType.KStr, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( jvalue, line_num )
@@ -78,7 +78,7 @@ class StrKeyDef( KeyDefBase[str] ):
 """
 class IntKeyDef( KeyDefBase[int] ):
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
-        super( IntKeyDef, self ).__init__( _json_key, _log_key, KeyType.KInt, groups )
+        super().__init__( _json_key, _log_key, KeyType.KInt, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( int( jvalue ), line_num )
@@ -89,7 +89,7 @@ class IntKeyDef( KeyDefBase[int] ):
 """
 class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
-        super( BoolKeyDef, self ).__init__( _json_key, _log_key, KeyType.KBool, groups )
+        super().__init__( _json_key, _log_key, KeyType.KBool, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( bool( jvalue ), line_num )
@@ -103,7 +103,7 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     now_datetime = dt.datetime.now()
 
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
-        super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp, groups )
+        super().__init__( _json_key, _log_key, KeyType.KTimeStamp, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         try:
@@ -116,7 +116,7 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
 
 class KeyPropRepository(ABC):
     def __init__(self) -> None:
-        super(KeyPropRepository, self).__init__()
+        super().__init__()
         self.keyprops_list: list[KeyPropBase] = list[KeyPropBase]()
 
     def add_keyprop(self, key_prop: KeyPropBase) -> None:
@@ -125,8 +125,8 @@ class KeyPropRepository(ABC):
     def keyprops_init(self):
         pass
 
-    def __init_subclass__( cls ):
-        super().__init_subclass__()
+#    def __init_subclass__( cls ):
+#        super().__init_subclass__()
 
 ##################################### KeyDefProps #########################################
 """
@@ -137,7 +137,7 @@ class KeyPropBase[ KT: KeyValTypes ]( KeyDefBase[KT], ABC ):
 
     def __init__( self, key_repository: KeyPropRepository, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ):
         self.key_repository: KeyPropRepository = key_repository
-        super( KeyPropBase, self ).__init__( _json_key, _log_key, _key_type, groups )
+        super().__init__( _json_key, _log_key, _key_type, groups )
 
 class KeyPropClassSurface( Protocol ):
 
@@ -151,7 +151,7 @@ class KeyPropClassSurface( Protocol ):
 class StrKeyProp( KeyPropBase[str] ):
     def __init__( self, class_surface: KeyPropClassSurface, key_repository: KeyPropRepository, _json_key: str, _log_key: str, groups: list[str ] | str | None = None ):
         self.class_surface = class_surface
-        super( StrKeyProp, self ).__init__( key_repository=key_repository, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
+        super().__init__( key_repository=key_repository, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
         if self == self.key_repository:
             print("self is same")
 
