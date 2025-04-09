@@ -5,7 +5,7 @@ import datetime as dt
 from abc import abstractmethod, ABC
 from enum import IntEnum
 
-from .. import KeyValTypes
+from src.gengraphlib import KeyValTypes
 from .KeyValues import KeyValueBase, AddValueResult, KeyValueTriggerBase
 
 
@@ -99,12 +99,16 @@ class BoolKeyDef( KeyDefBase[bool] ):
 
 """
 class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
+    very_beginning = dt.datetime.fromisoformat("1970-01-01")
+    now_datetime = dt.datetime.now()
+
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
         super( TmstKeyDef, self ).__init__( _json_key, _log_key, KeyType.KTimeStamp, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         try:
-            datetime_value: dt.datetime = dt.datetime.fromordinal(int(jvalue))
+            jvalue_int = int(jvalue)
+            datetime_value: dt.datetime = self.very_beginning + dt.timedelta( microseconds=jvalue_int )
             return self.key_values.add_value( datetime_value, line_num )
         except ValueError as e:
             print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
@@ -122,7 +126,7 @@ class KeyPropRepository(ABC):
         pass
 
     def __init_subclass__( cls ):
-        super().__init_subclass__( cls )
+        super().__init_subclass__()
 
 ##################################### KeyDefProps #########################################
 """
@@ -132,9 +136,7 @@ class KeyPropRepository(ABC):
 class KeyPropBase[ KT: KeyValTypes ]( KeyDefBase[KT], ABC ):
 
     def __init__( self, key_repository: KeyPropRepository, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ):
-        self.key_repository: KR = key_repository
-        self.key_repository_type: type = type(self.key_repository)
-        self.key_repository_cls = key_repository.__class__
+        self.key_repository: KeyPropRepository = key_repository
         super( KeyPropBase, self ).__init__( _json_key, _log_key, _key_type, groups )
 
 class KeyPropClassSurface( Protocol ):

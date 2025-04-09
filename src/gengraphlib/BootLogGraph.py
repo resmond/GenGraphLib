@@ -1,5 +1,6 @@
 from typing import Self, Any
 
+
 import json
 import os
 
@@ -190,12 +191,12 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
         super().keyprops_init()
 
     def final_init( self ):
+        pass
 
-        priority_keydef: KeyPropBase[str] = self.get_typed_keyprop("priority")
-
-        if priority_keydef is not None:
-            value_trigger = PriorityValueTrigger()
-            priority_keydef.add_trigger( value_trigger )
+        # priority_keydef: KeyPropBase[str] = self.get_typed_keyprop("priority")
+        # if priority_keydef is not None:
+        #     value_trigger = PriorityValueTrigger()
+        #     priority_keydef.add_trigger( value_trigger )
 
     def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
         return val_result
@@ -230,46 +231,3 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
         await self.dir_manager.exec( specific_ndx, full_reparse )
         return True
 
-"""
-        self.new_keygroup_with_keys("ids", [
-            "sysdUsrSlice",
-            "usrUnit",
-            "sysdSess",
-            "usrID",
-            "sesID",
-            "seatID",
-            "cfgLine",
-            "cfgFile",
-            "dev",
-            "sysdCgrp",
-            "gID",
-            "pID",
-            "rtScope",
-            "krnDev",
-            "rtTime",
-            "sysUnit",
-            "usrUnit",
-            "udSName",
-            "udDvNd",
-            "krSubSys",
-            "snID",
-            "tID",
-            "slID",
-            "usrInvID",
-            "nmDev",
-            "glbDom",
-            "jbID",
-            "invID",
-            "msgID",
-            "slPID",
-            "sysdUsrUnit",
-            "ssysdUwnUID",
-            "strmID",
-            "exe",
-            "sysdSLc",
-            "sysdInvID",
-            "slnxCtx",
-            "uID"
-        ])
-
-"""
