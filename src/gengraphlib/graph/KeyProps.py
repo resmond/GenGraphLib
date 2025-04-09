@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Protocol, Self
 from abc import ABC
 
-from .. import KeyValTypes
+from src.gengraphlib import KeyValTypes
 from .KeyDefs import KeyDefBase, KeyType
 from .KeyValues import AddValueResult
 

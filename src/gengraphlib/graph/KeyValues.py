@@ -3,7 +3,7 @@ from typing import Self, Union
 
 from sortedcontainers import SortedDict
 
-from .. import KeyValTypes
+from src.gengraphlib import KeyValTypes
 
 class LineRefList( list[ int ] ):
     pass

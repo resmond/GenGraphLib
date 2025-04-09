@@ -1,10 +1,9 @@
-from collections.abc import Iterable
 from typing import Self, Any
+from collections.abc import Iterable
+from abc import abstractmethod
 
 import json
 import os
-
-from abc import abstractmethod
 
 from .KeyDefs import (
     KeyDefBase,
@@ -15,8 +14,7 @@ from .KeyDefs import (
     TmstKeyDef
 )
 
-from .KeyProps import KeyPropRepository,  KeyPropBase
-
+from .KeyProps import KeyPropRepository, KeyPropBase
 from .KeyGroups import KeyGroups, keygroup_rec
 from .KeyProps import StrKeyProp
 from .KeyValues import AddValueResult, KeyValueTriggerBase

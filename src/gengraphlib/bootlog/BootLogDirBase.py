@@ -7,7 +7,7 @@ import asyncio.subprocess as asub
 
 from collections.abc import AsyncGenerator
 
-from ..fileparse.CmdStreamBase import  CmdStreamBase
+from src.gengraphlib import  CmdStreamBase
 
 class BootLogDirBase:
 

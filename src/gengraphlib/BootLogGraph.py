@@ -1,25 +1,26 @@
 from typing import Self, Any
 
-
 import json
 import os
 
 from progress.bar import Bar
 
-from .graph.KeyDefs import KeyDefBase
-from .graph.KeyProps import KeyPropClassSurface, StrKeyProp
-
-from .graph.KeyDefs import StrKeyDef
-from .graph.KeyDefs import IntKeyDef
-from .graph.KeyDefs import BoolKeyDef
-from .graph.KeyDefs import TmstKeyDef
-from . import process_fields_fn
-
-from .bootlog.BootLogDirBase import BootLogDirBase
-from .bootlog.BootLogManagerBase import BootLogManagerBase
-from .graph.KeyRepository import KeyDefIndex, KeyRepository
-from .graph.KeyValues import KeyValueTriggerBase, AddValueResult
-
+from src.gengraphlib import (
+    process_fields_fn,
+    KeyDefBase,
+    KeyPropClassSurface,
+    StrKeyProp,
+    StrKeyDef,
+    IntKeyDef, 
+    BoolKeyDef,
+    TmstKeyDef,
+    KeyDefIndex,
+    KeyRepository,
+    KeyValueTriggerBase,
+    AddValueResult,
+    BootLogDirBase,
+    BootLogManagerBase
+)
 
 class GraphLogDir( BootLogDirBase ):
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:

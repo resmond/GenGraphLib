@@ -5,8 +5,7 @@ from typing import Self
 import datetime as dt
 import os as os
 
-from .. import process_fields_fn, KeyValTypes
-
+from src.gengraphlib import process_fields_fn, KeyValTypes
 from .BootLogDirBase import BootLogDirBase
 
 #class GraphCmd( StrEnum ):

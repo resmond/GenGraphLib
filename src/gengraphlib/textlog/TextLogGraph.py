@@ -2,10 +2,9 @@ import json
 
 from typing import Self, TextIO
 
-from ..fileparse.RgxCore import RgxLine, TRgxField
-from ..fileparse.ParseTriggers import ParseTriggers, LineParseResult
-from TextBootLogLines import TextBootLogLine, TextBootLogLines
-from TextLogModules import TextLogModuleTypes
+from src.gengraphlib import RgxLine, TRgxField, ParseTriggers, LineParseResult
+from .TextBootLogLines import TextBootLogLine, TextBootLogLines
+from .TextLogModules import TextLogModuleTypes
 
 #LINE_CALLBACK = Callable[ str, bool ]
 
