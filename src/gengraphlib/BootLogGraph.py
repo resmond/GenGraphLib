@@ -6,12 +6,9 @@ import os
 
 from progress.bar import Bar
 
-from .graph.KeyDefs import (
-    KeyDefBase,
-    StrKeyProp,
-    KeyPropClassSurface,
-    KeyPropBase,
-)
+from .graph.KeyDefs import KeyDefBase
+from .graph.KeyProps import KeyPropClassSurface, StrKeyProp
+
 from .graph.KeyDefs import StrKeyDef
 from .graph.KeyDefs import IntKeyDef
 from .graph.KeyDefs import BoolKeyDef

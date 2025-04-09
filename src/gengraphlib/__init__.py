@@ -5,6 +5,8 @@ from .fileparse.ParseTriggers import TParseTestFn, MatchTrigger, ParseTriggers, 
 from .fileparse.RgxCore import TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine
 from .graph.GraphNodeLib import GraphNodeBase, TGraphNode, NodeDict
 from .graph.GraphLineBase import GraphLineBase
+from .graph.KeyDefs import KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
+from .graph.KeyProps import KeyPropRepository, KeyPropBase, KeyPropClassSurface, StrKeyProp
 from .graph.KeyGroups import KeyGroup, KeyGroups
 from .graph.KeyValues import LineRefList, KeyValueBase
 from .graph.KeyRepository import DefaultDictOfLists, KeyRepository
@@ -17,8 +19,10 @@ __all__ = [
     , "TParseTestFn", "MatchTrigger", "ParseTriggers", "ResultState"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "GraphLineBase"
-    , "LineRefList", "KeyValueBase"
+    , "KeyType", "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
+    , "KeyPropRepository", "KeyPropBase", "KeyPropClassSurface", "StrKeyProp"
     , "KeyGroup", "KeyGroups"
+    , "LineRefList", "KeyValueBase"
     , "GraphNodeBase", "TGraphNode", "NodeDict"
     , "DefaultDictOfLists", "KeyRepository"
     , "TextBootLogLine", "TextBootLogLines"

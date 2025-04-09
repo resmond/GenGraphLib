@@ -1,5 +1,5 @@
 import datetime as dt
-import dateutil as dutil
+#import dateutil as dutil
 
 
 
@@ -13,7 +13,6 @@ if __name__ == "__main__":
 
     print( f"now: {test_datetime}" )
     print( f"very_beginning: {very_beginning}" )
-    print( f"test2{type(test2)}: {test2}" )
     print( f"test3{type(test3)}: {test3}" )
 
 

@@ -4,7 +4,7 @@ from typing import Self, Any
 import json
 import os
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from .KeyDefs import (
     KeyDefBase,
@@ -12,11 +12,13 @@ from .KeyDefs import (
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
-    TmstKeyDef,
-    KeyPropRepository,
-    KeyPropBase,
+    TmstKeyDef
 )
+
+from .KeyProps import KeyPropRepository,  KeyPropBase
+
 from .KeyGroups import KeyGroups, keygroup_rec
+from .KeyProps import StrKeyProp
 from .KeyValues import AddValueResult, KeyValueTriggerBase
 
 """
@@ -108,17 +110,14 @@ class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
     def get_typed_keyprop[T: KeyValTypes]( self, key: str ) -> KeyPropBase[T] | None:
         if self.keyprops_list.__contains__( key ):
             key_def: KeyDefBase = self[key]
-            match type(key_def):
-                case StrKeyDef():
-                    return key_def
-                case IntKeyDef():
-                    return key_def
-                case BoolKeyDef():
-                    return key_def
-                case TmstKeyDef():
-                    return key_def
-                case _:
-                    return None
+
+            if isinstance(key_def, KeyPropBase):
+                key_prop: KeyPropBase = key_def
+                match type(key_prop):
+                    case StrKeyProp():
+                        return key_def
+                    case _:
+                        return None
 
         return None
 
