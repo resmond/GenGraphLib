@@ -30,6 +30,7 @@ TParseTestFn = Callable[ [str, str], LineParseResult ]
 class MatchTrigger:
 
     def __init__(self: Self, tag: str, match_phrase: str, parse_fn: TParseTestFn) -> None:
+        super().__init__()
         self.tag: str = tag
         self.match_phrase: str = match_phrase
         self.parse_fn: TParseTestFn = parse_fn

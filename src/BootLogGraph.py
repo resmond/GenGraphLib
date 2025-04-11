@@ -5,7 +5,7 @@ import os
 
 from progress.bar import Bar
 
-from src.gengraphlib import (
+from gengraphlib import (
     process_fields_fn,
     KeyDefBase,
     KeyPropClassSurface,
@@ -29,8 +29,8 @@ class GraphLogDir( BootLogDirBase ):
 class GraphLogDirManager( BootLogManagerBase ):
 
     def __init__( self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
-        self._fields_fn = process_fields_fn
         super().__init__( root_dir, fields_fn )
+        self._fields_fn = process_fields_fn
 
 class PriorityValueTrigger( KeyValueTriggerBase[str] ):
 
@@ -40,14 +40,17 @@ class PriorityValueTrigger( KeyValueTriggerBase[str] ):
         else:
             return False
 
+    def gather( self, values: dict[str, str] ) -> dict[str, str]:
+        pass
+
 class BootLogGraph( KeyRepository, KeyPropClassSurface ):
     keydefs: list[KeyDefBase] = [
     ]
 
     def __init__( self: Self, _log_root: str ) -> None:
+        super().__init__( _log_root )
         self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
         self._log_keys: KeyDefIndex = KeyDefIndex()
-        super().__init__( _log_root )
 
         self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
 

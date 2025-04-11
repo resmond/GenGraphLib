@@ -8,6 +8,7 @@ TRX_GROUPPATTERN = tuple[str, str, str] | tuple[str, str] | str
 class TRgxField:
 
     def __init__(self: Self, specifier: str, pre: str = "", tail: str = "") -> None:
+        super().__init__()
         self.specifier: str = specifier
         self.pre: str = pre
         self.tail: str = tail
@@ -33,6 +34,7 @@ class RgxField:
         pre: str = "",
         tail: str = "",
     ) -> None:
+        super().__init__()
         self.name = name
         if isinstance( specifier_or_group, TRgxField ):
             self.specifier = specifier_or_group.specifier
@@ -60,6 +62,7 @@ class RgxField:
 class RgxLine:
 
     def __init__(self: Self, field_defs: dict[str, TRgxField ] | None= None) -> None:
+        super().__init__()
         self.pattern: Pattern | None = None
         self.fields: dict[str, RgxField] = {}
 

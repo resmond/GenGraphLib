@@ -38,12 +38,11 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
 
 class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
     def __init__( self: Self, root_dir: str ) -> None:
+        super().__init__()
         self._root_dir = root_dir
         self.key_groups: KeyGroups = KeyGroups(self)
         self.none_values: DefaultDictOfLists = DefaultDictOfLists()
         self.missing_keys: list[str] = []
-        super().__init__()
-        #super(KeyPropRepository, self).__init__()
 
     def __init_subclass__( cls ):
         super().__init_subclass__()
@@ -217,36 +216,3 @@ class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
         except Exception as exc:
             print(f'KeyGraphBase.dump_key_groups: Exception: {exc}')
 
-"""
-{"_SYSTEMD_INVOCATION_ID":"624f1d96f4894cc5929f65e6fa587096"
-_CMDLINE":"/usr/lib/systemd/systemd-modules-load"
-_CAP_EFFECTIVE":"1ffffffffff"
-PRIORITY":"6"
-
-__REALTIME_TIMESTAMP":"1744028103096482"
-_SOURCE_REALTIME_TIMESTAMP":"1744028103064722"
-
-_TRANSPORT":"journal"
-_COMM":"systemd-modules"
-_UID":"0"
-_MACHINE_ID":"4395b976dd294dd58d7b1ecc1f066791"
-_BOOT_ID":"4ffdd8ebe9c24b5c8e62570b49a5e223"
-__SEQNUM":"7382494"
-CODE_FUNC":"module_load_and_warn"
-_SYSTEMD_SLICE":"system.slice"
-SYSLOG_FACILITY":"3"
-_SELINUX_CONTEXT":"unconfined\n"
-SYSLOG_IDENTIFIER":"systemd-modules-load"
-_RUNTIME_SCOPE":"system"
-_EXE":"/usr/lib/systemd/systemd-modules-load"
-MESSAGE":"Inserted module 'lp'","CODE_LINE":"137"
-CODE_FILE":"src/shared/module-util.c"
-TID":"553"
-__MONOTONIC_TIMESTAMP":"3874654"
-__SEQNUM_ID":"7d0971a098e24097a784ffa07ef8d85f"
-_SYSTEMD_CGROUP":"/system.slice/systemd-modules-load.service"
-_SYSTEMD_UNIT":"systemd-modules-load.service"
-_GID":"0"
-_HOSTNAME":"gernby-NUC13ANHi7","_PID":"553"
-__CURSOR":"s=7d0971a098e24097a784ffa07ef8d85f;i=70a5de;b=4ffdd8ebe9c24b5c8e62570b49a5e223;m=3b1f5e;t=6322f2f9038a2;x=6049ddda03b4ddb4"}
-"""

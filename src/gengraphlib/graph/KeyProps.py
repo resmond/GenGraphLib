@@ -28,8 +28,8 @@ class KeyPropRepository(ABC):
 class KeyPropBase[ KT: KeyValTypes ]( KeyDefBase[KT], ABC ):
 
     def __init__( self, key_repository: KeyPropRepository, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ):
-        self.key_repository: KeyPropRepository = key_repository
         super().__init__( _json_key, _log_key, _key_type, groups )
+        self.key_repository: KeyPropRepository = key_repository
 
 class KeyPropClassSurface( Protocol ):
 
@@ -42,8 +42,8 @@ class KeyPropClassSurface( Protocol ):
 """
 class StrKeyProp( KeyPropBase[str] ):
     def __init__( self, class_surface: KeyPropClassSurface, key_repository: KeyPropRepository, _json_key: str, _log_key: str, groups: list[str ] | str | None = None ):
-        self.class_surface = class_surface
         super().__init__( key_repository=key_repository, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
+        self.class_surface = class_surface
         if self == self.key_repository:
             print("self is same")
 

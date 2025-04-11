@@ -17,6 +17,7 @@ class KeyType( IntEnum ):
 
 class KeyDefBase[T: KeyValTypes]( ABC ):
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
+        super().__init__()
         self.json_key: str = _json_key
         self.log_key: str = _log_key
         self.key_type: KeyType = _key_type
@@ -56,8 +57,6 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
     @abstractmethod
     def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
         pass
-
-
 
 """--------------------------------------------------------
     StrKeyDef

@@ -3,10 +3,11 @@
 from .common import KeyValTypes, process_fields_fn
 
 from .fileparse import (
-      ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
-    , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                          # RgxCore.py
-    , CmdStreamBase                                                                           # CmdStreamBase.py
+    ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
+    , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                                                           # CmdStreamText.py
 )
+
+from .streamio import CmdStreamBase, CmdStreamBinary, CmdStreamText
 
 from .graph import (
       GraphNodeBase, TGraphNode, NodeDict                                              # GraphNodeLib.py
@@ -25,12 +26,13 @@ from .textlog import (
 )
 
 from .bootlog import BootLogDirBase, BootLogManagerBase
-from .BootLogGraph import BootLogGraph
+#from src.BootLogGraph import BootLogGraph
 
 __all__ = [
-      "KeyValTypes", "process_fields_fn"
+      "CmdStreamBase", "CmdStreamBinary", "CmdStreamText"
+    , "KeyValTypes", "process_fields_fn"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
-    , "CmdStreamBase"
+    , "CmdStreamText"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "GraphNodeBase", "TGraphNode", "NodeDict"
     , "GraphLineBase"
@@ -46,6 +48,4 @@ __all__ = [
     , "TextLogParseContext", "TextLogGraph"
 
     , "BootLogDirBase", "BootLogManagerBase"
-    , "BootLogGraph"
-
 ]

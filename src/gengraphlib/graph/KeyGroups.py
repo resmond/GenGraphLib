@@ -7,10 +7,10 @@ keygroup_rec = tuple[str, str, str | None, list[str] | None]
 
 class KeyGroup( list[KeyDefBase] ):
     def __init__( self: Self, group_id: str, group_name: str = None, group_desc: str = "" ) -> None:
+        super().__init__()
         self.group_id: str = group_id
         self.group_name: str = group_name or group_id
         self.group_desc: str = group_desc
-        super().__init__()
 
     def add_keydef(self: Self, other: KeyDefBase) -> None:
         self.append(other)

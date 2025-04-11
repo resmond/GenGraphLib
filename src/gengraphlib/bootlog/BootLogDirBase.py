@@ -7,11 +7,13 @@ import asyncio.subprocess as asub
 
 from collections.abc import AsyncGenerator
 
-from src.gengraphlib import  CmdStreamBase
+from src.gengraphlib import  CmdStreamText
 
 class BootLogDirBase:
 
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
+        super().__init__()
+
         self.root_dir = root_dir
 
         self.idx: int = 0
@@ -26,7 +28,7 @@ class BootLogDirBase:
         self.started: bool = False
         self.error: int = 0
         self.exc: Exception | None = None
-        self.CmdStream: CmdStreamBase | None = None
+        self.CmdStream: CmdStreamText | None = None
 
         try:
             val_list: list[str] = log_rec.split()
@@ -41,15 +43,13 @@ class BootLogDirBase:
             self.dir_name = self.first_dt.isoformat()
             self.dir_path = os.path.join(self.root_dir, "boots", self.dir_name)
 
-            self.CmdStream = CmdStreamBase(cmd=self.cmd, exec_dir=self.dir_path)
+            self.CmdStream = CmdStreamText( cmd=self.cmd )
 
         except Exception as _ect:
             print(f"[BootLogDirBase.__init__] Exception: {_ect}")
             self.error = -1
             self.exc = _ect
             return
-
-        super().__init__()
 
     def __repr__(self: Self) -> str:
         return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'
@@ -67,6 +67,6 @@ class BootLogDirBase:
 
     async def stream( self: Self ) -> AsyncGenerator[ str, None ]:
         if self._dir_exists():
-            async for line in self.CmdStream.run_command(self.cmd, self.dir_path):
+            async for line in self.CmdStream.stream_textlines(self.cmd):
                 yield line
 

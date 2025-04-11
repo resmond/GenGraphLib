@@ -64,18 +64,13 @@ class AsyncTraverse[ TNode: NodeId ]( AsyncIterator[ TNode ], ABC ):
 class GraphNodeBase(NodeId):
 
     def __init__(self: Self, id: str = None ) -> None:
-       self.id = id
-
-
+        super().__init__()
+        self.id = id
 
 class TestNode(GraphNodeBase):
 
     def __init__(self: Self, id: str = None ) -> None:
         super().__init__(id)
-
-
-
-
 
 if __name__ == "__main__":
     node = GraphNodeBase()

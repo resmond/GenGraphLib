@@ -1,4 +1,4 @@
-from .CharCore import CSeg, CCharDef, int_to_cchar, cchar_to_int, cchar_to_str
+from .CChar import CSeg, CCharDef, int_to_cchar, cchar_to_int, cchar_to_str
 from .KeyMaps import KeyType, KeyRec
 
 

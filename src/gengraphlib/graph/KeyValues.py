@@ -11,7 +11,7 @@ class LineRefList( list[ int ] ):
 class KeyValueTriggerBase[ T: KeyValTypes ]( ABC ):
 
     def __init__( self ):
-        super( KeyValueTriggerBase, self ).__init__()
+        super().__init__()
 
     @abstractmethod
     def eval( self, value: T ) -> Self:
@@ -22,7 +22,7 @@ AddValueResult: type = Union[ KeyValueTriggerBase | None ]
 class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
 
     def __init__( self: Self, parent_key: str ) -> None:
-        super(KeyValueBase, self).__init__()
+        super().__init__()
         self.triggers: list[KeyValueTriggerBase[T ] ] | None = None
         self.parent_key = parent_key
         self.unique: bool = True

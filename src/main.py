@@ -1,6 +1,6 @@
 import asyncio as aio
 
-from src.gengraphlib.BootLogGraph import BootLogGraph
+from src.BootLogGraph import BootLogGraph
 
 
 async def main() -> bool:
