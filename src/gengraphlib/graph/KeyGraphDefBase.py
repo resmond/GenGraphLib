@@ -36,7 +36,7 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
         super().__init__()
 
-class KeyRepository( dict[str, KeyDefBase], FieldProcessor ):
+class KeyGraphDefBase( dict[str, KeyDefBase ], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
         super().__init__()
         self._root_dir = root_dir
@@ -128,19 +128,19 @@ class KeyRepository( dict[str, KeyDefBase], FieldProcessor ):
             try:
                 val_result: AddValueResult | None = None
                 match type(value).__name__:
-                    case "list":
-                        str_val = str(value)
-                        val_result = self[json_key].add_jvalue( str_val, line_num )
+                    case "str":
+                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "datetime":
                         val_result = self[json_key].add_jvalue( value, line_num )
                     case "int":
                         val_result = self[json_key].add_jvalue( value, line_num )
-                    case "float":
-                        val_result = self[json_key].add_jvalue( value, line_num )
-                    case "str":
-                        val_result = self[json_key].add_jvalue( value, line_num )
                     case "bool":
                         val_result = self[json_key].add_jvalue( value, line_num )
+                    case "float":
+                        val_result = self[json_key].add_jvalue( value, line_num )
+                    case "list":
+                        str_val = str(value)
+                        val_result = self[json_key].add_jvalue( str_val, line_num )
                     case _:
                         print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
 

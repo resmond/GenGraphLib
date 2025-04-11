@@ -10,11 +10,11 @@ from gengraphlib import (
     KeyPropClassSurface,
     StrKeyProp,
     StrKeyDef,
-    IntKeyDef, 
+    IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
     KeyDefIndex,
-    KeyRepository,
+    KeyGraphDefBase,
     KeyValueTriggerBase,
     AddValueResult,
     BootLogDirBase,
@@ -42,7 +42,7 @@ class PriorityValueTrigger( KeyValueTriggerBase[str] ):
     def gather( self, values: dict[str, str] ) -> dict[str, str] | bool:
         pass
 
-class BootLogGraph( KeyRepository, KeyPropClassSurface ):
+class BootLogGraph( KeyGraphDefBase, KeyPropClassSurface ):
     instance: Self | None = None
 
     def __init__( self: Self, _log_root: str ) -> None:
@@ -188,17 +188,19 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
 
         super().init_repository()
 
-    def keyprops_init( self ):
-        super().keyprops_init()
+    def by_logkey(self: Self, _log_key_str: str) -> KeyDefBase:
+        return self._log_keys[_log_key_str]
 
     def final_init( self ):
         super().final_init()
 
+    def keyprops_init( self ):
+        super().keyprops_init()
+
+
     def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
         return val_result
 
-    def by_logkey(self: Self, _log_key_str: str) -> KeyDefBase:
-        return self._log_keys[_log_key_str]
 
     #def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
         #return BootLogGraph.instance.process_fields(fields, line_num, log_line )

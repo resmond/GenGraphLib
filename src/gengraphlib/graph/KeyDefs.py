@@ -6,14 +6,14 @@ from abc import abstractmethod, ABC
 from enum import IntEnum
 
 from src.gengraphlib import KeyValTypes
-from .KeyValues import KeyValueBase, AddValueResult, KeyValueTriggerBase
+from .KeyValues import KeyValueSet, AddValueResult, KeyValueTriggerBase
 
 
 class KeyType( IntEnum ):
     KStr         = 1
     KInt         = 2
     KBool        = 3
-    KTimeStamp  = 4
+    KTimeStamp   = 4
 
 class KeyDefBase[T: KeyValTypes]( ABC ):
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
@@ -24,7 +24,7 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
         self.groups: list[str] | None = None
         self._skip: bool = False
         self._event_trigger: bool = False
-        self.key_values: KeyValueBase[T] = KeyValueBase[T]( _json_key )
+        self.key_values: KeyValueSet[T ] = KeyValueSet[T ]( _json_key )
 
         if groups is str:
             if groups == "skip":
@@ -58,8 +58,7 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
     def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
         pass
 
-"""
-    StrKeyDef
+"""   StrKeyDef
 
 """
 class StrKeyDef( KeyDefBase[str] ):
@@ -69,10 +68,7 @@ class StrKeyDef( KeyDefBase[str] ):
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( jvalue, line_num )
 
-
-"""
-
-    IntKeyDef
+"""   IntKeyDef
 
 """
 class IntKeyDef( KeyDefBase[int] ):

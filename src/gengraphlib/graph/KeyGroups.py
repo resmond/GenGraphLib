@@ -15,6 +15,8 @@ class KeyGroup( list[KeyDefBase] ):
     def add_keydef(self: Self, other: KeyDefBase) -> None:
         self.append(other)
 
+    def create_slice( self ):
+
 class KeyGroups( dict[str, KeyGroup ] ):
     def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:
         super().__init__()

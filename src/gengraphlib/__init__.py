@@ -10,13 +10,13 @@ from .fileparse import (
 from .streamio import CmdStreamBase, CmdStreamBinary, CmdStreamText
 
 from .graph import (
-      GraphNodeBase, TGraphNode, NodeDict                                              # GraphNodeLib.py
+    GraphNodeBase, TGraphNode, NodeDict                                              # GraphNodeLib.py
     , GraphLineBase                                                                    # GraphLineBase.py
     , KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef                # KeyDefs.py
     , KeyPropBase, KeyPropClassSurface, StrKeyProp, FieldProcessor                     # KeyProps.py
     , keygroup_rec, KeyGroup, KeyGroups                                                # KeyGroups.py
-    , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValueBase                   # KeyValues.py
-    , DefaultDictOfLists, KeyDefIndex, KeyRepository                                   # KeyRepository.py
+    , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValueSet                   # KeyValues.py
+    , DefaultDictOfLists, KeyDefIndex, KeyGraphDefBase                                   # KeyRepository.py
 )
 
 from .textlog import (
@@ -40,8 +40,8 @@ __all__ = [
     , "KeyPropBase", "KeyPropClassSurface", "StrKeyProp", "FieldProcessor"
     , "keygroup_rec", "KeyGroup", "KeyGroups"
 
-    , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValueBase"
-    , "DefaultDictOfLists", "KeyDefIndex", "KeyRepository"
+    , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValueSet"
+    , "DefaultDictOfLists", "KeyDefIndex", "KeyGraphDefBase"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

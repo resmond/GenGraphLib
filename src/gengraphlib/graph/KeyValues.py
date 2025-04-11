@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Self, Union
 
+import datetime as dt
+
 from sortedcontainers import SortedDict
 
 from src.gengraphlib import KeyValTypes
@@ -19,7 +21,7 @@ class KeyValueTriggerBase[ T: KeyValTypes ]( ABC ):
 
 AddValueResult: type = Union[ KeyValueTriggerBase | None ]
 
-class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
+class KeyValueSet[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
 
     def __init__( self: Self, parent_key: str ) -> None:
         super().__init__()
@@ -27,7 +29,7 @@ class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
         self.parent_key = parent_key
         self.unique: bool = True
 
-    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T ] ) ->  None:
+    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) ->  None:
         if self.triggers is None:
             self.triggers = list[ KeyValueTriggerBase[T] ]()
 
@@ -50,4 +52,30 @@ class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
 
     def __repr__( self: Self ) -> str:
         return f'{{unique:{self.unique}, cnt:{len(self)}'
+
+    def get_valuestr( self: Self ) -> str:
+        pass
+
+class StrKeyValueSet( KeyValueSet[str ] ):
+    def __init__( self: Self, parent_key: str ) -> None:
+        super().__init__( parent_key )
+
+class IntKeyValueSet( KeyValueSet[int ] ):
+    def __init__( self: Self, parent_key: str ) -> None:
+        super().__init__( parent_key )
+
+class BoolKeyValueSet( KeyValueSet[bool ] ):
+    def __init__( self: Self, parent_key: str ) -> None:
+        super().__init__( parent_key )
+
+class FloatKeyValueSet( KeyValueSet[float ] ):
+    def __init__( self: Self, parent_key: str ) -> None:
+        super().__init__( parent_key )
+
+class TmstKeyValueSet( KeyValueSet[dt.datetime ] ):
+    def __init__( self: Self, parent_key: str ) -> None:
+        super().__init__( parent_key )
+
+
+
 
