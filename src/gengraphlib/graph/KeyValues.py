@@ -23,13 +23,13 @@ class KeyValueBase[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
 
     def __init__( self: Self, parent_key: str ) -> None:
         super().__init__()
-        self.triggers: list[KeyValueTriggerBase[T ] ] | None = None
+        self.triggers: list[ KeyValueTriggerBase[T] ] | None = None
         self.parent_key = parent_key
         self.unique: bool = True
 
     def add_trigger( self: Self, trigger: KeyValueTriggerBase[T ] ) ->  None:
         if self.triggers is None:
-            self.triggers = list[KeyValueTriggerBase[T ] ]
+            self.triggers = list[ KeyValueTriggerBase[T] ]()
 
         self.triggers.append( trigger )
 

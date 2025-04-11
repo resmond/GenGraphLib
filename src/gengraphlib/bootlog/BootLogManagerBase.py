@@ -5,7 +5,7 @@ from typing import Self
 import datetime as dt
 import os as os
 
-from src.gengraphlib import process_fields_fn, KeyValTypes
+from src.gengraphlib import KeyValTypes, FieldProcessor
 from .BootLogDirBase import BootLogDirBase
 
 #class GraphCmd( StrEnum ):
@@ -31,7 +31,7 @@ from .BootLogDirBase import BootLogDirBase
 
 class BootLogManagerBase:
 
-    def __init__(self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
+    def __init__(self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
         super().__init__()
         self.root_dir: str = root_dir
         self.full_reparse: bool = True
@@ -41,7 +41,7 @@ class BootLogManagerBase:
         self._bootdir_list: list[BootLogDirBase] = list[BootLogDirBase]()
         self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
-        self._fields_fn = fields_fn
+        self._field_processor: FieldProcessor = field_processor
 
     """
         exec - starts LogDirManager execution
@@ -158,7 +158,7 @@ class BootLogManagerBase:
                 else:
 
                     try:
-                        self._fields_fn(fields, cnt, line)
+                        self._field_processor.process_fields(fields, cnt, line)
 
                     except Exception as fnexc:
                         print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
@@ -169,3 +169,4 @@ class BootLogManagerBase:
             print(f"  fields:  {fields}")
 
         return True
+

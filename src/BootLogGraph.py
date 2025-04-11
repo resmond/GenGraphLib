@@ -6,7 +6,6 @@ import os
 from progress.bar import Bar
 
 from gengraphlib import (
-    process_fields_fn,
     KeyDefBase,
     KeyPropClassSurface,
     StrKeyProp,
@@ -19,7 +18,8 @@ from gengraphlib import (
     KeyValueTriggerBase,
     AddValueResult,
     BootLogDirBase,
-    BootLogManagerBase
+    BootLogManagerBase,
+    FieldProcessor
 )
 
 class GraphLogDir( BootLogDirBase ):
@@ -28,9 +28,8 @@ class GraphLogDir( BootLogDirBase ):
 
 class GraphLogDirManager( BootLogManagerBase ):
 
-    def __init__( self: Self, root_dir: str, fields_fn: process_fields_fn ) -> None:
-        super().__init__( root_dir, fields_fn )
-        self._fields_fn = process_fields_fn
+    def __init__( self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
+        super().__init__( root_dir, field_processor )
 
 class PriorityValueTrigger( KeyValueTriggerBase[str] ):
 
@@ -40,30 +39,31 @@ class PriorityValueTrigger( KeyValueTriggerBase[str] ):
         else:
             return False
 
-    def gather( self, values: dict[str, str] ) -> dict[str, str]:
+    def gather( self, values: dict[str, str] ) -> dict[str, str] | bool:
         pass
 
 class BootLogGraph( KeyRepository, KeyPropClassSurface ):
-    keydefs: list[KeyDefBase] = [
-    ]
+    instance: Self | None = None
 
     def __init__( self: Self, _log_root: str ) -> None:
         super().__init__( _log_root )
-        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self.process_fields )
+        BootLogGraph.instance = self
+        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self )
         self._log_keys: KeyDefIndex = KeyDefIndex()
 
         self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
-
+        self.priority.add_trigger( PriorityValueTrigger() )
 
         self.add_keydefs(
             [
+                #StrKeyDef("priority", "PRIORITY", ["evt", "priority"]),
+                self.priority,
                 StrKeyDef("cmdLn", "_CMDLINE", "evt"),
                 StrKeyDef("comm", "_COMM", "evt"),
                 StrKeyDef("exe", "_EXE", "evt"),
                 StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM", "evt"),
                 StrKeyDef("msg", "MESSAGE", "evt"),
                 StrKeyDef("pID", "_PID", "evt"),
-#                StrKeyDef("priority", "PRIORITY", ["evt", "priority"]),
                 StrKeyDef("slID", "SYSLOG_IDENTIFIER", "evt"),
                 StrKeyDef("slnxCtx", "_SELINUX_CONTEXT", "evt"),
                 StrKeyDef("slPID", "SYSLOG_PID", "evt"),
@@ -192,18 +192,17 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
         super().keyprops_init()
 
     def final_init( self ):
-        pass
-
-        # priority_keydef: KeyPropBase[str] = self.get_typed_keyprop("priority")
-        # if priority_keydef is not None:
-        #     value_trigger = PriorityValueTrigger()
-        #     priority_keydef.add_trigger( value_trigger )
+        super().final_init()
 
     def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
         return val_result
 
     def by_logkey(self: Self, _log_key_str: str) -> KeyDefBase:
         return self._log_keys[_log_key_str]
+
+    #def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
+        #return BootLogGraph.instance.process_fields(fields, line_num, log_line )
+        #return super().process_fields(fields, line_num, log_line)
 
     def process_field( self: Self, key: str, value: Any, line_num: int, log_line: str = "" ) -> bool:
         key_def: KeyDefBase | None = self._log_keys.get(key, None)
@@ -222,7 +221,7 @@ class BootLogGraph( KeyRepository, KeyPropClassSurface ):
                 for line in file:
                     read_len += len(line)
                     field_dict = json.loads(line)
-                    self.process_fields(field_dict, line_num)
+                    self.process_fields(field_dict, line_num, line)
                     bar.next(read_len )
             bar.finish()
         except FileNotFoundError as ext:

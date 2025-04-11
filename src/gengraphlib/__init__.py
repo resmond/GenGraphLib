@@ -13,7 +13,7 @@ from .graph import (
       GraphNodeBase, TGraphNode, NodeDict                                              # GraphNodeLib.py
     , GraphLineBase                                                                    # GraphLineBase.py
     , KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef                # KeyDefs.py
-    , KeyPropRepository, KeyPropBase, KeyPropClassSurface, StrKeyProp                  # KeyProps.py
+    , KeyPropBase, KeyPropClassSurface, StrKeyProp, FieldProcessor                     # KeyProps.py
     , keygroup_rec, KeyGroup, KeyGroups                                                # KeyGroups.py
     , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValueBase                   # KeyValues.py
     , DefaultDictOfLists, KeyDefIndex, KeyRepository                                   # KeyRepository.py
@@ -37,7 +37,7 @@ __all__ = [
     , "GraphNodeBase", "TGraphNode", "NodeDict"
     , "GraphLineBase"
     , "KeyType", "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
-    , "KeyPropRepository", "KeyPropBase", "KeyPropClassSurface", "StrKeyProp"
+    , "KeyPropBase", "KeyPropClassSurface", "StrKeyProp", "FieldProcessor"
     , "keygroup_rec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValueBase"

@@ -7,7 +7,7 @@ class TextLogModule( GraphNodeBase ):
 
     def __init__(self: Self, id: str) -> None:
         self.module_type_node: GraphNodeBase | None = None
-        self.events: NodeDict[GraphNodeBase ] | None = None
+        self.events: NodeDict[ GraphNodeBase ] | None = None
         super().__init__( id=id )
 
     def add_event( self: Self, event_node: GraphNodeBase ) -> None:

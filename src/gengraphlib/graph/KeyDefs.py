@@ -22,18 +22,18 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
         self.log_key: str = _log_key
         self.key_type: KeyType = _key_type
         self.groups: list[str] | None = None
-        self.skip: bool = False
-        self.event_trigger: bool = False
+        self._skip: bool = False
+        self._event_trigger: bool = False
         self.key_values: KeyValueBase[T] = KeyValueBase[T]( _json_key )
 
         if groups is str:
             if groups == "skip":
-                self.skip = True
+                self._skip = True
             self.groups = [groups]
         if groups is not None:
             self.groups: list[str] = groups
             if "skip" in self.groups:
-                self.skip = True
+                self._skip = True
         else:
             self.groups = None
 
@@ -41,24 +41,24 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
 
     def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
         self.key_values.add_trigger( trigger )
-        self.event_trigger = True
+        self._event_trigger = True
+        self._skip = False
 
     def add_value( self: Self, new_value: T, line_num: int ) -> AddValueResult:
-        addval_result: AddValueResult = self.key_values.add_value(new_value, line_num)
-        if addval_result is None:
-            return addval_result
+        if self._skip:
+            return None
         else:
-            return addval_result
+            return self.key_values.add_value(new_value, line_num)
 
     @property
     def dologing( self ) -> bool:
-        return not self.skip
+        return not self._skip
 
     @abstractmethod
     def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
         pass
 
-"""--------------------------------------------------------
+"""
     StrKeyDef
 
 """
@@ -70,7 +70,7 @@ class StrKeyDef( KeyDefBase[str] ):
         return self.key_values.add_value( jvalue, line_num )
 
 
-"""--------------------------------------------------------
+"""
 
     IntKeyDef
 
@@ -82,7 +82,7 @@ class IntKeyDef( KeyDefBase[int] ):
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( int( jvalue ), line_num )
 
-"""--------------------------------------------------------
+"""
     BoolKeyDef
 
 """

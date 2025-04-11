@@ -1,23 +1,23 @@
-from typing import Self, Any
+from typing import Self, Any, Protocol
 from collections.abc import Iterable
 from abc import abstractmethod
 
 import json
 import os
 
+#from src.gengraphlib import KeyPropBase, KeyDefBase
 from .KeyDefs import (
     KeyDefBase,
-    KeyValTypes,
-    StrKeyDef,
-    IntKeyDef,
-    BoolKeyDef,
-    TmstKeyDef
+    KeyValTypes
 )
 
-from .KeyProps import KeyPropRepository, KeyPropBase
+from .KeyProps import KeyPropBase
 from .KeyGroups import KeyGroups, keygroup_rec
-from .KeyProps import StrKeyProp
 from .KeyValues import AddValueResult, KeyValueTriggerBase
+
+class FieldProcessor(Protocol):
+    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
+        pass
 
 """
     DefaultDictOfLists
@@ -36,7 +36,7 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
         super().__init__()
 
-class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
+class KeyRepository( dict[str, KeyDefBase], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
         super().__init__()
         self._root_dir = root_dir
@@ -82,43 +82,26 @@ class KeyRepository( dict[str, KeyDefBase], KeyPropRepository ):
 
         self.final_init()
 
-    @abstractmethod
     def final_init( self ):
-        self.keyprops_init()
+        #self.keyprops_init()
         pass
 
     def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
-        if self.__contains__( key ):
+        if key in self:
             key_def: KeyDefBase = self[key]
-            match type(key_def):
-                case StrKeyDef():
-                    return key_def
-                case IntKeyDef():
-                    return key_def
-                case BoolKeyDef():
-                    return key_def
-                case TmstKeyDef():
-                    return key_def
-                case _:
-                    return None
-
+            if isinstance(key_def, KeyDefBase):
+                return key_def
         return None
 
-    def get_typed_keyprop[T: KeyValTypes]( self, key: str ) -> KeyPropBase[T] | None:
-        if self.keyprops_list.__contains__( key ):
+    def get_typed_keyprop[T: KeyValTypes]( self, key: str ) -> KeyPropBase[T]  | None:
+        if key in self:
             key_def: KeyDefBase = self[key]
-
             if isinstance(key_def, KeyPropBase):
-                key_prop: KeyPropBase = key_def
-                match type(key_prop):
-                    case StrKeyProp():
-                        return key_def
-                    case _:
-                        return None
+                return key_def
 
         return None
 
-    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str = "" ) -> bool:
+    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
 
         for log_key, value in fields.items():
             self.process_field( log_key, value, line_num, log_line )

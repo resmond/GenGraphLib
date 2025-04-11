@@ -8,7 +8,7 @@ async def main() -> bool:
 
     help(log_graph)
 
-    await log_graph.exec_query( specific_ndx=-5 )
+    await log_graph.exec_query( specific_ndx=0 )
     log_graph.dump_trace_groups()
     log_graph.dump_key_values()
     print("main() complete")

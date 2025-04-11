@@ -26,11 +26,10 @@ class GraphSliceItem:
 class GraphSliceDef(list[GraphSliceItem], ABC):
 
     def __init__(self, names: Iterable[tuple] ):
+        if names is not None:
+            for name in names:
+                self.append(GraphSliceItem(name))
         super().__init__()
         #self.key_group: KeyGroup = key_group
-
-
-
-        super().__init__()
 
 
