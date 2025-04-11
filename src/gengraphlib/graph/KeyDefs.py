@@ -3,17 +3,9 @@ from typing import Self
 
 import datetime as dt
 from abc import abstractmethod, ABC
-from enum import IntEnum
 
-from src.gengraphlib import KeyValTypes
-from .KeyValues import KeyValueSet, AddValueResult, KeyValueTriggerBase
-
-
-class KeyType( IntEnum ):
-    KStr         = 1
-    KInt         = 2
-    KBool        = 3
-    KTimeStamp   = 4
+from src.gengraphlib import KeyValTypes, KeyType
+from .KeyValues import KeyValues, AddValueResult, KeyValueTriggerBase
 
 class KeyDefBase[T: KeyValTypes]( ABC ):
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
@@ -22,20 +14,19 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
         self.log_key: str = _log_key
         self.key_type: KeyType = _key_type
         self.groups: list[str] | None = None
-        self._skip: bool = False
+        self._skip: bool = True
         self._event_trigger: bool = False
-        self.key_values: KeyValueSet[T ] = KeyValueSet[T ]( _json_key )
+        self.key_values: KeyValues[T] = KeyValues[T]( self )
 
-        if groups is str:
-            if groups == "skip":
-                self._skip = True
-            self.groups = [groups]
-        if groups is not None:
-            self.groups: list[str] = groups
-            if "skip" in self.groups:
-                self._skip = True
-        else:
-            self.groups = None
+        match groups:
+            case str() if groups in ["skip", ""]:
+                pass
+            case str():
+                self.groups = [groups]
+                self._skip = False
+            case [] if len(groups) > 0:
+                self.groups = groups
+                self._skip = False
 
         super().__init__()
 
@@ -51,7 +42,7 @@ class KeyDefBase[T: KeyValTypes]( ABC ):
             return self.key_values.add_value(new_value, line_num)
 
     @property
-    def dologing( self ) -> bool:
+    def dologing( self: Self ) -> bool:
         return not self._skip
 
     @abstractmethod
@@ -109,4 +100,14 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
             print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
             return False
 
+"""
+    FloatKeyDef
+
+"""
+class FloatKeyDef( KeyDefBase[float] ):
+    def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ):
+        super().__init__( _json_key, _log_key, KeyType.KFloat, groups )
+
+    def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
+        return self.key_values.add_value( float( jvalue ), line_num )
 

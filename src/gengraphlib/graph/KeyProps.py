@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Protocol, Self
 from abc import ABC
 
-from src.gengraphlib import KeyValTypes, KeyGraphDefBase
+from src.gengraphlib import KeyValTypes, KeyGraphBase
 from .KeyDefs import KeyDefBase, KeyType
 from .KeyValues import AddValueResult
 
@@ -27,9 +27,9 @@ class KeyPropRepository(ABC):
 """
 class KeyPropBase[ KT: KeyValTypes ]( KeyDefBase[KT], ABC ):
 
-    def __init__( self: Self, key_repository: KeyGraphDefBase, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ) -> None:
+    def __init__( self: Self, key_repository: KeyGraphBase, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ) -> None:
         super().__init__( _json_key, _log_key, _key_type, groups )
-        self.key_repository: KeyGraphDefBase = key_repository
+        self.key_repository: KeyGraphBase = key_repository
         self._desc_name: str = ""
 
     def __set_name__(self: Self, owner: type, name) -> None:
@@ -49,7 +49,7 @@ class KeyPropClassSurface( Protocol ):
 
 """
 class StrKeyProp( KeyPropBase[str] ):
-    def __init__( self, class_surface: KeyPropClassSurface, key_repository: KeyGraphDefBase, _json_key: str, _log_key: str, groups: list[str ] | str | None = None ):
+    def __init__( self, class_surface: KeyPropClassSurface, key_repository: KeyGraphBase, _json_key: str, _log_key: str, groups: list[str ] | str | None = None ):
         super().__init__( key_repository=key_repository, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
         self.class_surface = class_surface
         if self == self.key_repository:

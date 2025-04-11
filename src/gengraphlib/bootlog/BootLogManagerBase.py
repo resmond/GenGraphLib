@@ -140,7 +140,7 @@ class BootLogManagerBase:
     async def process_bootlog( self: Self, boot_log_dir: BootLogDirBase ) -> bool:
 
         cnt: int = -1
-        fields: dict[str, KeyValTypes] = {}
+        key_values: dict[str, KeyValTypes] = {}
         line: str = ""
         try:
 
@@ -148,17 +148,17 @@ class BootLogManagerBase:
 
                 try:
                     cnt += 1
-                    fields = json.loads(line)
+                    key_values = json.loads(line)
 
                 except json.decoder.JSONDecodeError as jserr:
                     print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
                     print(f"    line:  {line}")
-                    print(f"  fields:  {fields}")
+                    print(f"  fields:  {key_values}")
 
                 else:
 
                     try:
-                        self._field_processor.process_fields(fields, cnt, line)
+                        self._field_processor.process_keyvalues( key_values, cnt, line )
 
                     except Exception as fnexc:
                         print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
@@ -166,7 +166,7 @@ class BootLogManagerBase:
         except Exception as exc:
             print(f"[LogDirManagerBase.process_bootlog] boot_log_dir.streams() Exception: {exc}")
             print(f"    line:  {line}")
-            print(f"  fields:  {fields}")
+            print(f"  fields:  {key_values}")
 
         return True
 

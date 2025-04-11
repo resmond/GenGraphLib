@@ -5,7 +5,8 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from src.gengraphlib import KeyValTypes
+from src.gengraphlib import KeyValTypes, KeyDefBase
+
 
 class LineRefList( list[ int ] ):
     pass
@@ -21,13 +22,20 @@ class KeyValueTriggerBase[ T: KeyValTypes ]( ABC ):
 
 AddValueResult: type = Union[ KeyValueTriggerBase | None ]
 
-class KeyValueSet[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
+class ValueResults( dict[str, KeyValTypes] ):
 
-    def __init__( self: Self, parent_key: str ) -> None:
+    def __init__( self: Self, _json_key: str, _value: KeyValTypes ):
+        super().__init__()
+        self.json_key: str = _json_key
+        self.value: KeyValTypes = _value
+
+class KeyValues[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
+
+    def __init__( self: Self, _key_def: KeyDefBase[T] ) -> None:
+        self.key_def = _key_def
+        self.unique: bool = True
         super().__init__()
         self.triggers: list[ KeyValueTriggerBase[T] ] | None = None
-        self.parent_key = parent_key
-        self.unique: bool = True
 
     def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) ->  None:
         if self.triggers is None:
@@ -56,25 +64,25 @@ class KeyValueSet[ T: KeyValTypes ]( SortedDict[ T, LineRefList ] ):
     def get_valuestr( self: Self ) -> str:
         pass
 
-class StrKeyValueSet( KeyValueSet[str ] ):
-    def __init__( self: Self, parent_key: str ) -> None:
-        super().__init__( parent_key )
+class StrKeyValueSet( KeyValues[str] ):
+    def __init__( self: Self, _key_def: KeyDefBase[str] ) -> None:
+        super().__init__( _key_def )
 
-class IntKeyValueSet( KeyValueSet[int ] ):
-    def __init__( self: Self, parent_key: str ) -> None:
-        super().__init__( parent_key )
+class IntKeyValueSet( KeyValues[int ] ):
+    def __init__( self: Self, _key_def: KeyDefBase[int] ) -> None:
+        super().__init__( _key_def )
 
-class BoolKeyValueSet( KeyValueSet[bool ] ):
-    def __init__( self: Self, parent_key: str ) -> None:
-        super().__init__( parent_key )
+class BoolKeyValueSet( KeyValues[bool] ):
+    def __init__( self: Self, _key_def: KeyDefBase[bool] ) -> None:
+        super().__init__( _key_def )
 
-class FloatKeyValueSet( KeyValueSet[float ] ):
-    def __init__( self: Self, parent_key: str ) -> None:
-        super().__init__( parent_key )
+class FloatKeyValueSet( KeyValues[float] ):
+    def __init__( self: Self, _key_def: KeyDefBase[float] ) -> None:
+        super().__init__( _key_def )
 
-class TmstKeyValueSet( KeyValueSet[dt.datetime ] ):
-    def __init__( self: Self, parent_key: str ) -> None:
-        super().__init__( parent_key )
+class TmstKeyValueSet( KeyValues[dt.datetime ] ):
+    def __init__( self: Self, _key_def: KeyDefBase[dt.datetime] ) -> None:
+        super().__init__( _key_def )
 
 
 

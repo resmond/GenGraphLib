@@ -1,9 +1,4 @@
-from typing import Self, Any
-
-import json
-import os
-
-from progress.bar import Bar
+from typing import Self
 
 from gengraphlib import (
     KeyDefBase,
@@ -14,19 +9,21 @@ from gengraphlib import (
     BoolKeyDef,
     TmstKeyDef,
     KeyDefIndex,
-    KeyGraphDefBase,
+    KeyGraphBase,
     KeyValueTriggerBase,
     AddValueResult,
     BootLogDirBase,
     BootLogManagerBase,
     FieldProcessor
 )
+from src.gengraphlib import KeyValTypes
+
 
 class GraphLogDir( BootLogDirBase ):
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
         super().__init__( root_dir, log_rec )
 
-class GraphLogDirManager( BootLogManagerBase ):
+class GraphLogManager( BootLogManagerBase ):
 
     def __init__( self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
         super().__init__( root_dir, field_processor )
@@ -42,13 +39,13 @@ class PriorityValueTrigger( KeyValueTriggerBase[str] ):
     def gather( self, values: dict[str, str] ) -> dict[str, str] | bool:
         pass
 
-class BootLogGraph( KeyGraphDefBase, KeyPropClassSurface ):
+class BootLogGraph( KeyGraphBase, KeyPropClassSurface ):
     instance: Self | None = None
 
     def __init__( self: Self, _log_root: str ) -> None:
         super().__init__( _log_root )
         BootLogGraph.instance = self
-        self.dir_manager: GraphLogDirManager = GraphLogDirManager( _log_root, self )
+        self.dir_manager: GraphLogManager = GraphLogManager( _log_root, self )
         self._log_keys: KeyDefIndex = KeyDefIndex()
 
         self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
@@ -206,28 +203,13 @@ class BootLogGraph( KeyGraphDefBase, KeyPropClassSurface ):
         #return BootLogGraph.instance.process_fields(fields, line_num, log_line )
         #return super().process_fields(fields, line_num, log_line)
 
-    def process_field( self: Self, key: str, value: Any, line_num: int, log_line: str = "" ) -> bool:
+    def process_field( self: Self, key: str, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
         key_def: KeyDefBase | None = self._log_keys.get(key, None)
         if key_def is not None:
-            return self.process_keyvalue( key_def, value, line_num, log_line )
+            return self.process_keyvalue( key_def, value, rec_num, rec_line )
         else:
             return False
 
-    def read_json(self: Self, filepath: str):
-        try:
-            line_num: int = 0
-            read_len: int = 0
-            file_size: int = os.path.getsize(filepath)
-            bar = Bar("Processing", max=file_size)
-            with open(filepath) as file:
-                for line in file:
-                    read_len += len(line)
-                    field_dict = json.loads(line)
-                    self.process_fields(field_dict, line_num, line)
-                    bar.next(read_len )
-            bar.finish()
-        except FileNotFoundError as ext:
-            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
 
     async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
         await self.dir_manager.exec( specific_ndx, full_reparse )

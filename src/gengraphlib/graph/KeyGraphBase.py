@@ -1,9 +1,11 @@
-from typing import Self, Any, Protocol
+from typing import Self, Protocol
 from collections.abc import Iterable
 from abc import abstractmethod
 
 import json
 import os
+
+from progress.bar import Bar
 
 #from src.gengraphlib import KeyPropBase, KeyDefBase
 from .KeyDefs import (
@@ -12,12 +14,15 @@ from .KeyDefs import (
 )
 
 from .KeyProps import KeyPropBase
-from .KeyGroups import KeyGroups, keygroup_rec
+from .KeyGroups import KeyGroups
 from .KeyValues import AddValueResult, KeyValueTriggerBase
+from .. import keygroup_rec
+
 
 class FieldProcessor(Protocol):
-    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
+    def process_keyvalues( self: Self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
         pass
+
 
 """
     DefaultDictOfLists
@@ -36,7 +41,7 @@ class KeyDefIndex( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
         super().__init__()
 
-class KeyGraphDefBase( dict[str, KeyDefBase ], FieldProcessor ):
+class KeyGraphBase( dict[str, KeyDefBase ], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
         super().__init__()
         self._root_dir = root_dir
@@ -101,46 +106,46 @@ class KeyGraphDefBase( dict[str, KeyDefBase ], FieldProcessor ):
 
         return None
 
-    def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
+    def process_keyvalues( self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
 
         for log_key, value in fields.items():
             self.process_field( log_key, value, line_num, log_line )
 
         return True
 
-    def process_field( self: Self, key: str, value: Any, line_num: int, log_line: str = "" ) -> bool:
+    def process_field( self: Self, key: str, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
         key_def: KeyDefBase | None = self.get(key, None)
         if key_def is not None:
-            return self.process_keyvalue( key_def, value, line_num, log_line )
+            return self.process_keyvalue( key_def, value, rec_num, rec_line )
         else:
             return False
 
-    def process_keyvalue( self, key_def: KeyDefBase, value: Any, line_num: int, log_line: str = "" ) -> bool:
+    def process_keyvalue( self, key_def: KeyDefBase, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
 
         result: bool = False
 
         json_key = key_def.json_key
 
         if value is None:
-            self.none_values.add_entry( json_key, log_line )
+            self.none_values.add_entry( json_key, rec_line )
 
         elif key_def.dologing:
             try:
                 val_result: AddValueResult | None = None
                 match type(value).__name__:
                     case "str":
-                        val_result = self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, rec_num )
                     case "datetime":
-                        val_result = self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, rec_num )
                     case "int":
-                        val_result = self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, rec_num )
                     case "bool":
-                        val_result = self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, rec_num )
                     case "float":
-                        val_result = self[json_key].add_jvalue( value, line_num )
+                        val_result = self[json_key].add_jvalue( value, rec_num )
                     case "list":
                         str_val = str(value)
-                        val_result = self[json_key].add_jvalue( str_val, line_num )
+                        val_result = self[json_key].add_jvalue( str_val, rec_num )
                     case _:
                         print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
 
@@ -162,6 +167,23 @@ class KeyGraphDefBase( dict[str, KeyDefBase ], FieldProcessor ):
     def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
         print(f"[Trigger]: {val_result}")
         return val_result
+
+    def read_json(self: Self, filepath: str):
+        try:
+            line_num: int = 0
+            read_len: int = 0
+            file_size: int = os.path.getsize(filepath)
+            bar = Bar("Processing", max=file_size)
+            with open(filepath) as file:
+                for line in file:
+                    read_len += len(line)
+                    field_dict = json.loads(line)
+                    self.process_keyvalues( field_dict, line_num, line )
+                    bar.next(read_len )
+            bar.finish()
+        except FileNotFoundError as ext:
+            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
+
 
     def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
 

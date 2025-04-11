@@ -1,11 +1,11 @@
-from typing import Self
+from typing import Self, Any
 
-from src.gengraphlib import GraphNodeBase, GraphLineBase, LineParseResult, ResultState, RgxLine
+from src.gengraphlib import GraphNodeBase, GraphRecordBase, LineParseResult, ResultState, RgxLine
 
-class TextBootLogLine( GraphLineBase ):
+class TextBootLogLine( GraphRecordBase ):
 
-    def __init__(self: Self, line_str: str, line_num: int) -> None:
-        super().__init__( line_str = line_str, line_num = line_num )
+    def __init__( self: Self, _graph_root: Any, line_str: str, rec_index: int ) -> None:
+        super().__init__( _graph_root, rec_index = rec_index, line_str = line_str )
         self.rgx_line: RgxLine = RgxLine()
         self.event_type_id: str = ""
         self.date_seg: str = ""
@@ -38,13 +38,14 @@ class TextBootLogLine( GraphLineBase ):
 
 class TextBootLogLines( GraphNodeBase, list[TextBootLogLine ] ):
 
-    def __init__( self: Self ) -> None:
+    def __init__( self: Self, _graph_root: Any ) -> None:
         #self.log_file_graph: LogFileGraph
         self.cnt: int = 0
+        self._graph_root: Any = _graph_root
         super().__init__( id= "lineNodeIndex" )
 
     def new_line( self: Self, line_str: str, line_num: int ) -> TextBootLogLine:
-        new_line: TextBootLogLine =  TextBootLogLine( line_str=line_str, line_num=line_num )
+        new_line: TextBootLogLine =  TextBootLogLine( self._graph_root, line_str=line_str, rec_index =line_num )
         self.append( new_line )
         return new_line
 

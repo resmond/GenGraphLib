@@ -1,6 +1,6 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
-from .common import KeyValTypes, process_fields_fn
+from .common import KeyValTypes, process_fields_fn, keygroup_rec, KeyFilter, KeyType
 
 from .fileparse import (
     ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
@@ -10,13 +10,13 @@ from .fileparse import (
 from .streamio import CmdStreamBase, CmdStreamBinary, CmdStreamText
 
 from .graph import (
-    GraphNodeBase, TGraphNode, NodeDict                                              # GraphNodeLib.py
-    , GraphLineBase                                                                    # GraphLineBase.py
-    , KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef                # KeyDefs.py
+    GraphNodeBase, TGraphNode, NodeDict                                                # GraphNodeLib.py
+    , GraphRecordBase                                                                  # GraphLineBase.py
+    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef                         # KeyDefs.py
     , KeyPropBase, KeyPropClassSurface, StrKeyProp, FieldProcessor                     # KeyProps.py
-    , keygroup_rec, KeyGroup, KeyGroups                                                # KeyGroups.py
-    , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValueSet                   # KeyValues.py
-    , DefaultDictOfLists, KeyDefIndex, KeyGraphDefBase                                   # KeyRepository.py
+    , KeyGroupRec, KeyGroup, KeyGroups                                                              # KeyGroups.py
+    , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValues                      # KeyValues.py
+    , DefaultDictOfLists, KeyDefIndex, KeyGraphBase                                    # KeyRepository.py
 )
 
 from .textlog import (
@@ -30,18 +30,18 @@ from .bootlog import BootLogDirBase, BootLogManagerBase
 
 __all__ = [
       "CmdStreamBase", "CmdStreamBinary", "CmdStreamText"
-    , "KeyValTypes", "process_fields_fn"
+    , "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "CmdStreamText"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "GraphNodeBase", "TGraphNode", "NodeDict"
-    , "GraphLineBase"
-    , "KeyType", "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
+    , "GraphRecordBase"
+    , "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
     , "KeyPropBase", "KeyPropClassSurface", "StrKeyProp", "FieldProcessor"
-    , "keygroup_rec", "KeyGroup", "KeyGroups"
+    , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
-    , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValueSet"
-    , "DefaultDictOfLists", "KeyDefIndex", "KeyGraphDefBase"
+    , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValues"
+    , "DefaultDictOfLists", "KeyDefIndex", "KeyGraphBase"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

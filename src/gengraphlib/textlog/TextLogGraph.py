@@ -47,7 +47,7 @@ class TextLogGraph:
         self._input_file_name = input_file_name
         self._output_file_name = output_file_name
         self.next_line_number: int = 0
-        self.lines: TextBootLogLines = TextBootLogLines()
+        self.lines: TextBootLogLines = TextBootLogLines( self )
         self.module_types: TextLogModuleTypes = TextLogModuleTypes()
 
         #self.event_types: EventTypes = EventTypes()
@@ -64,7 +64,7 @@ class TextLogGraph:
 
 #        if parse_test_result is not None and parse_test_result[ "state" ] == ResultState.Found:
         line_values: dict[str,str] = self.rgx_line.process_line( new_line_str )
-        new_line_node: TextBootLogLine = TextBootLogLine( line_str= new_line_str, line_num=self.next_line_number )
+        new_line_node: TextBootLogLine = TextBootLogLine( self, line_str= new_line_str, rec_index =self.next_line_number )
         parse_test_result = new_line_node.parse_line( event_type_id=event_type_id, field_values =line_values )
 
 #        self.module_types.add_node(new_line_node)
