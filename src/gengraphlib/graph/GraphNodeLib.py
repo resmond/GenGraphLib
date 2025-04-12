@@ -10,9 +10,9 @@ from sortedcontainers import SortedList
 
 class GraphNodeBase:
 
-    def __init__(self: Self, id: str ):
-        self.id: str = id
+    def __init__(self: Self, id: str):
         super().__init__()
+        self.id: str = id
 
 
 

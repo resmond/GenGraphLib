@@ -6,7 +6,6 @@ from typing import Self, Protocol
 from .GraphNodeLib import GraphNodeBase
 from .. import KeyValues
 
-
 class KeyGraphRoot(Protocol):
 
     @property

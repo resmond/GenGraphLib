@@ -2,22 +2,22 @@ from collections.abc import Iterable
 from typing import Self
 
 from .. import KeyFilter
-from .GraphView import GraphView
+from .GraphVector import GraphVector
 from .KeyDefs import KeyDefBase
 
 KeyGroupRec = tuple[str] |tuple[str, str] | tuple[str, str, Iterable[str]]
 
-class KeyGroup( list[KeyDefBase] ):
+class KeyGroup( dict[str, KeyDefBase ] ):
     def __init__( self: Self, group_id: str, group_desc: str = "" ) -> None:
         super().__init__()
         self.group_id: str = group_id
         self.group_desc: str = group_desc
 
-    def add_keydef( self: Self, key_def: KeyDefBase) -> None:
-        self.append( key_def )
+    def add_keydef( self: Self, key_def: KeyDefBase ) -> None:
+        self[ key_def.json_key ]( key_def )
 
-    def create_slice( self: Self, _key_filter: KeyFilter ) -> GraphView:
-        return GraphView( self, _key_filter )
+    def create_slice( self: Self, _key_filter: KeyFilter ) -> GraphVector:
+        return GraphVector( self, _key_filter )
 
 class KeyGroups( dict[str, KeyGroup ] ):
     def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:

@@ -2,12 +2,12 @@ from __future__ import annotations
 from typing import Self
 
 import datetime as dt
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 
 from src.gengraphlib import KeyValTypes, KeyType
 from .KeyValues import KeyValues, AddValueResult, KeyValueTriggerBase
 
-class KeyDefBase[T: KeyValTypes]( ABC ):
+class KeyDefBase[T: KeyValTypes]:
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
         super().__init__()
         self.json_key: str = _json_key

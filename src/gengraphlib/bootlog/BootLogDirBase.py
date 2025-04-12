@@ -12,8 +12,6 @@ from src.gengraphlib import  CmdStreamText
 class BootLogDirBase:
 
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
-        super().__init__()
-
         self.root_dir = root_dir
 
         self.idx: int = 0
@@ -49,7 +47,9 @@ class BootLogDirBase:
             print(f"[BootLogDirBase.__init__] Exception: {_ect}")
             self.error = -1
             self.exc = _ect
-            return
+
+        super().__init__()
+
 
     def __repr__(self: Self) -> str:
         return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'

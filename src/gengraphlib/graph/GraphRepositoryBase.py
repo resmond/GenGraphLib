@@ -3,14 +3,14 @@ from io import TextIOWrapper
 from typing import Self
 
 from src.gengraphlib import KeyGraphBase, KeyValues
-from src.gengraphlib.graph.GraphView import GraphView
+from src.gengraphlib.graph.GraphVector import GraphVector
 
 
 class GraphRepositoryBase:
 
-    def __init__( self: Self, keygraph_def: KeyGraphBase, key_slice: GraphView ):
+    def __init__( self: Self, keygraph_def: KeyGraphBase, key_slice: GraphVector ):
         self._keygraph_def : KeyGraphBase = keygraph_def
-        self._key_slice : GraphView = key_slice
+        self._key_slice : GraphVector = key_slice
         pass
 
     async def write_slice( self, value_source: AsyncGenerator[KeyValues, None, None ] ) -> bool:
@@ -18,7 +18,7 @@ class GraphRepositoryBase:
 
 class GraphFileRepository( GraphRepositoryBase ):
 
-    def __init__( self: Self, keygraph_def: KeyGraphBase, key_slice: GraphView, file_path: str ):
+    def __init__( self: Self, keygraph_def: KeyGraphBase, key_slice: GraphVector, file_path: str ):
         super().__init__(keygraph_def, key_slice)
         self._file_path : str = file_path
         self._file : TextIOWrapper | None = None

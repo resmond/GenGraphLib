@@ -52,8 +52,6 @@ class StrKeyProp( KeyPropBase[str] ):
     def __init__( self, class_surface: KeyPropClassSurface, key_repository: KeyGraphBase, _json_key: str, _log_key: str, groups: list[str ] | str | None = None ):
         super().__init__( key_repository=key_repository, _json_key=_json_key, _log_key = _log_key, _key_type = KeyType.KStr, groups=groups )
         self.class_surface = class_surface
-        if self == self.key_repository:
-            print("self is same")
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         val_result: AddValueResult = self.key_values.add_value( jvalue, line_num )
