@@ -48,7 +48,7 @@ class BootLogDirBase:
             self.error = -1
             self.exc = _ect
 
-        super().__init__()
+        super(BootLogDirBase, self).__init__()
 
 
     def __repr__(self: Self) -> str:

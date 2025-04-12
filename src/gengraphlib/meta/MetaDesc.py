@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator
-from typing import Self
+from typing import Self, Protocol
+
+from src.gengraphlib import KeyValTypes
 
 
 class MetaDescriptorBase(ABC):
@@ -92,6 +94,29 @@ class HostClass:
         self._repo.items_dict[item.id] = item
 
     def filter( self: Self, _gen: Generator[TrackedItemRec, str, None ] | None ):
+        pass
+
+class KeyDefProp[ KT: KeyValTypes ]( Protocol ):
+
+    #def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str ] | None = None ) -> None:
+        #super().__init__( _json_key, _log_key, _key_type, groups )
+        #self._desc_name: str = ""
+
+    def __set_name__(self: Self, owner: type, name) -> None:
+        #print(f"[KeyProp].__set_name__( owner:{type(owner).__name__} )" )
+        #self._desc_name = name
+        pass
+
+    def __set__(self: Self, instance: type, value: KT) -> None:
+        #print(f"[KeyPropBase({self._desc_name}).__set_name__( instance:{type(instance).__name__} value[{type(value)}]: {value})" )
+        pass
+
+    def __delete__(self: Self, instance):
+        #print(f'MetaDescriptorBase[{self._desc_name}]__set__( instance: {type(instance)} )')
+        pass
+
+    def __get__(self: Self, instance, owner):
+        #print(f'MetaDescriptorBase[{self._desc_name}]__set__( instance: {type(instance)}, owner:{type(owner)} )')
         pass
 
 if __name__ == "__main__":

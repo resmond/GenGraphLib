@@ -13,10 +13,8 @@ from .KeyDefs import (
     KeyValTypes
 )
 
+from src.gengraphlib import keygroup_rec, KeyGroups, AddValueResult, KeyValueTriggerBase
 from .KeyProps import KeyPropBase
-from .KeyGroups import KeyGroups
-from .KeyValues import AddValueResult, KeyValueTriggerBase
-from .. import keygroup_rec
 
 
 class FieldProcessor(Protocol):
@@ -27,26 +25,26 @@ class FieldProcessor(Protocol):
 """
     DefaultDictOfLists
 """
-class DefaultDictOfLists(dict[str, list[str]]):
+class DictOfLists[T]( dict[str, list[T] ] ):
 
     def __init__( self: Self ) -> None:
         super().__init__()
 
-    def add_entry( self: Self, key: str, value: str ) -> None:
+    def add_entry( self: Self, key: str, value: T ) -> None:
         if key not in self:
             self[key] = []
         self[key].append( value )
 
-class KeyDefIndex( dict[str, KeyDefBase ] ):
+class KeyDefDict( dict[str, KeyDefBase] ):
     def __init__( self: Self ) -> None:
         super().__init__()
 
-class KeyGraphBase( dict[str, KeyDefBase ], FieldProcessor ):
+class KeyGraphBase( dict[str, KeyDefBase], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
         super().__init__()
         self._root_dir = root_dir
         self.key_groups: KeyGroups = KeyGroups(self)
-        self.none_values: DefaultDictOfLists = DefaultDictOfLists()
+        self.none_values: DictOfLists = DictOfLists()
         self.missing_keys: list[str] = []
 
     def __init_subclass__( cls ):

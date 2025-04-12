@@ -1,17 +1,17 @@
 from .GraphNodeLib import GraphNodeBase, TGraphNode, NodeDict
-from .GraphRecordBase import GraphRecordBase
+from .RecordBase import RecordBase
 from .KeyDefs import KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef
-from .KeyProps import KeyPropBase, KeyPropClassSurface, StrKeyProp
+from .KeyProps import StrKeyProp
 from .KeyGroups import KeyGroupRec, KeyGroup, KeyGroups
 from .KeyValues import LineRefList, KeyValueTriggerBase, AddValueResult, KeyValues
-from .KeyGraphBase import DefaultDictOfLists, KeyDefIndex, KeyGraphBase, FieldProcessor
+from .KeyGraphBase import DictOfLists, KeyDefDict, KeyGraphBase, FieldProcessor
 
 __all__ = [
       "GraphNodeBase", "TGraphNode", "NodeDict"
-    , "GraphRecordBase"
+    , "RecordBase"
     , "KeyType", "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
-    , "KeyPropBase", "KeyPropClassSurface", "StrKeyProp"
+    , "StrKeyProp"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
     , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValues"
-    , "DefaultDictOfLists", "KeyDefIndex", "KeyGraphBase", "FieldProcessor"
+    , "DictOfLists", "KeyDefDict", "KeyGraphBase", "FieldProcessor"
 ]

@@ -2,13 +2,12 @@ from typing import Self
 
 from gengraphlib import (
     KeyDefBase,
-    KeyPropClassSurface,
     StrKeyProp,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
-    KeyDefIndex,
+    KeyDefDict,
     KeyGraphBase,
     KeyValueTriggerBase,
     AddValueResult,
@@ -39,17 +38,16 @@ class PriorityValueTrigger( KeyValueTriggerBase[str] ):
     def gather( self, values: dict[str, str] ) -> dict[str, str] | bool:
         pass
 
-class BootLogGraph( KeyGraphBase, KeyPropClassSurface ):
+class BootLogGraph( KeyGraphBase ):
     instance: Self | None = None
+
+    priority: StrKeyProp = StrKeyProp( _json_key="priority", _log_key="PRIORITY", groups=["evt"] )
 
     def __init__( self: Self, _log_root: str ) -> None:
         super().__init__( _log_root )
         BootLogGraph.instance = self
         self.dir_manager: GraphLogManager = GraphLogManager( _log_root, self )
-        self._log_keys: KeyDefIndex = KeyDefIndex()
-
-        self.priority = StrKeyProp( class_surface = self, key_repository=super(),  _json_key = "priority", _log_key = "PRIORITY", groups=[ "evt" ] )
-        self.priority.add_trigger( PriorityValueTrigger() )
+        self._log_keys: KeyDefDict = KeyDefDict()
 
         self.add_keydefs(
             [
@@ -190,10 +188,6 @@ class BootLogGraph( KeyGraphBase, KeyPropClassSurface ):
 
     def final_init( self ):
         super().final_init()
-
-    def keyprops_init( self ):
-        super().keyprops_init()
-
 
     def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
         return val_result

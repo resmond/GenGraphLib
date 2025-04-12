@@ -38,7 +38,7 @@ class GraphVector( dict[str, VectorValue ] ):
         self.append( VectorValue( key_def, alias ) )
 
     def get_headers( self ) -> list[str]:
-        return [field.field_name for field in self.values()]
+        return [vector_value.field_name for vector_value in self.values()]
 
     def write_text( self, keyval_source: dict[str, KeyValTypes], text_writer: aio.StreamWriter, format_type: SerializationType ):
 
@@ -58,7 +58,7 @@ class GraphVector( dict[str, VectorValue ] ):
                     pass
 
                 case SerializationType.JObject:
-                    next_value = keyval_source[ key ]
+                    #next_value = keyval_source[ key ]
                     pass
 
 

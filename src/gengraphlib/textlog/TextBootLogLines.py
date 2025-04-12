@@ -1,8 +1,8 @@
 from typing import Self, Any
 
-from src.gengraphlib import GraphNodeBase, GraphRecordBase, LineParseResult, ResultState, RgxLine
+from src.gengraphlib import GraphNodeBase, RecordBase, LineParseResult, ResultState, RgxLine
 
-class TextBootLogLine( GraphRecordBase ):
+class TextBootLogLine( RecordBase ):
 
     def __init__( self: Self, _graph_root: Any, line_str: str, rec_index: int ) -> None:
         super().__init__( _graph_root, rec_index = rec_index, line_str = line_str )

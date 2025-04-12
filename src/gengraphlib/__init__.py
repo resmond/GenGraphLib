@@ -11,12 +11,12 @@ from .streamio import CmdStreamBase, CmdStreamBinary, CmdStreamText
 
 from .graph import (
     GraphNodeBase, TGraphNode, NodeDict                                                # GraphNodeLib.py
-    , GraphRecordBase                                                                  # GraphLineBase.py
+    , RecordBase                                                                  # GraphLineBase.py
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef                         # KeyDefs.py
-    , KeyPropBase, KeyPropClassSurface, StrKeyProp, FieldProcessor                     # KeyProps.py
+    , StrKeyProp, FieldProcessor                     # KeyProps.py
     , KeyGroupRec, KeyGroup, KeyGroups                                                              # KeyGroups.py
     , LineRefList, KeyValueTriggerBase, AddValueResult, KeyValues                      # KeyValues.py
-    , DefaultDictOfLists, KeyDefIndex, KeyGraphBase                                    # KeyRepository.py
+    , DictOfLists, KeyDefDict, KeyGraphBase                                    # KeyRepository.py
 )
 
 from .textlog import (
@@ -35,13 +35,13 @@ __all__ = [
     , "CmdStreamText"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "GraphNodeBase", "TGraphNode", "NodeDict"
-    , "GraphRecordBase"
+    , "RecordBase"
     , "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
-    , "KeyPropBase", "KeyPropClassSurface", "StrKeyProp", "FieldProcessor"
+    , "StrKeyProp", "FieldProcessor"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValues"
-    , "DefaultDictOfLists", "KeyDefIndex", "KeyGraphBase"
+    , "DictOfLists", "KeyDefDict", "KeyGraphBase"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

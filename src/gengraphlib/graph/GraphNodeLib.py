@@ -11,7 +11,7 @@ from sortedcontainers import SortedList
 class GraphNodeBase:
 
     def __init__(self: Self, id: str):
-        super().__init__()
+        super(GraphNodeBase, self).__init__()
         self.id: str = id
 
 

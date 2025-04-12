@@ -38,6 +38,7 @@ class GraphFileRepository( GraphRepositoryBase ):
 
     async def write_slice( self, value_source: AsyncGenerator[KeyValues, None ] ) -> bool:
         async for value in value_source:
+            print(value)
             pass
             #value
             #await self._file.writelines( [  ] )
