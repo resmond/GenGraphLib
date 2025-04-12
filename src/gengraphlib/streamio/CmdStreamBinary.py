@@ -7,19 +7,26 @@ from .CmdStreamBase import CmdStreamBase
 
 class CmdStreamBinary(CmdStreamBase):
 
-    def __init__(self: Self, cmd: str | None = None):
+    def __init__(self: Self, cmd: str | None = None, buffer_size: int = 4096):
+        self.buffer_size: int = buffer_size
         super().__init__(cmd)
 
+    async def stream_binary( self: Self, cmd: str | None = None, buffer_size: int | None = None ) -> AsyncGenerator[ bytes, None ]:
 
-    async def stream_binary( self: Self, cmd: str | None = None, buffer_size: int = 16384 ) -> AsyncGenerator[ bytes, None ]:
+        if buffer_size is not None:
+            self.buffer_size = buffer_size
+
         self.started = True
         while self.started:
             try:
                 self.started =  await self._run_command(cmd)
 
                 if self.started and self.exec_process is not None:
+
                     try:
-                        buffer = await self.exec_process.stdout.read( buffer_size )
+
+                        buffer = await self.exec_process.stdout.read( self.buffer_size )
+
                         if len(buffer) > 0:
                             #line_str = buffer.decode().strip()
                             yield buffer

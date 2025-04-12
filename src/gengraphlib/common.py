@@ -13,3 +13,9 @@ class KeyType( IntEnum ):
     KBool        = 3
     KTimeStamp   = 4
     KFloat       = 5
+
+class SerializationType( IntEnum ):
+    CSV = 1
+    JArray = 2
+    JObject = 3
+

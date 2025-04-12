@@ -4,8 +4,7 @@ from abc import ABC
 from collections.abc import Set, Iterable
 from typing import Self, Protocol
 
-from .GraphNodeLib import GraphNodeBase
-from .. import KeyValues
+from src.gengraphlib import GraphNodeBase, KeyValues
 
 class KeyGraphRoot(Protocol):
 

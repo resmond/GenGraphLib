@@ -5,6 +5,7 @@ from .KeyProps import StrKeyProp
 from .KeyGroups import KeyGroupRec, KeyGroup, KeyGroups
 from .KeyValues import LineRefList, KeyValueTriggerBase, AddValueResult, KeyValues
 from .KeyGraphBase import DictOfLists, KeyDefDict, KeyGraphBase, FieldProcessor
+from .GraphVector import VectorValue, GraphVector, GraphValueResult
 
 __all__ = [
       "GraphNodeBase", "TGraphNode", "NodeDict"
@@ -14,4 +15,6 @@ __all__ = [
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
     , "LineRefList", "KeyValueTriggerBase", "AddValueResult", "KeyValues"
     , "DictOfLists", "KeyDefDict", "KeyGraphBase", "FieldProcessor"
+
+    , "VectorValue", "GraphVector", "GraphValueResult"
 ]
