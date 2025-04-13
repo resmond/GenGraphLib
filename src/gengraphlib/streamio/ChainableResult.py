@@ -2,30 +2,22 @@ from abc import ABC
 from enum import IntEnum
 from typing import Self
 
-class ChainedResultErr( IntEnum ):
+class ChainErr( IntEnum ):
     Success         = 0
     FileReaderError = -1
     FileWriterError = -2
     ParsingError    = -3
     UnexpectedError = -99
     
-class ResultChainException(Exception):
-    def __init__( self, error_val: ChainedResultErr ):
+class ChainException( Exception ):
+    def __init__( self, error_val: ChainErr ):
         super().__init__()
-        self.error_val: ChainedResultErr = ChainedResultErr.UnexpectedError
-
-class KeyValueResultErr( ChainedResultErr ):
-    UnknownKey = -10
-
-class KeyValueResultException(ResultChainException):
-    def __init__( self, error_val: KeyValueResultErr ):
-        super().__init__(error_val)
-        self.error_val: ChainedResultErr = ChainedResultErr.UnexpectedError
+        self.error_val: ChainErr = ChainErr.UnexpectedError
 
 class ChainableResult( ABC ):
     def __init__(self: Self) -> None:
         super().__init__()
-        self.error_val: ChainedResultErr = ChainedResultErr.Success
+        self.error_val: ChainErr = ChainErr.Success
 
 
 

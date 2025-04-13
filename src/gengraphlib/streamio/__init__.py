@@ -1,18 +1,15 @@
-from .CmdStreamBase import CmdStreamBase
-from .CmdStreamText import CmdStreamText
-from .CmdStreamBinary import CmdStreamBinary
-from .ChainableResult import ChainableResult
-from .PipedChainBase import PipeChainType, PipedChainBase
+from .CmdStreamSource import CmdStreamSource
+
+from .ChainableResult import ChainableResult, ChainErr, ChainException
+from .PipedChain import PipeChainType, PipedChain
 from .ChainSinkBase import ChainSinkBase
 from .ChainSourceBase import ChainSourceBase
 from .ChainFilterBase import ChainFilterBase
 
 __all__ = [
-      "CmdStreamBase"
-    , "CmdStreamText"
-    , "CmdStreamBinary"
-    , "ChainableResult"
-    , "PipeChainType", "PipedChainBase"
+      "CmdStreamSource"
+    , "ChainableResult", "ChainErr", "ChainException"
+    , "PipeChainType", "PipedChain"
     , "ChainSinkBase"
     , "ChainSourceBase"
     , "ChainFilterBase"

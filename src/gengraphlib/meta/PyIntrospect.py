@@ -15,13 +15,12 @@ def print_methods(cls, base_classes, parent_methods, indent=0):
 
     base_classes_str = ', '.join(base_classes)
     module = sys.modules[cls.__module__]
-    file_path = getattr(module, '__file__',
-                        'No file (built-in or interactive)')
-    print(f"{spacing}Class: {cls.__name__} " +
-          f"[{base_classes_str}]: {file_path}")
+    file_path = getattr(module, '__file__', 'No file (built-in or interactive)')
+    print(f"{spacing}Class: {cls.__name__} " + f"[{base_classes_str}]: {file_path}")
 
-    for method_name in (m for m in dir(cls) if callable(getattr(cls, m))
-                                               and not m.startswith("__")):
+    for method_name in (m for m in dir(cls)
+                            if callable(getattr(cls, m))
+                                and not m.startswith("__")):
         is_overridden = method_name in parent_methods
         is_inherited = is_method_inherited(cls, method_name)
         if not is_inherited or not is_overridden:

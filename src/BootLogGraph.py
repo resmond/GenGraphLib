@@ -7,10 +7,8 @@ from gengraphlib import (
     IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
-    KeyDefDict,
-    KeyGraphBase,
-    KeyValueTriggerBase,
-    AddValueResult,
+    KeyDict,
+    KeySchemaBase,
     BootLogDirBase,
     BootLogManagerBase,
     FieldProcessor
@@ -27,18 +25,7 @@ class GraphLogManager( BootLogManagerBase ):
     def __init__( self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
         super().__init__( root_dir, field_processor )
 
-class PriorityValueTrigger( KeyValueTriggerBase[str] ):
-
-    def eval( self, value: str ) -> bool:
-        if value in ["3", "4", "5", "6", "7"]:
-            return True
-        else:
-            return False
-
-    def gather( self, values: dict[str, str] ) -> dict[str, str] | bool:
-        pass
-
-class BootLogGraph( KeyGraphBase ):
+class BootLogGraph( KeySchemaBase ):
     instance: Self | None = None
 
     priority: StrKeyProp = StrKeyProp( _json_key="priority", _log_key="PRIORITY", groups=["evt"] )
@@ -47,7 +34,7 @@ class BootLogGraph( KeyGraphBase ):
         super().__init__( _log_root )
         BootLogGraph.instance = self
         self.dir_manager: GraphLogManager = GraphLogManager( _log_root, self )
-        self._log_keys: KeyDefDict = KeyDefDict()
+        self._log_keys: KeyDict = KeyDict()
 
         self.add_keydefs(
             [
@@ -189,21 +176,12 @@ class BootLogGraph( KeyGraphBase ):
     def final_init( self ):
         super().final_init()
 
-    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
-        return val_result
-
-
-    #def process_fields( self, fields: dict[str,KeyValTypes], line_num: int, log_line: str) -> bool:
-        #return BootLogGraph.instance.process_fields(fields, line_num, log_line )
-        #return super().process_fields(fields, line_num, log_line)
-
     def process_field( self: Self, key: str, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
         key_def: KeyDefBase | None = self._log_keys.get(key, None)
         if key_def is not None:
             return self.process_keyvalue( key_def, value, rec_num, rec_line )
         else:
             return False
-
 
     async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
         await self.dir_manager.exec( specific_ndx, full_reparse )

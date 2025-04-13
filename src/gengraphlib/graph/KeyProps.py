@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from typing import Self
 
-from src.gengraphlib import KeyValTypes, KeyDefBase, KeyType, AddValueResult
+from src.gengraphlib import KeyValTypes, KeyDefBase, KeyType
 
 """
 class KeyPropRepository(ABC):
@@ -19,7 +19,7 @@ class KeyPropRepository(ABC):
 """
 
 ##################################### KeyDefProps #########################################
-class KeyPropBase[KT: KeyValTypes ]( KeyDefBase[ KT ], ABC ):
+class KeyPropBase[ T: KeyValTypes ]( KeyDefBase[ T ], ABC ):
     def __init__(self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
         super().__init__( _json_key, _log_key, _key_type, groups )
         self._desc_name: str | None = None
@@ -54,9 +54,7 @@ class KeyPropBase[KT: KeyValTypes ]( KeyDefBase[ KT ], ABC ):
 """
 class StrKeyProp( KeyPropBase[str] ):
     def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str | None = None ):
-        super().__init__(_json_key, _log_key, KeyType.KStr,  groups )
-        self._desc_name: str = ""
-        #self._key_def: StrKeyDef = StrKeyDef( _json_key, _log_key, groups )
+        super().__init__(_json_key, _log_key, KeyType.KStr, groups )
 
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         val_result: AddValueResult = self.key_values.add_value( jvalue, line_num )
@@ -65,7 +63,9 @@ class StrKeyProp( KeyPropBase[str] ):
         else:
             return self.on_trigger( val_result )
 
+"""
     def on_trigger( self: Self, val_result: AddValueResult ) -> AddValueResult:
 
         print(f"[StrKeyProp.on_trigger] {self.json_key}")
         return val_result
+"""

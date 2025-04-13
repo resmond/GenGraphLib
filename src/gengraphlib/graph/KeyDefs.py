@@ -4,8 +4,7 @@ from typing import Self
 import datetime as dt
 from abc import abstractmethod
 
-from src.gengraphlib import KeyValTypes, KeyType
-from .KeyValues import KeyValues, AddValueResult, KeyValueTriggerBase
+from src.gengraphlib import KeyValTypes, KeyType, KeyValues
 
 class KeyDefBase[T: KeyValTypes]:
     def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
@@ -30,11 +29,6 @@ class KeyDefBase[T: KeyValTypes]:
 
         super().__init__()
 
-    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
-        self.key_values.add_trigger( trigger )
-        self._event_trigger = True
-        self._skip = False
-
     def add_value( self: Self, new_value: T, line_num: int ) -> AddValueResult:
         if self._skip:
             return None
@@ -48,6 +42,13 @@ class KeyDefBase[T: KeyValTypes]:
     @abstractmethod
     def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
         pass
+
+"""
+    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
+        self.key_values.add_trigger( trigger )
+        self._event_trigger = True
+        self._skip = False
+"""
 
 """   StrKeyDef
 
@@ -111,3 +112,6 @@ class FloatKeyDef( KeyDefBase[float] ):
     def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
         return self.key_values.add_value( float( jvalue ), line_num )
 
+class KeyDict( dict[str, KeyDefBase ] ):
+    def __init__( self: Self ) -> None:
+        super().__init__()

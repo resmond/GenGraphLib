@@ -2,9 +2,9 @@ from typing import Self
 
 from collections.abc import AsyncGenerator
 
-from src.gengraphlib import ChainableResult, PipedChainBase, PipeChainType
+from src.gengraphlib import ChainableResult, PipedChain, PipeChainType
 
-class ChainFilterBase[ T: ChainableResult ]( PipedChainBase[ T:ChainableResult ] ):
+class ChainFilterBase[ T: ChainableResult ]( PipedChain[ T:ChainableResult ] ):
     pipechain_type: PipeChainType.PipeFilter
 
     def __init__(self: Self):

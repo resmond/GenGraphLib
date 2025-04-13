@@ -50,7 +50,7 @@ class BootLogManagerBase:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    async def exec( self, specific_ndx: int | None, full_reparse: bool = True  ) -> bool:
+    async def exec( self: Self, specific_ndx: int | None, full_reparse: bool = True  ) -> bool:
         self.full_reparse = full_reparse
 
         if self.full_reparse or not self._load_txt():
@@ -81,7 +81,7 @@ class BootLogManagerBase:
         _load_txt
             loads the text file and parses it into useful data structures
     """
-    def _load_txt( self ) -> bool:
+    def _load_txt( self: Self ) -> bool:
         try:
             with open( self._bootlist_txtfilepath ) as file:
                 first_line: bool = True
@@ -122,6 +122,8 @@ class BootLogManagerBase:
         process_dirs
             either selects a specific boot record to loops through them all and calls BootRecDir.exec() on each
     """
+
+
     async def process_dirs( self: Self, specific_idx: int | None = None ) -> bool:
         if specific_idx is not None:
             boot_log_dir = self._bootdir_list[ specific_idx ]

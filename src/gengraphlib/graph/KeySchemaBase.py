@@ -1,45 +1,31 @@
 from typing import Self, Protocol
 from collections.abc import Iterable
-from abc import abstractmethod
 
 import json
 import os
 
 from progress.bar import Bar
 
-#from src.gengraphlib import KeyPropBase, KeyDefBase
-from .KeyDefs import (
+from src.gengraphlib import (
+    keygroup_rec,
     KeyDefBase,
-    KeyValTypes
+    KeyValTypes,
+    KeyGroups,
+    DictOfLists,
 )
 
-from src.gengraphlib import keygroup_rec, KeyGroups, AddValueResult, KeyValueTriggerBase
-from .KeyProps import KeyPropBase
-
+from src.gengraphlib.graph.KeyProps import KeyPropBase
 
 class FieldProcessor(Protocol):
     def process_keyvalues( self: Self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
         pass
 
-
 """
-    DefaultDictOfLists
+    KeySchemaBase
 """
-class DictOfLists[T]( dict[str, list[T] ] ):
 
-    def __init__( self: Self ) -> None:
-        super().__init__()
 
-    def add_entry( self: Self, key: str, value: T ) -> None:
-        if key not in self:
-            self[key] = []
-        self[key].append( value )
-
-class KeyDefDict( dict[str, KeyDefBase] ):
-    def __init__( self: Self ) -> None:
-        super().__init__()
-
-class KeyGraphBase( dict[str, KeyDefBase], FieldProcessor ):
+class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
         super().__init__()
         self._root_dir = root_dir
@@ -129,7 +115,7 @@ class KeyGraphBase( dict[str, KeyDefBase], FieldProcessor ):
 
         elif key_def.dologing:
             try:
-                val_result: AddValueResult | None = None
+                #val_result: AddValueResult | None = None
                 match type(value).__name__:
                     case "str":
                         val_result = self[json_key].add_jvalue( value, rec_num )
@@ -147,8 +133,8 @@ class KeyGraphBase( dict[str, KeyDefBase], FieldProcessor ):
                     case _:
                         print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
 
-                if val_result is not None:
-                    self.keyvalue_trigger( val_result )
+#                if val_result is not None:
+#                    self.keyvalue_trigger( val_result )
 
                 result = True
 
@@ -161,10 +147,10 @@ class KeyGraphBase( dict[str, KeyDefBase], FieldProcessor ):
 
         return result
 
-    @abstractmethod
-    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
-        print(f"[Trigger]: {val_result}")
-        return val_result
+#    @abstractmethod
+#    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
+#        print(f"[Trigger]: {val_result}")
+#        return val_result
 
     def read_json(self: Self, filepath: str):
         try:

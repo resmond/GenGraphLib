@@ -10,7 +10,7 @@ class PipeChainType(IntEnum):
     PipeSource   = 0x02
     PipeFilter   = PipeSink | PipeSource
 
-class PipedChainBase[ T: ChainableResult ]( Protocol ):
+class PipedChain[ T: ChainableResult ]( Protocol ):
     pipechain_type: PipeChainType
 
     @property
