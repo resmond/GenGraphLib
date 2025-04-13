@@ -10,6 +10,7 @@ class StrKey:
     str_key_cnt: int = 0
 
     def __init__(self: Self, slot_name: str ) -> None:
+        super(StrKey, self).__init__()
         self.slot_name = slot_name
         self.slot_index = -1
         StrKey.str_key_cnt += 1

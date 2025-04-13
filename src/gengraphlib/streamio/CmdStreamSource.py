@@ -7,7 +7,7 @@ import asyncio.subprocess as asub
 class CmdStreamSource:
 
     def __init__(self: Self, cmd: str | None = None):
-        super().__init__()
+        super(CmdStreamSource, self).__init__()
         self.cmd: str = cmd
         self.exec_process: asub.Process | None = None
         self.started: bool = False

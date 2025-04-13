@@ -32,7 +32,7 @@ from .BootLogDirBase import BootLogDirBase
 class BootLogManagerBase:
 
     def __init__(self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
-        super().__init__()
+        super(BootLogManagerBase, self).__init__()
         self.root_dir: str = root_dir
         self.full_reparse: bool = True
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )

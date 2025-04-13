@@ -16,7 +16,7 @@ from src.gengraphlib import (
 
 from src.gengraphlib.graph.KeyProps import KeyPropBase
 
-class FieldProcessor(Protocol):
+class FieldProcessor( Protocol ):
     def process_keyvalues( self: Self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
         pass
 
@@ -27,7 +27,7 @@ class FieldProcessor(Protocol):
 
 class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
     def __init__( self: Self, root_dir: str ) -> None:
-        super().__init__()
+        super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir
         self.key_groups: KeyGroups = KeyGroups(self)
         self.none_values: DictOfLists = DictOfLists()
@@ -113,6 +113,7 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
         if value is None:
             self.none_values.add_entry( json_key, rec_line )
 
+        """
         elif key_def.dologing:
             try:
                 #val_result: AddValueResult | None = None
@@ -140,11 +141,12 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
 
             except Exception as valexc:
                 print( f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} ValueError: {valexc}" )
-
+                
         else:
             if json_key not in self.missing_keys:
                 self.missing_keys.append( json_key )
 
+            """
         return result
 
 #    @abstractmethod
