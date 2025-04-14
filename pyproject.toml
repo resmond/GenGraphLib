@@ -3,7 +3,7 @@ name = "GenGraphLib"
 description = "Node graph framework for journalctl logs."
 version = "0.1.0"
 readme = "README.md"
-requires-python = ">=3.13.2"
+requires-python = ">=3.12"
 license = {file = "LICENSE.md"}
 keywords = [
     "python",
@@ -28,6 +28,7 @@ dynamic = [
 ]
 dependencies = [
     "objgraph>=3.6.2",
+    "simd",
     "simsimd>=6.2.1",
 ]
 

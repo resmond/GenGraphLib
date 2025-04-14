@@ -1,31 +1,31 @@
 from typing import Self
 
+from collections.abc import AsyncGenerator
+
 import asyncio as aio
 import asyncio.subprocess as asub
-import simsimd as simd
 
-from src.gengraphlib.streamio import ChainSourceBase, ChainableResult, StreamType
+from . import ChainSourceBase, ChainableResult, StreamType
 
 class CommandChainSource[ T: ChainableResult ]( ChainSourceBase ):
 
     def __init__(self: Self, cmd: str, stream_type: StreamType = StreamType.LfTextLine, buffer_size: int = 4096  ):
         super( CommandChainSource, self ).__init__(stream_type, buffer_size)
-        self.nlbk_memview: memoryview | None = None
+        self.newline_char: bytes = b'\n'
         self.cmd: str = cmd
 
-        match stream_type:
-            case StreamType.LfTextLine:
-                self.nlbk_memview = memoryview( b'\n' )
-            case StreamType.CrLfTextLine:
-                self.nlbk_memview = memoryview( b'\r\n' )
+        # match stream_type:
+        #     case StreamType.LfTextLine:
+        #         self.nlbk_memview = memoryview( b'\n' )
+        #     case StreamType.CrLfTextLine:
+        #         self.nlbk_memview = memoryview( b'\r\n' )
 
         #self.exec_process: asub.Process | None = None
 
-    async def _new_result( self: Self ) -> T | None:
+    async def _result_pipe( self: Self ) -> AsyncGenerator[T, None] | None:
         if self.cmd is not None:
 
             try:
-                chain_result = ChainableResult()
 
                 exec_process: asub.Process = await aio.create_subprocess_shell(
                     cmd=self.cmd,
@@ -33,25 +33,29 @@ class CommandChainSource[ T: ChainableResult ]( ChainSourceBase ):
                 )
 
                 if exec_process is not None:
-                    try:
+                    chain_result: T = ChainableResult()
+                    while True:
+                        try:
 
-                        buffer = await self.exec_process.stdout.read( self.buffer_size )
+                            read_buffer = await self.exec_process.stdout.read( self.buffer_size )
+                            len_read: int = len(read_buffer)
 
-                        if len(buffer) > 0:
+                            if read_buffer is None or len_read == 0:
+                                yield chain_result
 
-                            mem_view = memoryview(buffer)
-                            found_at = simd.intersection(mem_view, self.nlbk_memview)
-                            if found_at > 0:
-                                print(f"found_at: {found_at} - ] {buffer} [")
+                            stream_cursor.extend(read_buffer)
+                            first_newline = stream_cursor.find(self.newline_char)
 
-                            chain_result.buffer = buffer
+                            if first_newline == -1:
+                                continue
 
-                            return chain_result
-                        else:
-                            self.started = False
+                            chain_result.add_buffer( stream_cursor[0:first_newline] )
 
-                    except Exception as innerexc:
-                        print(f"CmdStreamBinary.stream_binary: {innerexc}")
+
+                            stream_cursor = stream_cursor[first_newline+1:]
+
+                        except Exception as innerexc:
+                            print(f"CmdStreamBinary.stream_binary: {innerexc}")
 
 
             except Exception as exc:
@@ -61,22 +65,5 @@ class CommandChainSource[ T: ChainableResult ]( ChainSourceBase ):
             print("CmdStreamBase.run_command: No command")
 
 
-    #async def split( self, buffer: bytes ) -> AsyncGenerator[ bytes, None ]:
 
 
-if __name__ == "__main__":
-    teststr =   "found_at = simd.intersection(mem_view, self.nlbk_memview)" + \
-                "found_at = simd.intersection(mem_view, self.nlbk_memview)" + \
-                "a;lskdjfsdl fj sdlkfjsd;lkfjds;lkfljsdklfj\nskldjfdsldddd" + \
-                "found_at = simd.intersection(mem_view, self.nlbk_memview)" + \
-                "a;lskdjfsdl fj sdlkfjsd;lkfjds;lkfljsdklfj\nskldjfdsldddd" + \
-                "found_at = simd.intersection(mem_view, self.nlbk_memview)" + \
-                "a;lskdjfsdl fj sdlkfjsd;lkfjds;lkfljsdklfj\nskldjfdsldddd" + \
-                "found_at = simd.intersection(mem_view, self.nlbk_memview)"
-
-    test_memview = memoryview( teststr.encode() )
-    test_nlbk_memview = memoryview( b"\n" )
-
-    test_found_at = simd.intersection( test_memview, test_nlbk_memview )
-
-    print( test_found_at )

@@ -3,7 +3,7 @@ from typing import Self
 from . import KeyDefBase
 from .KeySchemaBase import KeySchemaBase
 
-from src.gengraphlib import (
+from .. import (
     DictOfLists,
     KeyValTypes,
     ChainFilterBase,

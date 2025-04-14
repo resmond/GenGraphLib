@@ -3,7 +3,7 @@ from asyncio import Protocol
 from typing import Self, TypeVar
 from sortedcontainers import SortedList, SortedDict
 
-from src.gengraphlib import KeyType, KeyValTypes
+from .. import KeyType, KeyValTypes
 
 class LineRefList( list[ int ] ):
     pass

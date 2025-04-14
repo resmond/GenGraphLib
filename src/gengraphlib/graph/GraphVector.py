@@ -2,9 +2,8 @@ from typing import Self
 
 import asyncio as aio
 
-from src.gengraphlib.common import SerializationType, KeyFilter
-
-from . import KeyDefBase, KeyDefDict
+from .. import SerializationType, KeyFilter
+from .  import KeyDefBase, KeyDefDict
 
 class VectorValue:
 

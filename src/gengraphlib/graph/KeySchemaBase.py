@@ -21,6 +21,8 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
         super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir
         self.id = id
+        self.missing_keys: list[str] = {}
+        self.none_values: list[str] = {}
         self.key_groups: KeyGroups = KeyGroups(self)
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
@@ -89,7 +91,7 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
                     bar.next(read_len )
             bar.finish()
         except FileNotFoundError as ext:
-            print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
+            print(f'[KeySchemaBase.read_json]FileNotFoundError: {ext} - {filepath}')
 
     def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
 
@@ -112,7 +114,7 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
                             keyfile.write(f'[{len(lines):5}]: {value}\n')
 
         except Exception as exc:
-            print(f'[KeyGraphBase.dump_key_values] ({key})  Exception: {exc}')
+            print(f'[KeySchemaBase.dump_key_values] ({key})  Exception: {exc}')
 
     def dump_trace_groups( self: Self ) -> None:
         try:
@@ -125,7 +127,7 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
             open( file_path, "w" ).write( data_str )
 
         except Exception as exc:
-            print(f'KeyGraphBase.dump_key_groups: Exception: {exc}')
+            print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
 
 

@@ -14,7 +14,7 @@ class KeyGroup( KeyDefDict ):
         self.group_desc: str = group_desc
 
     def add_keydef( self: Self, key_def: KeyDefBase ) -> None:
-        self[ key_def.json_key ]( key_def )
+        self[ key_def.json_key ] = key_def
 
     def create_vector( self: Self, _key_filter: KeyFilter ) -> GraphVector:
 

@@ -2,8 +2,8 @@ from typing import Self
 
 import datetime as dt
 
-from src.gengraphlib import KeyType
-from src.gengraphlib.graph import KeyDefBase
+from .. import KeyType
+from . import KeyDefBase
 
 """   StrKeyDef
 

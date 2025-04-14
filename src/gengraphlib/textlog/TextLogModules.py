@@ -1,6 +1,6 @@
 from typing import Self
 
-from src.gengraphlib import GraphNodeBase, NodeDict
+from .. import GraphNodeBase, NodeDict
 from .TextBootLogLines import TextBootLogLine
 
 class TextLogModule( GraphNodeBase ):

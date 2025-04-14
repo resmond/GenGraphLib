@@ -1,13 +1,13 @@
 import asyncio as aio
 
-from src.BootLogGraph import BootLogGraph
+from BootLogGraph import BootLogGraph
 
 async def main() -> bool:
     print("main() start")
 
     log_graph = BootLogGraph( id="1", _log_root = "/home/richard/data/jctl-logs/" )
 
-    help(log_graph)
+    #help(log_graph)
     
     await log_graph.exec_query( specific_ndx=-1 )
 

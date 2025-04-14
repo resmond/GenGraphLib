@@ -2,7 +2,7 @@ from typing import Self
 
 import datetime as dt
 
-from src.gengraphlib.graph.GraphLib import KeyDefBase, KeyValues
+from . import KeyDefBase, KeyValues
 
 class StrKeyValueSet( KeyValues[str] ):
     def __init__( self: Self, _key_def: KeyDefBase[str] ) -> None:
