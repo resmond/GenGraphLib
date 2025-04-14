@@ -10,17 +10,17 @@ from src.gengraphlib import (
     keygroup_rec,
     KeyDefBase,
     KeyValTypes,
-    KeyGroups
+    KeyGroups,
+    RecordBase,
+    KeyGraphRoot
 )
 
-class KeySchemaBase( dict[str, KeyDefBase ] ):
-    def __init__( self: Self, root_dir: str ) -> None:
+class KeySchemaBase( dict[str, KeyDefBase ], KeyGraphRoot ):
+    def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir
+        self.id = id
         self.key_groups: KeyGroups = KeyGroups(self)
-
-    def __init_subclass__( cls ):
-        super().__init_subclass__()
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.json_key] = _key_def
@@ -58,7 +58,13 @@ class KeySchemaBase( dict[str, KeyDefBase ] ):
         self.final_init()
 
     def final_init( self ):
-        #self.keyprops_init()
+        pass
+
+    @property
+    def graph_id(self: Self) -> str:
+        return self.id
+
+    def add_record( self: Self, graph_rec: RecordBase ) -> None:
         pass
 
     def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
@@ -83,7 +89,6 @@ class KeySchemaBase( dict[str, KeyDefBase ] ):
             bar.finish()
         except FileNotFoundError as ext:
             print(f'[JsonLogKeyGraph.read_json]FileNotFoundError: {ext} - {filepath}')
-
 
     def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
 

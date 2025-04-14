@@ -1,6 +1,7 @@
 from typing import Self
 
 from gengraphlib import (
+    KeyValTypes,
     KeyDefBase,
     StrKeyDef,
     IntKeyDef,
@@ -10,46 +11,48 @@ from gengraphlib import (
     KeySchemaBase,
     BootLogManager,
 )
-from src.gengraphlib import KeyValTypes
-
-class GraphLogManager( BootLogManager ):
-
-    def __init__( self: Self, root_dir: str ) -> None:
-        super().__init__( root_dir )
-
 class BootLogGraph( KeySchemaBase ):
     instance: Self | None = None
 
-    def __init__( self: Self, _log_root: str ) -> None:
-        super().__init__( _log_root )
+    def __init__( self: Self, id: str, _log_root: str ) -> None:
+        super().__init__( id="1", root_dir = _log_root )
         BootLogGraph.instance = self
-        self.log_manager: GraphLogManager = GraphLogManager( _log_root )
+        self.log_manager: BootLogManager = BootLogManager( _log_root )
         self._log_keys: KeyDict = KeyDict()
 
         self.add_keydefs(
             [
                 StrKeyDef("priority", "PRIORITY", "evt"),
-                StrKeyDef("cmdLn", "_CMDLINE", "evt"),
+                StrKeyDef("facility", "SYSLOG_FACILITY", "evt"),
                 StrKeyDef("comm", "_COMM", "evt"),
+                StrKeyDef("subsystem", "_KERNEL_SUBSYSTEM", "evt"),
+                StrKeyDef("device", "_KERNEL_DEVICE", ""),
+                StrKeyDef("dev", "DEVICE", ""),
+                #
+                StrKeyDef("rttime", "__REALTIME_TIMESTAMP", ""),
+                StrKeyDef("logtime", "SYSLOG_TIMESTAMP", "evt"),
+                #
+                StrKeyDef("cmdline", "_CMDLINE", "evt"),
+                StrKeyDef("command", "COMMAND", "evt"),
                 StrKeyDef("exe", "_EXE", "evt"),
-                StrKeyDef("krSubSys", "_KERNEL_SUBSYSTEM", "evt"),
-                StrKeyDef("msg", "MESSAGE", "evt"),
-                StrKeyDef("pID", "_PID", "evt"),
-                StrKeyDef("slID", "SYSLOG_IDENTIFIER", "evt"),
-                StrKeyDef("slnxCtx", "_SELINUX_CONTEXT", "evt"),
-                StrKeyDef("slPID", "SYSLOG_PID", "evt"),
-                StrKeyDef("slTime", "SYSLOG_TIMESTAMP", "evt"),
-                StrKeyDef("sysdCgrp", "_SYSTEMD_CGROUP", "evt"),
-                StrKeyDef("sysdUsrUnit", "_SYSTEMD_USER_UNIT", "evt"),
-                StrKeyDef("sysFac", "SYSLOG_FACILITY", "evt"),
+                StrKeyDef("cfgfile", "CONFIG_FILE", ""),
+                StrKeyDef("codefn", "CODE_FUNC", ""),
+                StrKeyDef("message", "MESSAGE", "evt"),
+                #
+                StrKeyDef("pid", "_PID", "evt"),
+                StrKeyDef("logID", "SYSLOG_IDENTIFIER", "evt"),
+                StrKeyDef("logpid", "SYSLOG_PID", "evt"),
+                StrKeyDef("linuxctx", "_SELINUX_CONTEXT", "evt"),
+                StrKeyDef("cgroup", "_SYSTEMD_CGROUP", "evt"),
+                StrKeyDef("userunit", "_SYSTEMD_USER_UNIT", "evt"),
+                StrKeyDef("transport", "_TRANSPORT", ""),
+                #
                 StrKeyDef("bootID", "_BOOT_ID", ""),
                 StrKeyDef("seqNum", "__SEQNUM", ""),
                 StrKeyDef("mID", "_MACHINE_ID", ""),
                 StrKeyDef("hstName", "_HOSTNAME", ""),
-                StrKeyDef("trns", "_TRANSPORT", ""),
                 StrKeyDef("mTime", "__MONOTONIC_TIMESTAMP", ""),
                 StrKeyDef("rtScope", "_RUNTIME_SCOPE", ""),
-                StrKeyDef("krnDev", "_KERNEL_DEVICE", ""),
                 StrKeyDef("snID", "__SEQNUM_ID", ""),
                 StrKeyDef("rtTime", "__REALTIME_TIMESTAMP", ""),
                 StrKeyDef("usrUnit", "UNIT", ""),
@@ -72,7 +75,6 @@ class BootLogGraph( KeySchemaBase ):
                 StrKeyDef("ssysdUwnUID", "_SYSTEMD_OWNER_UID", ""),
                 StrKeyDef("strmID", "_STREAM_ID", ""),
                 StrKeyDef("audSes", "_AUDIT_SESSION", ""),
-                StrKeyDef("cdFn", "CODE_FUNC", ""),
                 StrKeyDef("cdLn", "CODE_LINE", ""),
                 StrKeyDef("cdFl", "CODE_FILE", ""),
                 StrKeyDef("sysdInvID", "_SYSTEMD_INVOCATION_ID", ""),
@@ -80,7 +82,6 @@ class BootLogGraph( KeySchemaBase ):
                 StrKeyDef("uID", "_UID", ""),
                 StrKeyDef("cur", "__CURSOR", ""),
                 StrKeyDef("cap_eff", "_CAP_EFFECTIVE", ""),
-                StrKeyDef("sysdCgrp", "_SYSTEMD_CGROUP", "evt"),
                 StrKeyDef("gID", "_GID", ""),
                 StrKeyDef("avPrty", "AVAILABLE_PRETTY", ""),
                 StrKeyDef("muPrty", "MAX_USE_PRETTY", ""),
@@ -97,10 +98,8 @@ class BootLogGraph( KeySchemaBase ):
                 StrKeyDef("usePrty", "CURRENT_USE_PRETTY", ""),
                 StrKeyDef("dskKpFrPrty", "DISK_KEEP_FREE_PRETTY", ""),
                 StrKeyDef("where", "WHERE", ""),
-                StrKeyDef("dev", "DEVICE", ""),
                 StrKeyDef("sysdRaw", "SYSLOG_RAW", ""),
                 StrKeyDef("cfgLine", "CONFIG_LINE", ""),
-                StrKeyDef("cfgFile", "CONFIG_FILE", ""),
                 StrKeyDef("taint", "TAINT", ""),
                 StrKeyDef("thID", "THREAD_ID", ""),
                 StrKeyDef("tmstBoot", "TIMESTAMP_BOOTTIME", ""),
@@ -130,7 +129,6 @@ class BootLogGraph( KeySchemaBase ):
                 StrKeyDef("usrUnit", "USER_UNIT", ""),
                 StrKeyDef("sysdSess", "_SYSTEMD_SESSION", ""),
                 StrKeyDef("topic", "TOPIC", ""),
-                StrKeyDef("command", "COMMAND", "evt"),
                 StrKeyDef("exitCd", "EXIT_CODE", ""),
                 StrKeyDef("exitSt", "EXIT_STATUS", ""),
                 StrKeyDef("unitRes", "UNIT_RESULT", ""),

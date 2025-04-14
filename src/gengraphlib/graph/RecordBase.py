@@ -14,20 +14,6 @@ class KeyGraphRoot(Protocol):
     def add_record( self: Self, graph_rec: RecordBase ) -> None:
         pass
 
-class RecordSet( Set[KeyValues] ):
-
-    def __init__( self: Self, graph_root: KeyGraphRoot, rec_index: int ) -> None:
-        pass
-
-    def __contains__( self, values : KeyValues ) -> bool:
-        pass
-
-    def __len__( self ) -> int:
-        pass
-
-    def __iter__( self ) -> Iterable[KeyValues]:
-        pass
-
 class RecordBase( GraphNodeBase ):
 
     def __init__( self: Self, _graph: KeyGraphRoot, rec_index: int, line_str: str | None = None ) -> None:

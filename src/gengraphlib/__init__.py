@@ -17,13 +17,14 @@ from .streamio import (
 )
 
 from .graph import (
-    GraphNodeBase, TGraphNode, NodeDict                                        # GraphNodes.py
-    , RecordBase                                                               # GraphLineBase.py
+      GraphNodeBase, TGraphNode, NodeDict                                        # GraphNodes.py
+    , KeyGraphRoot, RecordBase                                                               # GraphLineBase.py
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict        # KeyDefs.py
     , KeyGroupRec, KeyGroup, KeyGroups                                         # KeyGroups.py
     , LineRefList, KeyValues                                                   # KeyValues.py
     , KeySchemaBase                                                            # KeyRepository.py
-    , VectorValue, GraphVector, GraphValueResult                               # GraphVector
+    , VectorValue, GraphVector, GraphValueResult
+    , BootLogChainFilter
 )
 
 from .textlog import (
@@ -42,13 +43,14 @@ __all__ = [
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "GraphNodeBase", "TGraphNode", "NodeDict"
-    , "RecordBase"
+    , "KeyGraphRoot", "RecordBase"
     , "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValues"
     , "KeySchemaBase"
     , "VectorValue", "GraphVector", "GraphValueResult"
+    , "BootLogChainFilter"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

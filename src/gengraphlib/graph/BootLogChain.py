@@ -5,16 +5,27 @@ from src.gengraphlib import (
     DictOfLists,
     KeyValTypes,
     KeyDefBase,
-    ChainFilterBase,
+    ChainFilterBase, ChainableResult,
 )
 
+class BootLogChainResult( ChainableResult ):
 
-class BootLogChainFilter(ChainFilterBase):
+    def __init__( self: Self ) -> None:
+
+        super(BootLogChainResult, self).__init__()
+
+class BootLogChainFilter( ChainFilterBase[BootLogChainResult] ):
     def __init__( self: Self, key_schema: KeySchemaBase ) -> None:
         super(BootLogChainFilter, self).__init__()
         self.key_schema: KeySchemaBase = key_schema
         self.none_values: DictOfLists = DictOfLists()
         self.missing_keys: list[str] = []
+
+    async def _filter_result( self: Self, input_result: BootLogChainResult ) -> BootLogChainResult | None:
+        if input_result is None:
+            return self.null_result
+        else:
+            return input_result
 
     def process_keyvalue( self, key_def: KeyDefBase, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
 

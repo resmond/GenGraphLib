@@ -2,7 +2,7 @@ from typing import Self
 
 from src.gengraphlib import ChainSourceBase, ChainableResult
 
-class CmdChainSource[ T: ChainableResult ](ChainSourceBase[T]):
+class CmdChainSource[ T: ChainableResult ]( ChainSourceBase[T] ):
 
     def __init__(self, cmd):
         super(CmdChainSource, self).__init__()
