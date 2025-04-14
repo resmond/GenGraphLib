@@ -29,7 +29,7 @@ class TextBootLogLine( RecordBase ):
             self.message = field_values[ "message" ]
 
         except Exception as exc:
-            print(f"error: {self.line_str}")
+            print(f"error: {self.rec_str}" )
             print(f"dict: {field_values}" )
             print(f"Eception:{exc}")
             result_state = ResultState.Exception

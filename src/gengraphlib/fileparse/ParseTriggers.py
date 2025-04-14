@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from typing import  Self
+
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum

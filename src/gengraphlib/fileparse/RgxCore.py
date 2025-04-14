@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Self, Pattern, Match, overload
 import regex as rx
 
