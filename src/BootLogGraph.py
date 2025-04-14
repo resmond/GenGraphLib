@@ -2,44 +2,33 @@ from typing import Self
 
 from gengraphlib import (
     KeyDefBase,
-    StrKeyProp,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
     KeyDict,
     KeySchemaBase,
-    BootLogDirBase,
-    BootLogManagerBase,
-    FieldProcessor
+    BootLogManager,
 )
 from src.gengraphlib import KeyValTypes
 
+class GraphLogManager( BootLogManager ):
 
-class GraphLogDir( BootLogDirBase ):
-    def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
-        super().__init__( root_dir, log_rec )
-
-class GraphLogManager( BootLogManagerBase ):
-
-    def __init__( self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
-        super().__init__( root_dir, field_processor )
+    def __init__( self: Self, root_dir: str ) -> None:
+        super().__init__( root_dir )
 
 class BootLogGraph( KeySchemaBase ):
     instance: Self | None = None
 
-    priority: StrKeyProp = StrKeyProp( _json_key="priority", _log_key="PRIORITY", groups=["evt"] )
-
     def __init__( self: Self, _log_root: str ) -> None:
         super().__init__( _log_root )
         BootLogGraph.instance = self
-        self.dir_manager: GraphLogManager = GraphLogManager( _log_root, self )
+        self.log_manager: GraphLogManager = GraphLogManager( _log_root )
         self._log_keys: KeyDict = KeyDict()
 
         self.add_keydefs(
             [
-                #StrKeyDef("priority", "PRIORITY", ["evt", "priority"]),
-                self.priority,
+                StrKeyDef("priority", "PRIORITY", "evt"),
                 StrKeyDef("cmdLn", "_CMDLINE", "evt"),
                 StrKeyDef("comm", "_COMM", "evt"),
                 StrKeyDef("exe", "_EXE", "evt"),
@@ -184,6 +173,6 @@ class BootLogGraph( KeySchemaBase ):
             return False
 
     async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
-        await self.dir_manager.exec( specific_ndx, full_reparse )
+        #await self.dir_manager.exec( specific_ndx, full_reparse )
         return True
 

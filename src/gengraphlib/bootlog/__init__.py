@@ -1,7 +1,7 @@
-from .BootLogDirBase import BootLogDirBase
-from .BootLogManagerBase import BootLogManagerBase
+from .BootLogDir import BootLogDir
+from .BootLogManager import BootLogManager
 
 __all__ = [
-      "BootLogDirBase"
-    , "BootLogManagerBase"
+    "BootLogDir"
+    , "BootLogManager"
 ]

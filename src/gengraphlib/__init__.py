@@ -20,7 +20,6 @@ from .graph import (
     GraphNodeBase, TGraphNode, NodeDict                                        # GraphNodes.py
     , RecordBase                                                               # GraphLineBase.py
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict        # KeyDefs.py
-    , StrKeyProp, FieldProcessor                                               # KeyProps.py
     , KeyGroupRec, KeyGroup, KeyGroups                                         # KeyGroups.py
     , LineRefList, KeyValues                                                   # KeyValues.py
     , KeySchemaBase                                                            # KeyRepository.py
@@ -33,7 +32,7 @@ from .textlog import (
     , TextLogParseContext, TextLogGraph                                        # TextLogGraph
 )
 
-from .bootlog import BootLogDirBase, BootLogManagerBase
+from .bootlog import BootLogDir, BootLogManager
 
 __all__ = [
       "CmdStreamSource"
@@ -45,7 +44,6 @@ __all__ = [
     , "GraphNodeBase", "TGraphNode", "NodeDict"
     , "RecordBase"
     , "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef", "KeyDict"
-    , "StrKeyProp", "FieldProcessor"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValues"
@@ -56,5 +54,5 @@ __all__ = [
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
     , "TextLogParseContext", "TextLogGraph"
 
-    , "BootLogDirBase", "BootLogManagerBase"
+    , "BootLogDir", "BootLogManager"
 ]

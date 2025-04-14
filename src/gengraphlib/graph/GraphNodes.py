@@ -6,20 +6,18 @@ from sortedcontainers import SortedList
     NodeBase is the root of the hierarchy
       
 """
-
-
 class GraphNodeBase:
 
-    def __init__(self: Self, id: str):
-        super(GraphNodeBase, self).__init__()
+    def __init__(self: Self, id: str) -> None:
         self.id: str = id
+        super(GraphNodeBase, self).__init__()
 
 TGraphNode = TypeVar( 'TGraphNode', bound = GraphNodeBase )
 
 class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
 
-    def __init__(self: Self, id: str):
-        super().__init__(id=id)
+    def __init__(self: Self, id: str) -> None:
+        super(NodeDict, self).__init__(id=id)
 
     def add( self: Self, item: TGraphNode ) -> None:
         self[ item.id ] = item
@@ -28,7 +26,7 @@ class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
         self[ other.id ] = other
 
     @abstractmethod
-    def __missing__(self, key: str) -> TNode:
+    def __missing__(self: Self, key: str) -> TNode:
         new_node: TGraphNode = TGraphNode.__new__( TGraphNode )
         self[key] = new_node
         return new_node
@@ -36,7 +34,7 @@ class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
 class IndexedNodeList[ TNode: GraphNodeBase ]( GraphNodeBase, SortedList[TNode ] ):
     #id: str = Field( None, alias="id" )
     # list: defaultdict[int,T] = []
-    def __init__( self: Self, id: str ):
+    def __init__( self: Self, id: str ) -> None:
         super(IndexedNodeList, self).__init__(id=id)
 
     #def add_item(self: Self, item: T) -> None:

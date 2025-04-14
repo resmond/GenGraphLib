@@ -5,8 +5,8 @@ from typing import Self
 import datetime as dt
 import os as os
 
-from src.gengraphlib import KeyValTypes, FieldProcessor
-from .BootLogDirBase import BootLogDirBase
+from src.gengraphlib import KeyValTypes
+from .BootLogDir import BootLogDir
 
 #class GraphCmd( StrEnum ):
 #    Full    = "Full"
@@ -29,37 +29,18 @@ from .BootLogDirBase import BootLogDirBase
 
 --------------------------------------------------------"""
 
-class BootLogManagerBase:
+class BootLogManager:
 
-    def __init__(self: Self, root_dir: str, field_processor: FieldProcessor ) -> None:
-        super(BootLogManagerBase, self).__init__()
+    def __init__(self: Self, root_dir: str ) -> None:
+        super( BootLogManager, self ).__init__()
         self.root_dir: str = root_dir
         self.full_reparse: bool = True
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.jline" )
-        self._bootdir_list: list[BootLogDirBase] = list[BootLogDirBase]()
-        self._bootdir_dict: dict[ dt.datetime, BootLogDirBase ] = {}
+        self._bootdir_list: list[BootLogDir ] = list[BootLogDir ]()
+        self._bootdir_dict: dict[ dt.datetime, BootLogDir ] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
-        self._field_processor: FieldProcessor = field_processor
-
-    """
-        exec - starts LogDirManager execution
-            exec_cmd - either Full or Refresh
-                Full - processes all boot records from fresh exports from journalctl
-                Refresh - processes of the last two boot records from fresh exports
-            specific_ndx - index of specific boot record to process else it processes them all
-    """
-    async def exec( self: Self, specific_ndx: int | None, full_reparse: bool = True  ) -> bool:
-        self.full_reparse = full_reparse
-
-        if self.full_reparse or not self._load_txt():
-            self._query_bootlist()
-
-        if self._load_txt():
-            return await self.process_dirs( specific_ndx )
-        else:
-            return False
 
     """
         _log_querylist
@@ -88,7 +69,7 @@ class BootLogManagerBase:
 
                 for log_line in file:
                     if not first_line:
-                        boot_log_dir = BootLogDirBase(self.root_dir, log_line )
+                        boot_log_dir = BootLogDir( self.root_dir, log_line )
                         self._bootdir_list.append( boot_log_dir )
                         self._bootdir_dict[ boot_log_dir.first_dt ] = boot_log_dir
                     else:
@@ -119,56 +100,50 @@ class BootLogManagerBase:
             return False
 
     """
-        process_dirs
-            either selects a specific boot record to loops through them all and calls BootRecDir.exec() on each
+        exec - starts LogDirManager execution
+            exec_cmd - either Full or Refresh
+                Full - processes all boot records from fresh exports from journalctl
+                Refresh - processes of the last two boot records from fresh exports
+            specific_ndx - index of specific boot record to process else it processes them all
     """
+    async def get_pipedchain( self: Self, specific_ndx: int, full_reparse: bool = True  ) -> bool:
+        self.full_reparse = full_reparse
 
+        if self.full_reparse or not self._load_txt():
+            self._query_bootlist()
 
-    async def process_dirs( self: Self, specific_idx: int | None = None ) -> bool:
-        if specific_idx is not None:
-            boot_log_dir = self._bootdir_list[ specific_idx ]
-            print(f'LogDirManager.process_dirs: specific_idx: {specific_idx}: {boot_log_dir.first_dt} ')
-            return await self.process_bootlog( boot_log_dir )
-        else:
-            for bool_log_dir in self._bootdir_list:
-                if not await self.process_bootlog( bool_log_dir ):
-                    print(f'LogDirManager.process_dirs: failed: {bool_log_dir.id}:{bool_log_dir.first_dt}')
-                    return False
-        return True
+        if self._load_txt():
+            boot_log_dir = self._bootdir_list[ specific_ndx ]
+            print(f'LogDirManager.process_dirs: specific_idx: {specific_ndx}: {boot_log_dir.first_dt} ')
 
-    """
-        process_dir
-    """
-    async def process_bootlog( self: Self, boot_log_dir: BootLogDirBase ) -> bool:
-
-        cnt: int = -1
-        key_values: dict[str, KeyValTypes] = {}
-        line: str = ""
-        try:
-
-            async for line in boot_log_dir.stream():
-
-                try:
-                    cnt += 1
-                    key_values = json.loads(line)
-
-                except json.decoder.JSONDecodeError as jserr:
-                    print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
-                    print(f"    line:  {line}")
-                    print(f"  fields:  {key_values}")
-
-                else:
+            cnt: int = -1
+            key_values: dict[str, KeyValTypes] = {}
+            line: str = ""
+            try:
+    
+                async for line in boot_log_dir.stream():
 
                     try:
-                        self._field_processor.process_keyvalues( key_values, cnt, line )
+                        cnt += 1
+                        key_values = json.loads(line)
 
-                    except Exception as fnexc:
-                        print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
+                    except json.decoder.JSONDecodeError as jserr:
+                        print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
+                        print(f"    line:  {line}")
+                        print(f"  fields:  {key_values}")
 
-        except Exception as exc:
-            print(f"[LogDirManagerBase.process_bootlog] boot_log_dir.streams() Exception: {exc}")
-            print(f"    line:  {line}")
-            print(f"  fields:  {key_values}")
+                    else:
+
+                        try:
+                            self._field_processor.process_keyvalues( key_values, cnt, line )
+
+                        except Exception as fnexc:
+                            print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
+
+            except Exception as exc:
+                print(f"[LogDirManagerBase.process_bootlog] boot_log_dir.streams() Exception: {exc}")
+                print(f"    line:  {line}")
+                print(f"  fields:  {key_values}")
 
         return True
 

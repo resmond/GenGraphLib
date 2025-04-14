@@ -10,8 +10,7 @@ from src.gengraphlib import (
     keygroup_rec,
     KeyDefBase,
     KeyValTypes,
-    KeyGroups,
-    DictOfLists,
+    KeyGroups
 )
 
 from src.gengraphlib.graph.KeyProps import KeyPropBase
@@ -30,8 +29,6 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
         super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir
         self.key_groups: KeyGroups = KeyGroups(self)
-        self.none_values: DictOfLists = DictOfLists()
-        self.missing_keys: list[str] = []
 
     def __init_subclass__( cls ):
         super().__init_subclass__()
@@ -90,70 +87,6 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
 
         return None
 
-    def process_keyvalues( self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
-
-        for log_key, value in fields.items():
-            self.process_field( log_key, value, line_num, log_line )
-
-        return True
-
-    def process_field( self: Self, key: str, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
-        key_def: KeyDefBase | None = self.get(key, None)
-        if key_def is not None:
-            return self.process_keyvalue( key_def, value, rec_num, rec_line )
-        else:
-            return False
-
-    def process_keyvalue( self, key_def: KeyDefBase, value: KeyValTypes, rec_num: int, rec_line: str = "" ) -> bool:
-
-        result: bool = False
-
-        json_key = key_def.json_key
-
-        if value is None:
-            self.none_values.add_entry( json_key, rec_line )
-
-        """
-        elif key_def.dologing:
-            try:
-                #val_result: AddValueResult | None = None
-                match type(value).__name__:
-                    case "str":
-                        val_result = self[json_key].add_jvalue( value, rec_num )
-                    case "datetime":
-                        val_result = self[json_key].add_jvalue( value, rec_num )
-                    case "int":
-                        val_result = self[json_key].add_jvalue( value, rec_num )
-                    case "bool":
-                        val_result = self[json_key].add_jvalue( value, rec_num )
-                    case "float":
-                        val_result = self[json_key].add_jvalue( value, rec_num )
-                    case "list":
-                        str_val = str(value)
-                        val_result = self[json_key].add_jvalue( str_val, rec_num )
-                    case _:
-                        print(f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} unhandeled valuetype" )
-
-#                if val_result is not None:
-#                    self.keyvalue_trigger( val_result )
-
-                result = True
-
-            except Exception as valexc:
-                print( f"[KeyGraphBase.process_field ({json_key}:{json_key}={value})] type: {type( value )} ValueError: {valexc}" )
-                
-        else:
-            if json_key not in self.missing_keys:
-                self.missing_keys.append( json_key )
-
-            """
-        return result
-
-#    @abstractmethod
-#    def keyvalue_trigger( self: Self, val_result: KeyValueTriggerBase ) -> AddValueResult:
-#        print(f"[Trigger]: {val_result}")
-#        return val_result
-
     def read_json(self: Self, filepath: str):
         try:
             line_num: int = 0
@@ -206,4 +139,6 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
 
         except Exception as exc:
             print(f'KeyGraphBase.dump_key_groups: Exception: {exc}')
+
+
 

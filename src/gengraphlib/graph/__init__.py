@@ -1,20 +1,18 @@
 from .GraphNodes import GraphNodeBase, TGraphNode, NodeDict
 from .RecordBase import RecordBase
 from .KeyDefs import KeyType, KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict
-from .KeyProps import StrKeyProp
 from .KeyGroups import KeyGroupRec, KeyGroup, KeyGroups
 from .KeyValues import LineRefList, KeyValues
-from .KeySchemaBase import KeySchemaBase, FieldProcessor
+from .KeySchemaBase import KeySchemaBase
 from .GraphVector import VectorValue, GraphVector, GraphValueResult
 
 __all__ = [
       "GraphNodeBase", "TGraphNode", "NodeDict"
     , "RecordBase"
     , "KeyType", "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef", "KeyDict"
-    , "StrKeyProp"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
     , "LineRefList", "KeyValues"
-    , "KeyDict", "KeySchemaBase", "FieldProcessor"
+    , "KeyDict", "KeySchemaBase"
 
     , "VectorValue", "GraphVector", "GraphValueResult"
 ]

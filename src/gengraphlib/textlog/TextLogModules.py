@@ -6,9 +6,9 @@ from .TextBootLogLines import TextBootLogLine
 class TextLogModule( GraphNodeBase ):
 
     def __init__(self: Self, id: str) -> None:
+        super(TextLogModule, self).__init__( id=id )
         self.module_type_node: GraphNodeBase | None = None
         self.events: NodeDict[ GraphNodeBase ] | None = None
-        super().__init__( id=id )
 
     def add_event( self: Self, event_node: GraphNodeBase ) -> None:
         if self.events is None:
@@ -19,7 +19,7 @@ class TextLogModule( GraphNodeBase ):
 class TextLogModules( NodeDict[ TextLogModule ] ):
 
     def __init__(self: Self, id: str = "module_node_dict") -> None:
-        super().__init__( id=id )
+        super(TextLogModules, self).__init__( id=id )
 
     def __missing__(self, key) -> TextLogModule:
         self[key] = new_node = TextLogModule( id=key )
@@ -28,7 +28,7 @@ class TextLogModules( NodeDict[ TextLogModule ] ):
 class TextLogModuleType( NodeDict[ TextLogModules ] ):
 
     def __init__( self: Self, id: str = "module_type_node" ) -> None:
-        super().__init__( id=id )
+        super(TextLogModuleType, self).__init__( id=id )
         #self.module_nodes = ModuleNodeDict(id="model_node_dict")
         #self.module_nodes[line_node.module_id] = ModuleNode( id=line_node.module_id, module_type_node=self )
 
@@ -39,16 +39,16 @@ class TextLogModuleType( NodeDict[ TextLogModules ] ):
 class TextLogModuleTypes( NodeDict[ TextLogModuleType ] ):
 
     def __init__( self: Self ) -> None:
-        super().__init__( id= "module_type_dict" )
+        super(TextLogModuleTypes, self).__init__( id= "module_type_dict" )
 
-    def __missing__(self, key) -> TextLogModuleType:
+    def __missing__(self: Self, key) -> TextLogModuleType:
         self[key] = new_node = TextLogModuleType( id=key )
         return new_node
 
     def accept_line_node( self: Self, line_node: TextBootLogLine ) -> None:
         self[ line_node.module_type_id ][ line_node.module_id ] = line_node
 
-    def __add__( self, other: TextBootLogLine ) -> None:
+    def __add__( self: Self, other: TextBootLogLine ) -> None:
         self.accept_line_node(other)
 
 #    def add_node( self: Self, line_node: ModuleTypeNode ) -> None:
