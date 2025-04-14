@@ -1,13 +1,13 @@
 from collections.abc import Iterable
 from typing import Self
 
-from .. import KeyFilter
+
+from .. import KeyFilter, KeyGroupRec
+from .  import KeyDefBase, KeyDefDict
+
 from .GraphVector import GraphVector
-from .KeyDefs import KeyDefBase
 
-KeyGroupRec = tuple[str] |tuple[str, str] | tuple[str, str, Iterable[str]]
-
-class KeyGroup( dict[str, KeyDefBase ] ):
+class KeyGroup( KeyDefDict ):
     def __init__( self: Self, group_id: str, group_desc: str = "" ) -> None:
         super().__init__()
         self.group_id: str = group_id
@@ -17,6 +17,7 @@ class KeyGroup( dict[str, KeyDefBase ] ):
         self[ key_def.json_key ]( key_def )
 
     def create_vector( self: Self, _key_filter: KeyFilter ) -> GraphVector:
+
         return GraphVector( self, _key_filter )
 
 class KeyGroups( dict[str, KeyGroup ] ):

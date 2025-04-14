@@ -28,6 +28,7 @@ dynamic = [
 ]
 dependencies = [
     "objgraph>=3.6.2",
+    "simsimd>=6.2.1",
 ]
 
 

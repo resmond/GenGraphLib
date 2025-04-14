@@ -2,7 +2,9 @@ from typing import Self
 
 import asyncio as aio
 
-from src.gengraphlib import KeyFilter, KeyGroup, KeyDefBase, SerializationType
+from src.gengraphlib.common import SerializationType, KeyFilter
+
+from . import KeyDefBase, KeyDefDict
 
 class VectorValue:
 
@@ -15,10 +17,10 @@ class VectorValue:
             self.field_name: str = _alias
 
 class GraphVector( dict[str, VectorValue ] ):
-
-    def __init__( self, _key_group: KeyGroup, _key_filter: KeyFilter ):
+    def __init__( self, _key_group: KeyDefDict  , _key_filter: KeyFilter ):
         super().__init__()
-        self._key_group: KeyGroup = _key_group
+
+        self._key_group: KeyDefDict = _key_group
         self._filter_map: KeyFilter = _key_filter
 
         for json_key, key_def in self._key_group.items():

@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 import datetime as dt
 from enum import IntEnum
 from typing import Self
@@ -7,6 +7,7 @@ KeyValTypes: type = type[str, int, bool, dt.datetime, float]
 process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 keygroup_rec = tuple[str, str, str | None, list[str] | None]
 KeyFilter: type = dict[str, str | None ]
+KeyGroupRec = tuple[str] |tuple[str, str] | tuple[str, str, Iterable[str]]
 
 class KeyType( IntEnum ):
     KStr         = 1

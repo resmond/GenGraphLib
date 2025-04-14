@@ -1,11 +1,13 @@
 from typing import Self
 
+from . import KeyDefBase
+from .KeySchemaBase import KeySchemaBase
+
 from src.gengraphlib import (
-    KeySchemaBase,
     DictOfLists,
     KeyValTypes,
-    KeyDefBase,
-    ChainFilterBase, ChainableResult,
+    ChainFilterBase,
+    ChainableResult,
 )
 
 class BootLogChainResult( ChainableResult ):

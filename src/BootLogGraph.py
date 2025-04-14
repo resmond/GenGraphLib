@@ -15,7 +15,7 @@ class BootLogGraph( KeySchemaBase ):
     instance: Self | None = None
 
     def __init__( self: Self, id: str, _log_root: str ) -> None:
-        super().__init__( id="1", root_dir = _log_root )
+        super().__init__( id=id, root_dir = _log_root )
         BootLogGraph.instance = self
         self.log_manager: BootLogManager = BootLogManager( _log_root )
         self._log_keys: KeyDict = KeyDict()

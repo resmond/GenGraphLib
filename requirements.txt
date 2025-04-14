@@ -11,3 +11,4 @@ pandas
 sortedcontainers
 sortedcontainers-stubs
 progress
+simsimd

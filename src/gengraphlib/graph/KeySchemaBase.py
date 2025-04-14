@@ -6,16 +6,17 @@ import os
 
 from progress.bar import Bar
 
-from src.gengraphlib import (
-    keygroup_rec,
-    KeyDefBase,
-    KeyValTypes,
-    KeyGroups,
+from ..  import KeyValTypes, keygroup_rec
+
+from . import (
     RecordBase,
-    KeyGraphRoot
+    KeyDefBase,
+    KeyDefDict,
+    KeyGroups,
+    GraphRecordRoot
 )
 
-class KeySchemaBase( dict[str, KeyDefBase ], KeyGraphRoot ):
+class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir

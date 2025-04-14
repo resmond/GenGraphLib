@@ -1,52 +1,9 @@
-from __future__ import annotations
 from typing import Self
 
 import datetime as dt
 
-from src.gengraphlib import KeyValTypes, KeyType, KeyValues
-
-class KeyDefBase[T: KeyValTypes]:
-    def __init__( self: Self, _json_key: str, _log_key: str, _key_type: KeyType, groups: list[str] | str | None = None) -> None:
-        super(KeyDefBase, self).__init__()
-        self.json_key: str = _json_key
-        self.log_key: str = _log_key
-        self.key_type: KeyType = _key_type
-        self.groups: list[str] | None = None
-        self._skip: bool = True
-        self._event_trigger: bool = False
-        self.key_values: KeyValues[T] = KeyValues[T]( self )
-
-        match groups:
-            case str() if groups in ["skip", ""]:
-                pass
-            case str():
-                self.groups = [groups]
-                self._skip = False
-            case [] if len(groups) > 0:
-                self.groups = groups
-                self._skip = False
-
-    @property
-    def dologing( self: Self ) -> bool:
-        return not self._skip
-
-    #def add_value( self: Self, new_value: T, line_num: int ) -> AddValueResult:
-    #    if self._skip:
-    #        return None
-    #    else:
-    #        return self.key_values.add_value(new_value, line_num)
-
-
-    #@abstractmethod
-    #def add_jvalue( self: Self, jvalue: KeyValTypes, line_num: int ) -> AddValueResult:
-    #    pass
-
-"""
-    def add_trigger( self: Self, trigger: KeyValueTriggerBase[T] ) -> None:
-        self.key_values.add_trigger( trigger )
-        self._event_trigger = True
-        self._skip = False
-"""
+from src.gengraphlib import KeyType
+from src.gengraphlib.graph import KeyDefBase
 
 """   StrKeyDef
 
