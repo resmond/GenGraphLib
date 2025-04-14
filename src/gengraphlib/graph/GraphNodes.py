@@ -19,10 +19,10 @@ class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
     def __init__(self: Self, id: str) -> None:
         super(NodeDict, self).__init__(id=id)
 
-    def add( self: Self, item: TGraphNode ) -> None:
+    def add( self: Self, item: TNode ) -> None:
         self[ item.id ] = item
 
-    def __add__( self: Self, other: TGraphNode ) -> None:
+    def __add__( self: Self, other: TNode ) -> None:
         self[ other.id ] = other
 
     @abstractmethod
@@ -32,15 +32,7 @@ class NodeDict[ TNode: GraphNodeBase ]( GraphNodeBase, dict[ str, TNode ] ):
         return new_node
 
 class IndexedNodeList[ TNode: GraphNodeBase ]( GraphNodeBase, SortedList[TNode ] ):
-    #id: str = Field( None, alias="id" )
-    # list: defaultdict[int,T] = []
     def __init__( self: Self, id: str ) -> None:
         super(IndexedNodeList, self).__init__(id=id)
-
-    #def add_item(self: Self, item: T) -> None:
-    #    self[len(self.list)] = item
-
-    #def __add__(self: Self, other: T):
-    #    self[len(self.list)] = other
 
 

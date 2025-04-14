@@ -1,4 +1,4 @@
-from typing import Self, Protocol
+from typing import Self
 from collections.abc import Iterable
 
 import json
@@ -13,18 +13,7 @@ from src.gengraphlib import (
     KeyGroups
 )
 
-from src.gengraphlib.graph.KeyProps import KeyPropBase
-
-class FieldProcessor( Protocol ):
-    def process_keyvalues( self: Self, fields: dict[str,KeyValTypes ], line_num: int, log_line: str ) -> bool:
-        pass
-
-"""
-    KeySchemaBase
-"""
-
-
-class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
+class KeySchemaBase( dict[str, KeyDefBase ] ):
     def __init__( self: Self, root_dir: str ) -> None:
         super(KeySchemaBase, self).__init__()
         self._root_dir = root_dir
@@ -77,14 +66,6 @@ class KeySchemaBase( dict[str, KeyDefBase ], FieldProcessor ):
             key_def: KeyDefBase = self[key]
             if isinstance(key_def, KeyDefBase):
                 return key_def
-        return None
-
-    def get_typed_keyprop[T: KeyValTypes]( self, key: str ) -> KeyPropBase[T]  | None:
-        if key in self:
-            key_def: KeyDefBase = self[key]
-            if isinstance(key_def, KeyPropBase):
-                return key_def
-
         return None
 
     def read_json(self: Self, filepath: str):
