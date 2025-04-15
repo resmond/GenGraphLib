@@ -1,26 +1,13 @@
-from __future__ import annotations
-
 from typing import Self
 
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator
 
 import asyncio as aio
 import asyncio.subprocess as asub
 
-from .. import GraphRecordRoot
-
-dispatch_fn: Callable[str, None] | None = None
-
-class KeyValueDispatcher(dict[bytes,dispatch_fn]):
-
-    def __init__(self: Self, key_schema: GraphRecordRoot ):
-        super(KeyValueDispatcher, self).__init__()
-        self.key_schema: GraphRecordRoot = key_schema
-
 class CmdKeyValueStream:
 
-    def __init__(self: Self, cmd: str, key_schema: GraphRecordRoot ):
-        self.key_schema: GraphRecordRoot = key_schema
+    def __init__(self: Self, cmd: str ):
         self.cmd: str = cmd
 
     async def pipe( self: Self ) -> AsyncGenerator[ bytes, None ]:

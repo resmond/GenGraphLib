@@ -2,7 +2,9 @@ from typing import Self
 
 import datetime as dt
 
-from .. import KeyType, KeyValTypes, KeyDefInterface, KeyValues
+from .. import KeyType, KeyValTypes, KeyDefInterface
+
+from .. import KeyValues
 
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def __init__( self: Self, json_key: str, log_key: str, key_type: KeyType, groups: list[str] | str | None = None ) -> None:
@@ -32,11 +34,11 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def visit( self: Self, visitor ) -> None:
         visitor.visit_key_def( self )
 
+
+
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
         super(StrKeyDef, self).__init__( json_key, log_key, KeyType.KStr, groups )
-
-
 
 class IntKeyDef( KeyDefBase[int] ):
     def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:

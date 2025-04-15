@@ -12,7 +12,7 @@ from .fileparse import (
 )
 
 from .streamio import (
-    ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
+      ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
     , PipedChainBase, ChainSinkBase, ChainSourceBase, ChainFilterBase
     , CmdKeyValueStream
 )

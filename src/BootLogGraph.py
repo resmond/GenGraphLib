@@ -181,7 +181,7 @@ class BootLogGraph( KeySchemaBase ):
         print(f"start: {start}")
 
         with open("/home/richard/data/jctl-logs/rawout.bin", "wb") as writer:
-            command_source = CmdKeyValueStream("journalctl -b -1 -o export", self)
+            command_source = CmdKeyValueStream("journalctl -b -1 -o export" )
             async for buffer_result in command_source.pipe():
                 writer.write(buffer_result)
 
@@ -190,6 +190,8 @@ class BootLogGraph( KeySchemaBase ):
         print(f"elapsed: {end - start}")
 
         print(f"BootLogGraph.exec(): {self.id} LogDir: {log_dir.dir_path}")
+
     
+
 
 

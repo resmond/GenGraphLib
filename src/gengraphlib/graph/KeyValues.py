@@ -5,20 +5,21 @@ import datetime as dt
 from sortedcontainers import SortedDict
 
 from .. import (
+    KeyType,
     KeyValTypes,
     LineRefList,
-    KeyDefInterface,
-    GNodeInterface,
-    KeyValuesInterface,
-    value_event_fn,
-    KeyType,
-    KeyValueEvent,
+    value_event_fn
 )
 
+from .. import (
+    KeyDefInterface,
+    KeyValuesInterface,
+    KeyValueEvent
+)
 
-class KeyValues[T: KeyValTypes](
-    SortedDict[T, LineRefList], GNodeInterface, KeyValuesInterface
-):
+#from .. import GNodeInterface
+
+class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface ):
     def __init__(self: Self, _key_def: KeyDefInterface[T]) -> None:
         super(KeyValues, self).__init__()
 

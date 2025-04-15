@@ -1,17 +1,10 @@
-from .GraphLib import (
-    GNodeInterface,
-    NodeDict,
-    IndexedNodeList,
-    GraphRecordRoot,
-    RecordBase
-)
-
+from .GraphLib import GNodeInterface, NodeDict, IndexedNodeList, GraphRecordRoot, RecordBase
+from .KeyValues import KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
 from .KeyGroups import KeyGroup, KeyGroups
-from .KeyValues import KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
+from .GraphVector import VectorValue, GraphVector, GraphValueResult
 from .KeySchemaBase import KeySchemaBase
 from .KeyValVisitor import KeyValueVisitorBase
-from .GraphVector import VectorValue, GraphVector, GraphValueResult
 
 __all__ = [
       "GNodeInterface", "NodeDict", "IndexedNodeList", "GraphRecordRoot", "RecordBase"

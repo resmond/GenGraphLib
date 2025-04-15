@@ -127,7 +127,11 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
         except FileNotFoundError as ext:
             print(f'[KeySchemaBase.read_json]FileNotFoundError: {ext} - {filepath}')
 
-    def dump_key_values( self: Self, source_id: str = "all",  line_numbers: bool = False ) -> None:
+    def persist_data( self: Self ):
+        self._persist_keys()
+        self._log_traces()
+
+    def _persist_keys( self: Self, source_id: str = "all", line_numbers: bool = False ) -> None:
 
         key: str = ""
         try:
@@ -150,7 +154,7 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
         except Exception as exc:
             print(f'[KeySchemaBase.dump_key_values] ({key})  Exception: {exc}')
 
-    def dump_trace_groups( self: Self ) -> None:
+    def _log_traces( self: Self ) -> None:
         try:
             data_str = json.dumps( self.missing_keys, indent=4 )
             file_path = os.path.join( self._root_dir, "missedkeys.json" )

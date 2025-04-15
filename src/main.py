@@ -6,13 +6,8 @@ async def main() -> bool:
     print("main() start")
 
     log_graph = BootLogGraph( id="1", _log_root = "/home/richard/data/jctl-logs/" )
-
-    #help(log_graph)
-    
     await log_graph.exec( specific_ndx=-1 )
-
-    log_graph.dump_trace_groups()
-    log_graph.dump_key_values()
+    log_graph.persist_data()
 
     print("main() complete")
     return True

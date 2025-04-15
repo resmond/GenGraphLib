@@ -5,7 +5,6 @@ from sortedcontainers import SortedList
 
 from .. import KValueDict, KeyDefInterface
 
-
 class GNodeInterface( Protocol ):
     id: str
 
