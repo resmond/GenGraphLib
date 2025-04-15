@@ -1,27 +1,21 @@
 from .GraphLib import (
-    LineRefList,
-    GraphNodeBase,
-    TGraphNode,
+    GNodeInterface,
     NodeDict,
     IndexedNodeList,
     GraphRecordRoot,
-    RecordBase,
-    KeyDefSig,
-    KeyDefBase,
-    KeyDefDict,
-    KeyValues
+    RecordBase
 )
 
-from .KeyDefs import StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict
+from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict
 from .KeyGroups import KeyGroup, KeyGroups
-from .KeyValues import StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
+from .KeyValues import KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
 from .KeySchemaBase import KeySchemaBase
 from .GraphVector import VectorValue, GraphVector, GraphValueResult
 from src.gengraphlib.streamio.LogChainObjs import BootLogChainFilter
 
 __all__ = [
-      "LineRefList", "GraphNodeBase", "TGraphNode", "NodeDict", "IndexedNodeList", "GraphRecordRoot", "RecordBase"
-    , "KeyDefSig", "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
+      "GNodeInterface", "NodeDict", "IndexedNodeList", "GraphRecordRoot", "RecordBase"
+    , "KeyDefBase", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef"
     , "KeyDict" , "KeyValues", "KeyGroup", "KeyGroups"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeyDict", "KeySchemaBase"

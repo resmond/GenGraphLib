@@ -1,13 +1,15 @@
 from typing import Self
 
-from src.gengraphlib.graph import KeyDefBase
-from src.gengraphlib.graph.KeySchemaBase import KeySchemaBase
+from .. import
+from .. import
 
-from src.gengraphlib import (
+from .. import (
     DictOfLists,
     KeyValTypes,
     ChainFilterBase,
+    KeyDefBase,
     ChainableResult,
+    KeySchemaBase
     #CommandChainSource
 )
 

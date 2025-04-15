@@ -2,6 +2,7 @@
 
 from .common import (
       KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
+    , IValueTuple, SValueTuple, KValueDict, KeyDefInterface, KeyDefDict, LineRefList
     , KeyFilter, KeyType, SerializationType, DictOfLists
 )
 
@@ -11,17 +12,17 @@ from .fileparse import (
 )
 
 from .streamio import (
-    ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
+      ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
     , PipedChainBase, ChainSinkBase, ChainSourceBase, ChainFilterBase
     , CmdChainSource
 )
 
 from .graph import (
-    LineRefList, GraphNodeBase, TGraphNode, NodeDict, IndexedNodeList                     # GraphLib.py
-    , GraphRecordRoot, RecordBase, KeyValues, KeyDefSig                                        # GraphLineBase.py
-    , KeyDefBase, KeyDefDict, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict        # KeyDefs.py
-    , KeyGroup, KeyGroups                                                                  # KeyGroups.py
-    , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet                                                   # KeyValues.py
+      NodeDict, IndexedNodeList, GNodeInterface
+    , GraphRecordRoot, RecordBase, KeyValues
+    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict
+    , KeyGroup, KeyGroups
+    , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
     , KeySchemaBase, VectorValue, GraphVector, GraphValueResult
     , BootLogChainFilter
 )
@@ -38,10 +39,11 @@ __all__ = [
       "ChainableResult", "PipeChainType", "StreamType", "ChainErr", "ChainException", "PipedChainBase"
     , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CmdChainSource"
     , "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType", "DictOfLists"
+    , "IValueTuple", "SValueTuple", "KValueDict", "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
-    , "GraphNodeBase", "TGraphNode", "NodeDict", "IndexedNodeList"
-    , "GraphRecordRoot", "RecordBase", "KeyDefSig"
+    , "NodeDict", "IndexedNodeList", "GNodeInterface"
+    , "GraphRecordRoot", "RecordBase", "KeyDefInterface"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 

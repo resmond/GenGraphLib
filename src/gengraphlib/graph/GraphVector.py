@@ -2,14 +2,13 @@ from typing import Self
 
 import asyncio as aio
 
-from .. import SerializationType, KeyFilter
-from .  import KeyDefBase, KeyDefDict
+from .. import SerializationType, KeyFilter, KeyDefDict, KeyDefInterface
 
 class VectorValue:
 
-    def __init__( self: Self, key_def: KeyDefBase, _alias: str | None = None ) -> None:
+    def __init__( self: Self, key_def: KeyDefInterface, _alias: str | None = None ) -> None:
         super().__init__()
-        self.key_def: KeyDefBase = key_def
+        self.key_def: KeyDefInterface = key_def
         if _alias is None:
             self.field_name: str = self.key_def.json_key
         else:
@@ -29,7 +28,7 @@ class GraphVector( dict[str, VectorValue ] ):
             else:
                 self.add( key_def )
 
-    def add( self: Self, key_def: KeyDefBase, alias: str | None = None ):
+    def add( self: Self, key_def: KeyDefInterface, alias: str | None = None ):
         self.append( VectorValue( key_def, alias ) )
 
     def get_headers( self ) -> list[str]:
@@ -86,9 +85,9 @@ class GraphVector( dict[str, VectorValue ] ):
 
 class GraphValueResult:
 
-    def __init__( self: Self, key_def: KeyDefBase, value: str | None = None ):
+    def __init__( self: Self, key_def: KeyDefInterface, value: str | None = None ):
         super().__init__()
-        self.key_def: KeyDefBase = key_def
+        self.key_def: KeyDefInterface = key_def
         self.value: str = value
 
 

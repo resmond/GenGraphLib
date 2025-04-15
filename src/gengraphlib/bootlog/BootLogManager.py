@@ -8,10 +8,6 @@ import os as os
 from .. import KeyValTypes
 from .BootLogDir import BootLogDir
 
-#class GraphCmd( StrEnum ):
-#    Full    = "Full"
-#    Refresh = "Refresh"
-
 """--------------------------------------------------------
     LogDirManagerBase __init__()
         root_dir - root of all log data

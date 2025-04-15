@@ -6,23 +6,23 @@ import os
 
 from progress.bar import Bar
 
-from ..  import KeyValTypes, keygroup_rec
+from ..  import KeyValTypes, keygroup_rec, KeyDefDict
 
 from . import (
     RecordBase,
     KeyDefBase,
-    KeyDefDict,
     KeyGroups,
     GraphRecordRoot
 )
 
-class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
+class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super(KeySchemaBase, self).__init__()
+        self._log_keys: KeyDefDict = KeyDefDict()
         self._root_dir = root_dir
         self.id = id
-        self.missing_keys: list[str] = {}
-        self.none_values: list[str] = {}
+        self.missing_keys: list[str] = []
+        self.none_values: list[str] = []
         self.key_groups: KeyGroups = KeyGroups(self)
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
@@ -33,12 +33,16 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
         for _key_def in _keydefs:
             self.add_keydef(_key_def)
 
-    def add_key_to_group( self: Self, _group_id: str, _key: str ) -> None:
-        if _group_id == "":
-            _group_id = "skip"
-        key_group = self.key_groups[_group_id ]
-        key_def: KeyDefBase = self[_key]
-        key_group.add_keydef(key_def)
+    def add_key_to_group( self: Self, _group_id: str | list[str], _key: str ) -> None:
+        if isinstance(_group_id, str):
+            if _group_id == "":
+                _group_id = "skip"
+            key_group = self.key_groups[_group_id ]
+            key_def: KeyDefBase = self[_key]
+            key_group.add_keydef(key_def)
+        else:
+            for id in _group_id:
+                self.add_key_to_group(id, _key)
 
     def new_keygroup( self: Self, _group_id: str, _group_name: str = "", _group_desc: str = "", _keys: list[str] | None = None ) -> None:
         self.key_groups.add_keygroup( _group_id, _group_name, _group_desc )
@@ -68,6 +72,9 @@ class KeySchemaBase( KeyDefDict, GraphRecordRoot ):
         return self.id
 
     def add_record( self: Self, graph_rec: RecordBase ) -> None:
+        pass
+
+    def apply_values( self: Self, graph_rec: RecordBase, _log_key: str, value: str ) -> None:
         pass
 
     def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:

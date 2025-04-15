@@ -1,18 +1,18 @@
 from typing import Self
 
-from .. import GraphNodeBase, NodeDict
+from .. import GNodeInterface, NodeDict
 from .TextBootLogLines import TextBootLogLine
 
-class TextLogModule( GraphNodeBase ):
+class TextLogModule( GNodeInterface ):
 
     def __init__(self: Self, id: str) -> None:
         super(TextLogModule, self).__init__( id=id )
-        self.module_type_node: GraphNodeBase | None = None
-        self.events: NodeDict[ GraphNodeBase ] | None = None
+        self.module_type_node: GNodeInterface | None = None
+        self.events: NodeDict[ GNodeInterface ] | None = None
 
-    def add_event( self: Self, event_node: GraphNodeBase ) -> None:
+    def add_event( self: Self, event_node: GNodeInterface ) -> None:
         if self.events is None:
-            self.events = NodeDict[GraphNodeBase]( id= "event_node_dict" )
+            self.events = NodeDict[GNodeInterface]( id= "event_node_dict" )
 
         self.events[event_node.id] = event_node
 
@@ -22,7 +22,8 @@ class TextLogModules( NodeDict[ TextLogModule ] ):
         super(TextLogModules, self).__init__( id=id )
 
     def __missing__(self, key) -> TextLogModule:
-        self[key] = new_node = TextLogModule( id=key )
+        new_node = TextLogModule( id=key )
+        self[key] = new_node
         return new_node
 
 class TextLogModuleType( NodeDict[ TextLogModules ] ):

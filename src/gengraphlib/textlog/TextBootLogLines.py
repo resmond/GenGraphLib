@@ -1,11 +1,13 @@
 from typing import Self, Any
 
-from .. import GraphNodeBase, RecordBase, LineParseResult, ResultState, RgxLine
+from .. import GNodeInterface, RecordBase, LineParseResult, ResultState, RgxLine, GraphRecordRoot
+
 
 class TextBootLogLine( RecordBase ):
 
-    def __init__( self: Self, _graph_root: Any, line_str: str, rec_index: int ) -> None:
-        super().__init__( _graph_root, rec_index = rec_index, line_str = line_str )
+    def __init__( self: Self, _graph_root: GraphRecordRoot, line_str: str, rec_index: int ) -> None:
+        super().__init__(rec_index = rec_index )
+        self.graph_root: GraphRecordRoot = _graph_root
         self.rgx_line: RgxLine = RgxLine()
         self.event_type_id: str = ""
         self.date_seg: str = ""
@@ -14,6 +16,7 @@ class TextBootLogLine( RecordBase ):
         self.module_type_id: str = ""
         self.module_id: str = ""
         self.message: str = ""
+        print(line_str)
         #self.values: dict[str, str] | None = None
 
     def parse_line( self: Self, event_type_id: str, field_values: dict[str, str] ) -> LineParseResult:
@@ -36,7 +39,7 @@ class TextBootLogLine( RecordBase ):
 
         return LineParseResult( state=result_state, message = field_values[ "message" ] )
 
-class TextBootLogLines( GraphNodeBase, list[TextBootLogLine ] ):
+class TextBootLogLines( GNodeInterface, list[TextBootLogLine ] ):
 
     def __init__( self: Self, _graph_root: Any ) -> None:
         #self.log_file_graph: LogFileGraph

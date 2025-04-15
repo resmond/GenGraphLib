@@ -1,7 +1,7 @@
 from typing import Self
 from enum import IntEnum
 
-from asyncio import Protocol, Queue
+from asyncio import Protocol
 from collections.abc import AsyncGenerator
 
 class ChainErr( IntEnum ):

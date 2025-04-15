@@ -2,28 +2,35 @@ from collections.abc import Iterable
 from typing import Self
 
 
-from .. import KeyFilter, KeyGroupRec
-from .  import KeyDefBase, KeyDefDict
+from .. import (
+    KeyFilter,
+    KeyGroupRec,
+    KeyDefDict,
+    KeyDefInterface,
+    GraphVector,
+    GNodeInterface,
+    GraphRecordRoot,
+)
 
-from .GraphVector import GraphVector
 
-class KeyGroup( KeyDefDict ):
-    def __init__( self: Self, group_id: str, group_desc: str = "" ) -> None:
-        super().__init__()
-        self.group_id: str = group_id
+class KeyGroup( KeyDefDict, GNodeInterface ):
+    def __init__( self: Self, id: str, group_desc: str = "" ) -> None:
+        super(KeyGroup, self).__init__()
+        self.id: str = id
         self.group_desc: str = group_desc
 
-    def add_keydef( self: Self, key_def: KeyDefBase ) -> None:
+    def add_keydef( self: Self, key_def: KeyDefInterface ) -> None:
         self[ key_def.json_key ] = key_def
 
     def create_vector( self: Self, _key_filter: KeyFilter ) -> GraphVector:
 
         return GraphVector( self, _key_filter )
 
-class KeyGroups( dict[str, KeyGroup ] ):
-    def __init__( self: Self, graph_root: dict[str,KeyDefBase ] ) -> None:
-        super().__init__()
-        self.graph_root: dict[str,KeyDefBase ] = graph_root
+class KeyGroups( dict[str, KeyGroup ], GNodeInterface ):
+    def __init__( self: Self, id: str,  graph_root: GraphRecordRoot ) -> None:
+        super(KeyGroups, self).__init__()
+        self.id: str = id
+        self.graph_root: GraphRecordRoot = graph_root
 
     def add_keygroup( self: Self, group_id: str, group_desc: str = "", keys: Iterable[str] | None = None ) -> None:
         self[group_id] = KeyGroup( group_id, group_desc )
@@ -50,7 +57,7 @@ class KeyGroups( dict[str, KeyGroup ] ):
 
         self.add_keygroup( group_id, group_desc, keys )
 
-    def add_key_to_group( self: Self, _group_id: str, _key_def: KeyDefBase ) -> None:
+    def add_key_to_group( self: Self, _group_id: str, _key_def: KeyDefInterface ) -> None:
         key_group: KeyGroup = self[_group_id ]
         key_group.add_keydef(_key_def)
 

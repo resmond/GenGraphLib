@@ -2,50 +2,60 @@ from typing import Self
 
 import datetime as dt
 
-from .. import KeyType
-from . import KeyDefBase
+from .. import KeyType, KeyValTypes, KeyDefInterface, KeyValues
 
-"""   StrKeyDef
+class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
+    def __init__( self: Self, json_key: str, log_key: str, key_type: KeyType, groups: list[str] | str | None = None ) -> None:
+        super(KeyDefBase, self).__init__()
+        self.json_key:       str = json_key
+        self.log_key:        str = log_key
+        self.key_type:       KeyType = key_type
+        self.groups:         list[str] | None = None
+        self._skip:          bool = True
+        self._event_trigger: bool = False
+        self.key_values:     KeyValues[T] = KeyValues[T]( self )
 
-"""
+        match groups:
+            case str() if groups in ["skip", ""]:
+                pass
+            case str():
+                self.groups = [groups]
+                self._skip = False
+            case [] if len(groups) > 0:
+                self.groups = groups
+                self._skip = False
+
+    @property
+    def dologing( self: Self ) -> bool:
+        return not self._skip
+
 class StrKeyDef( KeyDefBase[str] ):
-    def __init__( self: Self, _json_key: str, _log_key: str, groups: list[str] | str | None = None ) -> None:
-        super(StrKeyDef, self).__init__( _json_key, _log_key, KeyType.KStr, groups )
+    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
+        super(StrKeyDef, self).__init__( json_key, log_key, KeyType.KStr, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    return self.key_values.add_value( jvalue, line_num )
 
-"""   IntKeyDef
-
-"""
 class IntKeyDef( KeyDefBase[int] ):
-    def __init__( self: Self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ) -> None:
-        super(IntKeyDef, self).__init__( _json_key, _log_key, KeyType.KInt, groups )
+    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
+        super(IntKeyDef, self).__init__( json_key, log_key, KeyType.KInt, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    return self.key_values.add_value( int( jvalue ), line_num )
 
-"""
-    BoolKeyDef
-
-"""
 class BoolKeyDef( KeyDefBase[bool] ):
-    def __init__( self: Self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ) -> None:
-        super(BoolKeyDef, self).__init__( _json_key, _log_key, KeyType.KBool, groups )
+    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
+        super(BoolKeyDef, self).__init__( json_key, log_key, KeyType.KBool, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    return self.key_values.add_value( bool( jvalue ), line_num )
 
-"""
-    TmstKeyDef
-
-"""
 class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")
     now_datetime = dt.datetime.now()
 
-    def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ) -> None:
-        super(TmstKeyDef, self).__init__( _json_key, _log_key, KeyType.KTimeStamp, groups )
+    def __init__( self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
+        super(TmstKeyDef, self).__init__( json_key, log_key, KeyType.KTimeStamp, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    try:
@@ -56,13 +66,9 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     #        print(f'[TmstKeyDef.add_str_value({self.json_key}:{self.log_key})] ValueError: {e} - "{jvalue}"' )
     #        return False
 
-"""
-    FloatKeyDef
-
-"""
 class FloatKeyDef( KeyDefBase[float] ):
-    def __init__( self, _json_key: str, _log_key: str, groups: list[str] | str  | None = None ) -> None:
-        super(FloatKeyDef, self).__init__( _json_key, _log_key, KeyType.KFloat, groups )
+    def __init__( self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
+        super(FloatKeyDef, self).__init__( json_key, log_key, KeyType.KFloat, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    return self.key_values.add_value( float( jvalue ), line_num )
