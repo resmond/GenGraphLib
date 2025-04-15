@@ -1,45 +1,23 @@
-import os
-
 from typing import Self
 
+import os
 import datetime as dt
-import asyncio.subprocess as asub
-
-from collections.abc import AsyncGenerator
-
-#from src.gengraphlib import  CmdStreamText
 
 class BootLogDir:
 
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
         super( BootLogDir, self ).__init__()
-
-        self.root_dir = root_dir
-
         val_list: list[str] = log_rec.split()
+        self.root_dir = root_dir
         self.idx: int = int(val_list[0])
         self.id: str = val_list[1]
-
-        _first_dt: str = " ".join(val_list[3:5])
-        _last_dt: str = " ".join(val_list[7:9])
-        self.first_dt: dt.datetime = dt.datetime.fromisoformat(_first_dt)
-        self.last_dt: dt.datetime = dt.datetime.fromisoformat(_last_dt)
-
+        self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
+        self.last_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
         self.dir_name: str = self.first_dt.isoformat()
         self.dir_path: str = os.path.join(self.root_dir, "boots", self.dir_name)
+        self.dir_exists: bool = self.make_dir()
 
-        self.exec_process: asub.Process | None = None
-        self.cmd: str = f"journalctl -b {self.id} -o json"
-        self.started: bool = False
-        self.error: int = 0
-        self.exc: Exception | None = None
-
-    def __repr__( self: Self ) -> str:
-        return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'
-
-    def __str__( self: Self ) -> str: return self.__repr__()
-
-    def _dir_exists( self: Self ) -> bool:
+    def make_dir( self: Self ) -> bool:
         try:
             os.makedirs( self.dir_path, exist_ok=True )
             return True
@@ -48,8 +26,10 @@ class BootLogDir:
             print(f'[BootLogDirBase._dir_exists] Exception: {e}')
             return False
 
-    async def stream( self: Self ) -> AsyncGenerator[ str, None ]:
-        if self._dir_exists():
-            async for line in self.CmdStream.stream_text( self.cmd ):
-                yield line
+    def __repr__( self: Self ) -> str:
+        return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'
+
+    def __str__( self: Self ) -> str: return self.__repr__()
+
+
 

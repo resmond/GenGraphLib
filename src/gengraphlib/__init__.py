@@ -2,8 +2,8 @@
 
 from .common import (
       KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
-    , IValueTuple, SValueTuple, KValueDict, KeyDefInterface, KeyDefDict, LineRefList
-    , KeyFilter, KeyType, SerializationType, DictOfLists
+    , IValueTuple, SValueTuple, KValueDict, KeyValueEvent, KeyDefInterface, KeyDefDict, LineRefList
+    , KeyFilter, KeyType, SerializationType, DictOfLists, value_event_fn, KeyValuesInterface
 )
 
 from .fileparse import (
@@ -12,19 +12,19 @@ from .fileparse import (
 )
 
 from .streamio import (
-      ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
+    ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
     , PipedChainBase, ChainSinkBase, ChainSourceBase, ChainFilterBase
-    , CmdChainSource
+    , CmdKeyValueStream
 )
 
 from .graph import (
-      NodeDict, IndexedNodeList, GNodeInterface
+    NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase, KeyValues
-    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, TmstKeyDef, KeyDict
+    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
     , KeySchemaBase, VectorValue, GraphVector, GraphValueResult
-    , BootLogChainFilter
+    , KeyValueVisitorBase
 )
 
 from .textlog import (
@@ -33,29 +33,41 @@ from .textlog import (
     , TextLogParseContext, TextLogGraph                                        # TextLogGraph
 )
 
+from .codegen import (
+      KeyValInfo, LogSchemaVisitor
+    , ClassGenBase, CodePattern, GenCodeRenderer, InfoPattern
+    , ImportsInfo , ImportPattern, ClsLineInfo, ClsLinePattern
+)
+
 from .bootlog import BootLogDir, BootLogManager
 
 __all__ = [
       "ChainableResult", "PipeChainType", "StreamType", "ChainErr", "ChainException", "PipedChainBase"
-    , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CmdChainSource"
+    , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CmdKeyValueStream"
     , "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType", "DictOfLists"
-    , "IValueTuple", "SValueTuple", "KValueDict", "KeyDefInterface", "KeyDefDict", "LineRefList"
+    , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
-    , "NodeDict", "IndexedNodeList", "GNodeInterface"
+    , "NodeDict", "IndexedNodeList", "GNodeInterface", "value_event_fn", "KeyValuesInterface"
     , "GraphRecordRoot", "RecordBase", "KeyDefInterface"
-    , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "TmstKeyDef", "KeyDict"
+    , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValues"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeySchemaBase"
-    , "VectorValue", "GraphVector", "GraphValueResult"
-    , "BootLogChainFilter"
+    , "VectorValue", "GraphVector", "GraphValueResult", "KeyValueVisitorBase"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
     , "TextLogParseContext", "TextLogGraph"
 
+    , "KeyValInfo", "LogSchemaVisitor"
+    , "CodePattern", "GenCodeRenderer", "InfoPattern", "ImportsInfo"
+    , "ImportPattern" , "ClsLineInfo", "ClsLinePattern",  "ClassGenBase"
+
     , "BootLogDir", "BootLogManager"
 ]
+
+
+

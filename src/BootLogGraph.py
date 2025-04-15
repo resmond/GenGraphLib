@@ -1,3 +1,4 @@
+import time
 from typing import Self
 
 from gengraphlib import (
@@ -11,6 +12,9 @@ from gengraphlib import (
     KeySchemaBase,
     BootLogManager,
 )
+from src.gengraphlib import BootLogDir, CmdKeyValueStream
+
+
 class BootLogGraph( KeySchemaBase ):
     instance: Self | None = None
 
@@ -170,7 +174,22 @@ class BootLogGraph( KeySchemaBase ):
         else:
             return False
 
-    async def exec_query( self: Self, specific_ndx: int, full_reparse: bool = True ) -> bool:
-        #await self.dir_manager.exec( specific_ndx, full_reparse )
-        return True
+    async def exec(self: Self, specific_ndx: int ):
+        log_dir: BootLogDir = self.log_manager.get_bootlogdir(specific_ndx)
+
+        start = time.time()
+        print(f"start: {start}")
+
+        with open("/home/richard/data/jctl-logs/rawout.bin", "wb") as writer:
+            command_source = CmdKeyValueStream("journalctl -b -1 -o export", self)
+            async for buffer_result in command_source.pipe():
+                writer.write(buffer_result)
+
+        end = time.time()
+        print(f"end: {end}")
+        print(f"elapsed: {end - start}")
+
+        print(f"BootLogGraph.exec(): {self.id} LogDir: {log_dir.dir_path}")
+    
+
 

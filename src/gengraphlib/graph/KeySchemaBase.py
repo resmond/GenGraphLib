@@ -6,7 +6,16 @@ import os
 
 from progress.bar import Bar
 
-from ..  import KeyValTypes, keygroup_rec, KeyDefDict
+from .. import (
+    KeyValTypes,
+    keygroup_rec,
+    KeyDefDict,
+    StrKeyDef,
+    KeyValueVisitorBase,
+    IntKeyDef,
+    BoolKeyDef,
+    TmstKeyDef,
+)
 
 from . import (
     RecordBase,
@@ -23,7 +32,7 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
         self.id = id
         self.missing_keys: list[str] = []
         self.none_values: list[str] = []
-        self.key_groups: KeyGroups = KeyGroups(self)
+        self.key_groups: KeyGroups = KeyGroups("key_groups",self)
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.json_key] = _key_def
@@ -63,6 +72,24 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
                         self.add_key_to_group(group_id, key)
 
         self.final_init()
+
+    def visit_keyvalues( self: Self, visitor: KeyValueVisitorBase ) -> bool:
+        for key, key_def in self.items():
+            from src.gengraphlib.graph.KeyDefs import FloatKeyDef
+            match key_def:
+                case StrKeyDef():
+                    visitor.visit_str( key_def, key_def.key_values )
+                case IntKeyDef():
+                    visitor.visit_int( key_def, key_def.key_values )
+                case FloatKeyDef():
+                    visitor.visit_float( key_def, key_def.key_values )
+                case BoolKeyDef():
+                    visitor.visit_bool( key_def, key_def.key_values )
+                case TmstKeyDef():
+                    visitor.visit_tmst( key_def, key_def.key_values )
+                case _:
+                    pass
+        return True
 
     def final_init( self ):
         pass

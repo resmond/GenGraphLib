@@ -29,12 +29,14 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def dologing( self: Self ) -> bool:
         return not self._skip
 
+    def visit( self: Self, visitor ) -> None:
+        visitor.visit_key_def( self )
+
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
         super(StrKeyDef, self).__init__( json_key, log_key, KeyType.KStr, groups )
 
-    #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
-    #    return self.key_values.add_value( jvalue, line_num )
+
 
 class IntKeyDef( KeyDefBase[int] ):
     def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:

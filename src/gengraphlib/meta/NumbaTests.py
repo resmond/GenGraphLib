@@ -19,7 +19,11 @@ class CType(IntEnum):
 
 class Keydef:
 
-    def __init__(self: Self, _json_key: str, _log_key: str, _key_type: int):
+    def __init__( self: Self,
+            _json_key: str,
+            _log_key:  str,
+            _key_type: int
+        ):
         self.json_key: str = _json_key
         self.log_key:  str = _log_key
         self.key_type: int = _key_type

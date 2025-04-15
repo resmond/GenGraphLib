@@ -38,7 +38,7 @@ class StrKey:
         print (f'SET: instance: [{type(instance)}] {instance} value: {value}')
         self.value = value
 
-    def do_something( self: Self, num: int ) -> str:
+    def do_something( self: Self ) -> str:
         print(self.__slots__)
 
         return "something"

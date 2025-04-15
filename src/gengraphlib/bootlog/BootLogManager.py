@@ -1,11 +1,9 @@
-import json
 import subprocess
 
 from typing import Self
 import datetime as dt
 import os as os
 
-from .. import KeyValTypes
 from .BootLogDir import BootLogDir
 
 """--------------------------------------------------------
@@ -102,44 +100,14 @@ class BootLogManager:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    async def get_pipedchain( self: Self, specific_ndx: int, full_reparse: bool = True  ) -> bool:
+    def get_bootlogdir( self: Self, specific_ndx: int, full_reparse: bool = True  ) -> BootLogDir | None:
         self.full_reparse = full_reparse
 
         if self.full_reparse or not self._load_txt():
             self._query_bootlist()
 
         if self._load_txt():
-            boot_log_dir = self._bootdir_list[ specific_ndx ]
-            print(f'LogDirManager.process_dirs: specific_idx: {specific_ndx}: {boot_log_dir.first_dt} ')
-
-            cnt: int = -1
-            key_values: dict[str, KeyValTypes] = {}
-            line: str = ""
-            try:
-    
-                async for line in boot_log_dir.stream():
-
-                    try:
-                        cnt += 1
-                        key_values = json.loads(line)
-
-                    except json.decoder.JSONDecodeError as jserr:
-                        print(f"[LogDirManagerBase.process_bootlog] json.loads Exception: {jserr}")
-                        print(f"    line:  {line}")
-                        print(f"  fields:  {key_values}")
-
-                    else:
-
-                        try:
-                            self._field_processor.process_keyvalues( key_values, cnt, line )
-
-                        except Exception as fnexc:
-                            print(f"[LogDirManagerBase.process_bootlog] self._fields_fn Exception: {fnexc}")
-
-            except Exception as exc:
-                print(f"[LogDirManagerBase.process_bootlog] boot_log_dir.streams() Exception: {exc}")
-                print(f"    line:  {line}")
-                print(f"  fields:  {key_values}")
-
-        return True
+            return self._bootdir_list[ specific_ndx ]
+        else:
+            return None
 

@@ -3,6 +3,7 @@ import datetime as dt
 from enum import IntEnum
 from typing import Self, Protocol
 
+
 KeyValTypes: type = type[str, int, bool, dt.datetime, float]
 process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 keygroup_rec = tuple[str, str, str | None, list[str] | None]
@@ -29,6 +30,16 @@ KeyDefDict:  type = dict[ str, KeyDefInterface ]
 LineRefList: type = list[ int ]
 
 KValueDict: type = dict[str, KeyValTypes]
+
+KeyValueEvent: type = tuple[int, int, memoryview]
+
+value_event_fn = Callable[ [ KeyValueEvent ], None ]
+
+class KeyValuesInterface( Protocol ):
+    key_type: KeyType
+    value_event_fn: value_event_fn
+
+    def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 
 class SerializationType( IntEnum ):
     CSV = 1
