@@ -1,15 +1,17 @@
 from collections.abc import Iterable
 from typing import Self
 
-
 from .. import (
     KeyFilter,
     KeyGroupRec,
     KeyDefDict,
-    KeyDefInterface,
+    KeyDefInterface
+)
+
+from . import (
     GraphVector,
     GNodeInterface,
-    GraphRecordRoot,
+    GraphRecordRoot
 )
 
 

@@ -4,8 +4,7 @@ from typing import Self
 
 from typing_extensions import TypeVar
 
-from src.gengraphlib import (
-    CmdKeyValueStream,
+from . import (
     KeyDefBase,
     KeyValues,
     StrKeyDef,
@@ -14,11 +13,13 @@ from src.gengraphlib import (
     IntKeyValueSet,
     BoolKeyDef,
     BoolKeyValueSet,
+    FloatKeyDef,
     FloatKeyValueSet,
     TmstKeyDef,
-    TmstKeyValueSet,
+    TmstKeyValueSet
 )
-from src.gengraphlib.graph.KeyDefs import FloatKeyDef
+
+from .. import CmdKeyValueStream
 
 KeyDefType = TypeVar( 'KeyDefType', bound=KeyDefBase )
 KeyValType = TypeVar( 'KeyValType', bound=KeyValues )

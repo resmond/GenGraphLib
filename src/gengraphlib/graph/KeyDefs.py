@@ -4,7 +4,7 @@ import datetime as dt
 
 from .. import KeyType, KeyValTypes, KeyDefInterface
 
-from .. import KeyValues
+from .KeyValues import KeyValues
 
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def __init__( self: Self, json_key: str, log_key: str, key_type: KeyType, groups: list[str] | str | None = None ) -> None:

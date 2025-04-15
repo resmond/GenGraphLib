@@ -10,11 +10,13 @@ from .. import (
     KeyValTypes,
     keygroup_rec,
     KeyDefDict,
+)
+
+from . import (
     StrKeyDef,
-    KeyValueVisitorBase,
     IntKeyDef,
     BoolKeyDef,
-    TmstKeyDef,
+    TmstKeyDef
 )
 
 from . import (
@@ -72,24 +74,6 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
                         self.add_key_to_group(group_id, key)
 
         self.final_init()
-
-    def visit_keyvalues( self: Self, visitor: KeyValueVisitorBase ) -> bool:
-        for key, key_def in self.items():
-            from src.gengraphlib.graph.KeyDefs import FloatKeyDef
-            match key_def:
-                case StrKeyDef():
-                    visitor.visit_str( key_def, key_def.key_values )
-                case IntKeyDef():
-                    visitor.visit_int( key_def, key_def.key_values )
-                case FloatKeyDef():
-                    visitor.visit_float( key_def, key_def.key_values )
-                case BoolKeyDef():
-                    visitor.visit_bool( key_def, key_def.key_values )
-                case TmstKeyDef():
-                    visitor.visit_tmst( key_def, key_def.key_values )
-                case _:
-                    pass
-        return True
 
     def final_init( self ):
         pass
@@ -167,5 +151,23 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
         except Exception as exc:
             print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
+    from .KeyValVisitor import KeyValueVisitorBase
+    def visit_keyvalues( self: Self, visitor: KeyValueVisitorBase ) -> bool:
+        for key, key_def in self.items():
+            from src.gengraphlib.graph.KeyDefs import FloatKeyDef
+            match key_def:
+                case StrKeyDef():
+                    visitor.visit_str( key_def, key_def.key_values )
+                case IntKeyDef():
+                    visitor.visit_int( key_def, key_def.key_values )
+                case FloatKeyDef():
+                    visitor.visit_float( key_def, key_def.key_values )
+                case BoolKeyDef():
+                    visitor.visit_bool( key_def, key_def.key_values )
+                case TmstKeyDef():
+                    visitor.visit_tmst( key_def, key_def.key_values )
+                case _:
+                    pass
+        return True
 
 

@@ -1,7 +1,7 @@
 from io import TextIOWrapper
 from typing import Self
 
-from src.gengraphlib import (
+from . import (
     ClsLinePattern,
     ClsLineInfo,
     InfoPattern,
