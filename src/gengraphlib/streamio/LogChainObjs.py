@@ -1,20 +1,16 @@
 from typing import Self
 
-from . import KeyDefBase
-from .KeySchemaBase import KeySchemaBase
+from src.gengraphlib.graph import KeyDefBase
+from src.gengraphlib.graph.KeySchemaBase import KeySchemaBase
 
-from .. import (
+from src.gengraphlib import (
     DictOfLists,
     KeyValTypes,
     ChainFilterBase,
     ChainableResult,
+    #CommandChainSource
 )
 
-class BootLogChainResult( ChainableResult ):
-
-    def __init__( self: Self ) -> None:
-
-        super(BootLogChainResult, self).__init__()
 
 class BootLogChainFilter( ChainFilterBase[BootLogChainResult] ):
     def __init__( self: Self, key_schema: KeySchemaBase ) -> None:

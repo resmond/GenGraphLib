@@ -17,7 +17,7 @@ from .KeyGroups import KeyGroup, KeyGroups
 from .KeyValues import StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
 from .KeySchemaBase import KeySchemaBase
 from .GraphVector import VectorValue, GraphVector, GraphValueResult
-from .BootLogChain import BootLogChainFilter
+from src.gengraphlib.streamio.LogChainObjs import BootLogChainFilter
 
 __all__ = [
       "LineRefList", "GraphNodeBase", "TGraphNode", "NodeDict", "IndexedNodeList", "GraphRecordRoot", "RecordBase"

@@ -11,9 +11,9 @@ from .fileparse import (
 )
 
 from .streamio import (
-      ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
+    ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
     , PipedChainBase, ChainSinkBase, ChainSourceBase, ChainFilterBase
-    , CommandChainSource
+    , CmdChainSource
 )
 
 from .graph import (
@@ -36,7 +36,7 @@ from .bootlog import BootLogDir, BootLogManager
 
 __all__ = [
       "ChainableResult", "PipeChainType", "StreamType", "ChainErr", "ChainException", "PipedChainBase"
-    , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CommandChainSource"
+    , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CmdChainSource"
     , "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType", "DictOfLists"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"

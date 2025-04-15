@@ -23,10 +23,15 @@ class StreamType(IntEnum):
     LfTextLine = 2
     CrLfTextLine = 3
 
-class PartialResult:
-    def __init__( self: Self, buffer: bytes | None = None ) -> None:
+class ChainException( Exception ):
+    def __init__( self, chain_err: ChainErr = ChainErr.UnexpectedError ):
         super().__init__()
-        self._buffer: bytes | None = buffer
+        self.error_val: ChainErr = chain_err
+
+class PartialResult:
+    def __init__( self: Self, buf: bytes | None = None ) -> None:
+        super().__init__()
+        self._buffer: bytes = buf
 
     @property
     def buffer_size(self: Self) -> int:
@@ -39,15 +44,18 @@ class PartialResult:
     def buffer(self: Self) -> bytes | None:
         return self._buffer
 
-    @buffer.setter
-    def buffer(self: Self, buffer: bytes) -> None:
-        self._buffer = buffer
+    # @buffer.setter
+    # def buffer(self: Self, buffer: bytes) -> None:
+    #     self._buffer = buffer
 
-class ChainableResult( Queue[PartialResult] ):
-    def __init__( self: Self ) -> None:
-        super().__init__()
+class ChainableResult( list[bytes] ):
+
+    def __init__( self: Self, buf: bytes | None = None ) -> None:
+        super(ChainableResult, self).__init__()
         self.error_val: ChainErr = ChainErr.Success
         self.exc: Exception | None = None
+        if buf is not None:
+            self.append(buf)
 
     def set_error( self: Self, error_val: ChainErr ) -> None:
         self.error_val = error_val
@@ -56,15 +64,10 @@ class ChainableResult( Queue[PartialResult] ):
         self.exc = exc
 
     def add_buffer( self: Self, buffer: bytes ) -> None:
-        self.put_nowait( PartialResult( buffer ) )
-        
-    async def async_dequeue( self: Self ) -> PartialResult | None:
-        return await self.get()
+        self.append( buffer )
 
-class ChainException( Exception ):
-    def __init__( self, chain_err: ChainErr = ChainErr.UnexpectedError ):
-        super().__init__()
-        self.error_val: ChainErr = chain_err
+    def dequeue( self: Self ) -> bytes | None:
+        return self.pop()
 
 class PipedChainBase[ T: ChainableResult ]( Protocol ):
     pipechain_type: PipeChainType
@@ -81,7 +84,7 @@ class PipedChainBase[ T: ChainableResult ]( Protocol ):
     def chain( self: Self, _source_pipe: AsyncGenerator[T, None ] | None ) -> None:
         pass
 
-    def run_pipe(self: Self ) -> T | None:
+    def run_pipe(self: Self ) -> AsyncGenerator[T, None ] | None | None:
         pass
 
 class ChainSourceBase[ T: ChainableResult ]( PipedChainBase[ T: ChainableResult ] ):

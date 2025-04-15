@@ -1,6 +1,6 @@
 
 from .ChainableLib import ChainErr, PipeChainType, StreamType, ChainException, PipedChainBase, ChainableResult, ChainSourceBase, ChainFilterBase, ChainSinkBase
-from .CommandChainSource import CommandChainSource
+from .CmdChainSource import CmdChainSource
 
 __all__ = [
     "ChainErr",
@@ -12,5 +12,5 @@ __all__ = [
     "ChainSourceBase",
     "ChainFilterBase",
     "ChainSinkBase",
-    "CommandChainSource"
+    "CmdChainSource"
 ]
