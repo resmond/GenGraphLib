@@ -29,12 +29,13 @@ from .graph import (
 
 from .proc import (
       ProcType, ProcState, ProcBase
+    , TaskType, TaskState, TaskBase
     , AppProcessBase, StreamSourceProc, StreamSinkProc
-    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MessageQueueBase
+    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
 )
 
 from .tasks import (
-    TaskType, TaskState, TaskBase, MsgParsingTask, ValueIndexingTask
+    MsgRecvTask, ValueIndexingTask
 )
 
 from .textlog import (
@@ -69,9 +70,9 @@ __all__ = [
     , "VectorValue", "GraphVector", "GraphValueResult", "KeyValueVisitorBase"
 
     , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "StreamSourceProc", "StreamSinkProc"
-    , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MessageQueueBase"
+    , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
-    , "TaskType", "TaskState", "TaskBase", "MsgParsingTask", "ValueIndexingTask"
+    , "TaskType", "TaskState", "TaskBase", "MsgRecvTask", "ValueIndexingTask"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

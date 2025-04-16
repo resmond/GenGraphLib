@@ -1,9 +1,12 @@
 import time
 from typing import Self
 
-from .  import ProcBase
-from .. import KeyValueSchema, BootLogManager, BootLogDir, CmdKeyValueStream
+import multiprocessing as mp
 
+from .  import ProcBase
+from .. import KeyValueSchema
+from .. import CmdKeyValueStream
+from ..bootlog import BootLogManager, BootLogDir
 
 class StreamSourceProc(ProcBase):
 
@@ -12,12 +15,13 @@ class StreamSourceProc(ProcBase):
         self.keyval_schema = keyval_schema
         self.bootlog_manager = bootlog_manager
         self.cnt: int = 0
+        self.process = mp.Process(target=self.exec, args=(-1,))
 
     def start( self: Self ) -> None:
-        pass
+        self.process.start()
 
     def main_loop(self: Self) -> None:
-        self.exec(-1)
+
         pass
 
     async def exec(self: Self, specific_ndx: int):

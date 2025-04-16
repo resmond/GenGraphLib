@@ -5,7 +5,7 @@ from enum import IntEnum
 from abc import ABC, abstractmethod
 
 import multiprocessing as mp
-from threading import Thread
+from   threading import Thread
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -23,12 +23,12 @@ class TaskBase( ABC ):
     default_queue_size: int = 1024 * 256
 
     def __init__(self: Self, thread_id: str, queue_size: int | None = None ) -> None:
-        self.task_id: str = thread_id
+        self.task_id:    str = thread_id
         self.queue_size: int = queue_size or self.default_queue_size
-        self.msg_queue: mp.SimpleQueue = mp.SimpleQueue()
-        self.proc_state: TaskState = TaskState.Init
-        self.proc_type: TaskType = TaskType.Undefined
-        self.thread: Thread | None = None
+        self.msg_queue:  mp.SimpleQueue = mp.SimpleQueue()
+        self.task_state: TaskState = TaskState.Init
+        self.task_type:  TaskType = TaskType.Undefined
+        self.thread:     Thread | None = None
 
     @abstractmethod
     def start(self: Self) -> None: ...

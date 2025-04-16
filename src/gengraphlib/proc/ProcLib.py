@@ -7,8 +7,9 @@ from enum import IntEnum
 from abc import ABC, abstractmethod
 
 import multiprocessing as mp
-from threading import Thread
-from ..tasks import TaskBase
+from   threading import Thread
+
+from . import TaskBase
 
 class ProcType(IntEnum):
     Undefined = 0
@@ -36,10 +37,11 @@ class ProcBase(ABC):
         self.msg_queue: mp.SimpleQueue = mp.SimpleQueue()
         self.proc_state: ProcState = ProcState.Init
         self.proc_type: ProcType = ProcType.Undefined
-        self.proc: mp.Process | None = None
+        self.process: mp.Process | None = None
         self.main_thread: Thread | None = None
         self.tasks: dict[str, TaskBase ] = {}
         ProcRegistry.instance.register_proc(self)
+
 
     @abstractmethod
     def start(self: Self) -> None: ...

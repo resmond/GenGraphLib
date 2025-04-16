@@ -2,7 +2,8 @@ from typing import Self
 
 import multiprocessing as mp
 
-from src.gengraphlib import KeyDefBase, KeyValTypes
+from .. import KeyValTypes
+from .  import KeyDefBase
 
 class KeyValueSink[ T: KeyValTypes ]:
 

@@ -1,7 +1,6 @@
 from typing import Self
 
-from . import TaskBase
-
+from ..proc.TaskLib import TaskBase
 
 class ValueIndexingTask( TaskBase ):
 

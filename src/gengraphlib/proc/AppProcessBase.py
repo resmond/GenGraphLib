@@ -6,23 +6,22 @@ import threading as th
 from .ProcLib import ProcRegistry
 
 from . import ProcBase
-from .. import KeyValueSchema
+from ..tasks.MsgRecvTask import MsgRecvTask
 
 class AppProcessBase( ProcRegistry ):
     instance: Self | None = None
 
-    def __init__(self: Self) -> None:
+    def __init__(self: Self, app_id: str) -> None:
         super( AppProcessBase, self ).__init__()
         AppProcessBase.instance = self
         ProcRegistry.instance = self
-        self.keyval_schema: KeyValueSchema | None = None
+        self.app_id: str = app_id
         self.procs: dict[str, ProcBase] = {}
-        self.msg_queue: mp.SimpleQueue | None = None
-        self.msg_thread: th.Thread | None = None
+        self.msg_queue: MsgRecvTask | None = None
         self.init_internals()
 
     def init_internals( self: Self ) -> None:
-        self.msg_thread = th.Thread(target=self.msg_loop)
+        pass
 
     def register_proc( self: Self, proc: ProcBase ) -> None:
         self.procs[proc.proc_id] = proc

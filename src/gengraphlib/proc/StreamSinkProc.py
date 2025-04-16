@@ -1,7 +1,8 @@
 from typing import Self
 
 from . import ProcBase
-from .. import KeyValueSchema, BootLogManager
+from .. import KeyValueSchema
+from ..bootlog import BootLogManager
 
 class StreamSinkProc(ProcBase):
 
