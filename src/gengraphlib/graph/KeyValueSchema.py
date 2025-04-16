@@ -26,9 +26,9 @@ from . import (
     GraphRecordRoot
 )
 
-class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
+class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
-        super(KeySchemaBase, self).__init__()
+        super( KeyValueSchema, self ).__init__()
         self._log_keys: KeyDefDict = KeyDefDict()
         self._root_dir = root_dir
         self.id = id
@@ -61,6 +61,7 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
             for _key in _keys:
                 self.add_key_to_group( _group_id, _key )
 
+    # noinspection PyTypeHints
     def define_keygroups( self: Self, recs: Iterable[keygroup_rec] ) -> None:
         self.key_groups.define_keygroups( recs )
 
@@ -115,6 +116,7 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
         self._persist_keys()
         self._log_traces()
 
+    # noinspection PyUnresolvedReferences
     def _persist_keys( self: Self, source_id: str = "all", line_numbers: bool = False ) -> None:
 
         key: str = ""
@@ -126,7 +128,7 @@ class KeySchemaBase( dict[str, KeyDefBase], GraphRecordRoot ):
                 if not os.path.exists(key_dir):
                     os.mkdir(key_dir)
 
-                with open(f'{key_dir}/{source_id}-{key}.txt', "w") as keyfile:
+                with open(f'{key_dir}/{source_id}-{key}.jline', "w") as keyfile:
                     for value, lines in keydef.key_values.items():
                         if line_numbers:
                             lines_json = json.dumps(lines)

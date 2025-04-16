@@ -23,8 +23,18 @@ from .graph import (
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
-    , KeySchemaBase, VectorValue, GraphVector, GraphValueResult
+    , KeyValueSchema, VectorValue, GraphVector, GraphValueResult
     , KeyValueVisitorBase
+)
+
+from .proc import (
+      ProcType, ProcState, ProcBase
+    , AppProcessBase, StreamSourceProc, StreamSinkProc
+    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MessageQueueBase
+)
+
+from .tasks import (
+    TaskType, TaskState, TaskBase, MsgParsingTask, ValueIndexingTask
 )
 
 from .textlog import (
@@ -55,8 +65,13 @@ __all__ = [
 
     , "LineRefList", "KeyValues"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
-    , "KeySchemaBase"
+    , "KeyValueSchema"
     , "VectorValue", "GraphVector", "GraphValueResult", "KeyValueVisitorBase"
+
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "StreamSourceProc", "StreamSinkProc"
+    , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MessageQueueBase"
+
+    , "TaskType", "TaskState", "TaskBase", "MsgParsingTask", "ValueIndexingTask"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
@@ -68,6 +83,5 @@ __all__ = [
 
     , "BootLogDir", "BootLogManager"
 ]
-
 
 

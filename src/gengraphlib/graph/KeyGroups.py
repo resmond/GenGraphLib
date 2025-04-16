@@ -68,6 +68,7 @@ class KeyGroups( dict[str, KeyGroup ], GNodeInterface ):
             _key_def = self.graph_root[_json_key]
             self.add_key_to_group( _keygroup_id, _key_def )
 
+    # noinspection PyTypeHints
     def define_keygroups( self: Self, recs: Iterable[KeyGroupRec] ) -> None:
         for rec in recs:
             self.def_keygroup( rec )

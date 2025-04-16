@@ -18,6 +18,7 @@ def tupler(_p: PointType) -> PointType:
     return p1
 
 if __name__ == '__main__':
+    # noinspection PyTypeHints
     p5: PointType = (3, 4)
 
     help(p5)

@@ -35,7 +35,6 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         visitor.visit_key_def( self )
 
 
-
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
         super(StrKeyDef, self).__init__( json_key, log_key, KeyType.KStr, groups )

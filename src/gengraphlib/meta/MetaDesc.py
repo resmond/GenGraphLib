@@ -72,6 +72,7 @@ class HostClass:
     def get_repo( self: Self ) -> KeyRepo:
         return self._repo
 
+    # noinspection PyTypeHints
     @property
     def keydefs( self ) -> Generator[(str, str), None, None ]:
         for ky, vl in self._repo.items_dict.items():
