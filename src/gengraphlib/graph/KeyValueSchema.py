@@ -18,7 +18,7 @@ from . import (
     BoolKeyDef,
     FloatKeyDef,
     TmstKeyDef,
-    KeyValueVisitorBase,
+    KeyValueVisitor,
 )
 
 from . import (
@@ -156,7 +156,7 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
             print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
     #from src.gengraphlib.graph.KeyValVisitorBase import KeyValueVisitorBase
-    def visit_keyvalues[T: KeyValueVisitorBase]( self: Self, visitor: T ) -> bool:
+    def visit_schema[ T: KeyValueVisitor ]( self: Self, visitor: T ) -> bool:
         for key, key_def in self.items():
             #from src.gengraphlib.graph.KeyDefs import FloatKeyDef
             match key_def:

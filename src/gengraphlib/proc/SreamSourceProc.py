@@ -4,7 +4,7 @@ from typing import Self
 import multiprocessing as mp
 
 from ..graph import KeyValueSchema
-from ..streamio.CmdKeyValueStream import CmdKeyValueStream
+from hold.streamio.CmdKeyValueStream import CmdKeyValueStream
 from ..proc.ProcLib  import ProcBase
 from ..bootlog import BootLogManager, BootLogDir
 

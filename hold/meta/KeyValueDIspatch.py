@@ -2,7 +2,7 @@ from typing import Self
 
 from collections.abc import Callable
 
-from .. import GraphRecordRoot
+from src.gengraphlib import GraphRecordRoot
 
 dispatch_fn: Callable[str, None] | None = None
 

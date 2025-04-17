@@ -30,8 +30,8 @@ class KeyValInfo:
 
 class LogSchemaVisitor( KeyValueVisitorBase ):
 
-    def __init__(self: Self, keyvalue_stream: CmdKeyValueStream ) -> None:
-        super( LogSchemaVisitor, self ).__init__( keyvalue_stream )
+    def __init__( self: Self, keyvalue_generator: CmdKeyValueStream ) -> None:
+        super( LogSchemaVisitor, self ).__init__( keyvalue_generator )
         self.info_list: list[KeyValInfo] = []
         self.info_evt_list: list[KeyValInfo] = []
         self.evt_logged: list[KeyValInfo] = []
