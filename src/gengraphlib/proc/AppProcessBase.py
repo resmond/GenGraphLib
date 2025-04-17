@@ -1,12 +1,7 @@
 from typing import Self
 
-import multiprocessing as mp
-import threading as th
-
-from .ProcLib import ProcRegistry
-
-from . import ProcBase
-from ..tasks.MsgRecvTask import MsgRecvTask
+from .ProcLib import ProcRegistry, ProcBase
+from .MsgQueueBase import MsgQueueBase
 
 class AppProcessBase( ProcRegistry ):
     instance: Self | None = None
@@ -17,7 +12,7 @@ class AppProcessBase( ProcRegistry ):
         ProcRegistry.instance = self
         self.app_id: str = app_id
         self.procs: dict[str, ProcBase] = {}
-        self.msg_queue: MsgRecvTask | None = None
+        self.msg_queue: MsgQueueBase | None = None
         self.init_internals()
 
     def init_internals( self: Self ) -> None:
@@ -33,7 +28,7 @@ class AppProcessBase( ProcRegistry ):
             #throw_error(f"[ProcManager.start_proc] Unknown Proc ID: {proc_id}")
             print(f"[ProcManager.start_proc] Unknown Proc ID: {proc_id}")
 
-    async def start( self ):
+    def start( self ):
         pass
 
 

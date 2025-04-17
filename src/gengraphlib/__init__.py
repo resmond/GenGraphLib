@@ -35,7 +35,7 @@ from .proc import (
 )
 
 from .tasks import (
-    MsgRecvTask, ValueIndexingTask
+    ValueIndexingTask
 )
 
 from .textlog import (
@@ -72,7 +72,7 @@ __all__ = [
     , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "StreamSourceProc", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
-    , "TaskType", "TaskState", "TaskBase", "MsgRecvTask", "ValueIndexingTask"
+    , "TaskType", "TaskState", "TaskBase", "ValueIndexingTask"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

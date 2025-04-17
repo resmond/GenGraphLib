@@ -9,14 +9,16 @@ from progress.bar import Bar
 from .. import (
     KeyValTypes,
     keygroup_rec,
-    KeyDefDict,
+    KeyDefDict
 )
 
 from . import (
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
-    TmstKeyDef
+    FloatKeyDef,
+    TmstKeyDef,
+    KeyValueVisitorBase,
 )
 
 from . import (
@@ -153,10 +155,10 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         except Exception as exc:
             print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
-    from .KeyValVisitor import KeyValueVisitorBase
-    def visit_keyvalues( self: Self, visitor: KeyValueVisitorBase ) -> bool:
+    #from src.gengraphlib.graph.KeyValVisitorBase import KeyValueVisitorBase
+    def visit_keyvalues[T: KeyValueVisitorBase]( self: Self, visitor: T ) -> bool:
         for key, key_def in self.items():
-            from src.gengraphlib.graph.KeyDefs import FloatKeyDef
+            #from src.gengraphlib.graph.KeyDefs import FloatKeyDef
             match key_def:
                 case StrKeyDef():
                     visitor.visit_str( key_def, key_def.key_values )

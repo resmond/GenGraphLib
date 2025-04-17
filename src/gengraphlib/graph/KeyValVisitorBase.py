@@ -1,10 +1,11 @@
+from typing import Self
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Self
 
 from typing_extensions import TypeVar
 
-from . import (
+from src.gengraphlib.graph import (
     KeyDefBase,
     KeyValues,
     StrKeyDef,
@@ -19,12 +20,12 @@ from . import (
     TmstKeyValueSet
 )
 
-from .. import CmdKeyValueStream
+from src.gengraphlib import CmdKeyValueStream
 
-KeyDefType = TypeVar( 'KeyDefType', bound=KeyDefBase )
-KeyValType = TypeVar( 'KeyValType', bound=KeyValues )
-
-keydef_visit = Callable[ [ KeyDefType, KeyValType ], bool ]
+#KeyDefType = TypeVar( 'KeyDefType', bound=KeyDefBase )
+#KeyValType = TypeVar( 'KeyValType', bound=KeyValues )
+#keydef_visit = Callable[ [ KeyDefType, KeyValType ], bool ]
+keydef_visit = Callable[ [ KeyDefBase, KeyValues ], bool ]
 
 class KeyValueVisitorBase( ABC ):
 

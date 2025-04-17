@@ -4,7 +4,7 @@ from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, 
 from .KeyGroups import KeyGroup, KeyGroups
 from .GraphVector import VectorValue, GraphVector, GraphValueResult
 from .KeyValueSchema import KeyValueSchema
-from .KeyValVisitor import KeyValueVisitorBase
+from .KeyValVisitorBase import KeyValueVisitorBase
 from .KeyValueSink import KeyValueSink
 
 __all__ = [

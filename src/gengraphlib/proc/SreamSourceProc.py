@@ -3,9 +3,9 @@ from typing import Self
 
 import multiprocessing as mp
 
-from .  import ProcBase
-from .. import KeyValueSchema
-from .. import CmdKeyValueStream
+from ..graph import KeyValueSchema
+from ..streamio.CmdKeyValueStream import CmdKeyValueStream
+from ..proc.ProcLib  import ProcBase
 from ..bootlog import BootLogManager, BootLogDir
 
 class StreamSourceProc(ProcBase):
@@ -21,7 +21,6 @@ class StreamSourceProc(ProcBase):
         self.process.start()
 
     def main_loop(self: Self) -> None:
-
         pass
 
     async def exec(self: Self, specific_ndx: int):
@@ -34,12 +33,20 @@ class StreamSourceProc(ProcBase):
             command_source = CmdKeyValueStream("journalctl -b -1 -o export")
             self.cnt = 0
             async for line in command_source.line_stream():
-                line.find(b"=")
+                writer.write(line)
+                if len(line):
+                    print("next record")
+                    continue
+
+                split: int = line.find(b"=")
                 self.cnt += 1
                 if self.cnt % 10 == 0:
                     print(".", end="")
                 elif self.cnt % 100 == 0:
                     print(f"\ncnt: {self.cnt}")
+                elif self.cnt % 1000 == 0:
+                    print(f"\ncnt: {self.cnt}")
+                    break
 
         end = time.time()
         print(f"end: {end}")

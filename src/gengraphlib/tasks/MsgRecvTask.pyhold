@@ -1,14 +1,13 @@
 from typing import Self
 
-from ..proc import TaskBase
 from ..proc.MsgQueueBase import MsgQueueBase, StatusMsg, InfoMsg, DataMsg, ErrorMsg
 
-class MsgRecvTask( TaskBase, MsgQueueBase ):
-    def __init__(self: Self, proc_id: str, queue_size: int | None = None) -> None:
-        super( MsgRecvTask, self ).__init__( proc_id, queue_size )
+class MsgRecvTask( MsgQueueBase ):
+    def __init__( self: Self, queue_id: str, queue_size: int | None = None ) -> None:
+        super( MsgRecvTask, self ).__init__(queue_id)
 
-    def start(self: Self) -> None:
-        pass
+    async def start(self: Self) -> None:
+        await super().start()
 
     def main_loop(self: Self) -> None:
         pass

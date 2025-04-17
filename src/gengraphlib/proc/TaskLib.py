@@ -22,10 +22,10 @@ class TaskState( IntEnum ):
 class TaskBase( ABC ):
     default_queue_size: int = 1024 * 256
 
-    def __init__(self: Self, thread_id: str, queue_size: int | None = None ) -> None:
-        self.task_id:    str = thread_id
+    def __init__( self: Self, task_id: str, queue_size: int | None = None ) -> None:
+        self.task_id:    str = task_id
         self.queue_size: int = queue_size or self.default_queue_size
-        self.msg_queue:  mp.SimpleQueue = mp.SimpleQueue()
+        self.msg_queue:  mp.Queue = mp.Queue()
         self.task_state: TaskState = TaskState.Init
         self.task_type:  TaskType = TaskType.Undefined
         self.thread:     Thread | None = None
