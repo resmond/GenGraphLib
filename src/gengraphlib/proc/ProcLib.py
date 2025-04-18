@@ -43,10 +43,10 @@ class ProcBase(ABC, Startable):
         self.tasks: dict[str, TaskBase ] = {}
         AppProcessBase.instance.register_startable(self)
 
-    def id( self ) -> str:
+    def id( self: Self ) -> str:
         return self.proc_id
 
-    def is_proc( self ) -> bool:
+    def is_proc( self: Self ) -> bool:
         return True
 
     def start(self: Self) -> None:
@@ -60,7 +60,7 @@ class ProcBase(ABC, Startable):
         self.process.terminate()
         pass
 
-    def register_task( self, task: TaskBase ) -> None:
+    def register_task( self: Self, task: TaskBase ) -> None:
         self.tasks[ task.task_id ] = task
 
     def start_task( self, task_id: str ) -> None:

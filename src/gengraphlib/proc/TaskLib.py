@@ -8,9 +8,8 @@ from abc import ABC, abstractmethod
 import multiprocessing as mp
 from   threading import Thread
 
-from .AppProcessBase  import AppProcessBase, Startable
 from ..graph.GraphLib import KeyDefInterface
-
+from .AppProcessBase  import AppProcessBase, Startable
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -56,10 +55,10 @@ class TaskBase( ABC, Startable ):
         self.thread:     Thread | None = None
         AppProcessBase.instance.register_proc(self)
 
-    def id( self ) -> str:
+    def id( self: Self ) -> str:
         return self.task_id
 
-    def is_proc( self ) -> bool:
+    def is_proc( self: Self ) -> bool:
         return False
 
     def start(self: Self) -> None:
