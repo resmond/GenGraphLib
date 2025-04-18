@@ -6,27 +6,12 @@ import os
 
 from progress.bar import Bar
 
-from .. import (
-    KeyValTypes,
-    keygroup_rec,
-    KeyDefDict
-)
+from ..common import KeyValTypes, keygroup_rec, KeyDefDict
 
-from . import (
-    StrKeyDef,
-    IntKeyDef,
-    BoolKeyDef,
-    FloatKeyDef,
-    TmstKeyDef,
-    KeySchemaVisitor,
-)
-
-from . import (
-    RecordBase,
-    KeyDefBase,
-    KeyGroups,
-    GraphRecordRoot
-)
+from .GraphLib import RecordBase, GraphRecordRoot
+from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
+from .KeyGroups import KeyGroups
+from .KeySchemaVisitor import KeySchemaVisitor
 
 class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
     schema: Self

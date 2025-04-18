@@ -1,31 +1,11 @@
-from abc import abstractmethod
-from asyncio import Protocol
 from multiprocessing.managers import SyncManager
 from typing import Self
 
 import multiprocessing as mp
 import concurrent.futures as cf
 
-from .ProcLib import ProcRegistry
+from .ProcLib import ProcRegistry, Startable
 from .MsgQueueBase import MsgQueueBase
-
-
-class Startable(Protocol):
-
-    @abstractmethod
-    def id( self ) -> str: ...
-
-    @abstractmethod
-    def is_proc( self ) -> bool: ...
-        
-
-    def start( self: Self ) -> None: ...
-
-    def stop( self ) -> None: ...
-
-    @abstractmethod
-    def main_loop( self ) -> None: ...
-
 
 class AppProcessBase( ProcRegistry ):
     instance: Self | None = None

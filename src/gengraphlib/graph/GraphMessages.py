@@ -15,10 +15,10 @@ class IndexingProgressMsg(DataMsg):
 
 KeyValRec: type = tuple[str,bytes]
 
-class RecordValuesMsg( DataMsg ):
+class RecordDataMsg( DataMsg ):
 
     def __init__(self: Self, source_id: str ) -> None:
-        super( RecordValuesMsg, self ).__init__( source_id, message=None, data_dict=None )
+        super( RecordDataMsg, self ).__init__( source_id, message=None, data_dict=None )
         self.source_id: str = source_id
         self.rec_num:   int = -1
         self.values:    list[KeyValRec] = []
@@ -27,10 +27,10 @@ class RecordValuesMsg( DataMsg ):
         self.values.append( (alias, value ) )
         
 
-class KeyValueMsg[T: KeyValTypes]( DataMsg ):
+class ValueDataMsg[ T: KeyValTypes ]( DataMsg ):
 
     def __init__(self: Self, source_id: str, rec_num: int, key: str,  value: T ) -> None:
-        super( KeyValueMsg, self ).__init__( source_id, message=f"Key[{key}] = {value}", data_dict=None )
+        super( ValueDataMsg, self ).__init__( source_id, message= f"Key[{key}] = {value}", data_dict=None )
         self.source_id: str = source_id
         self.rec_num:   int = rec_num
         self.key:       str = key

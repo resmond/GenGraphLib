@@ -1,18 +1,10 @@
-from __future__ import annotations
-
 from typing import Self, Protocol
-
 from enum import IntEnum
-
 from abc import ABC, abstractmethod
-
 import multiprocessing as mp
 from   threading import Thread
 
-from .TaskLib import TaskBase
-from .AppProcessBase import Startable
-from .. import AppProcessBase
-
+from .TaskLib import TaskBase, Startable
 
 class ProcType(IntEnum):
     Undefined = 0
@@ -27,7 +19,7 @@ class ProcState(IntEnum):
     Stopped = 3
 
 class ProcRegistry(Protocol):
-    def register_proc( self, proc: ProcBase ) -> None: ...
+    def register_proc( self, proc: Startable ) -> None: ...
 
 class ProcBase(ABC, Startable):
     default_queue_size: int = 1024 * 256
@@ -41,7 +33,7 @@ class ProcBase(ABC, Startable):
         self.process: mp.Process = mp.Process( target = self.main_loop, args=() )
         self.main_thread: Thread | None = None
         self.tasks: dict[str, TaskBase ] = {}
-        AppProcessBase.instance.register_startable(self)
+        #AppProcessBase.instance.register_startable(self)
 
     def id( self: Self ) -> str:
         return self.proc_id

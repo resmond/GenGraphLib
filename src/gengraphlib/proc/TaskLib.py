@@ -9,7 +9,6 @@ import multiprocessing as mp
 from   threading import Thread
 
 from ..graph.GraphLib import KeyDefInterface
-from .AppProcessBase  import AppProcessBase, Startable
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -43,6 +42,16 @@ class IndexManagerInterface(Protocol):
     @staticmethod
     def register_index( index: IndexTaskInterface ) -> None: ...
 
+class Startable(Protocol):
+    @abstractmethod
+    def id( self ) -> str: ...
+    @abstractmethod
+    def is_proc( self ) -> bool: ...
+    def start( self: Self ) -> None: ...
+    def stop( self: Self ) -> None: ...
+    @abstractmethod
+    def main_loop( self: Self ) -> None: ...
+
 class TaskBase( ABC, Startable ):
     default_queue_size: int = 1024 * 256
 
@@ -53,7 +62,7 @@ class TaskBase( ABC, Startable ):
         self.task_state: TaskState = TaskState.Init
         self.task_type:  TaskType = TaskType.Undefined
         self.thread:     Thread | None = None
-        AppProcessBase.instance.register_proc(self)
+        #AppProcessBase.instance.register_proc(self)
 
     def id( self: Self ) -> str:
         return self.task_id

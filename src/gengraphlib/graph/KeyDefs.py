@@ -1,43 +1,42 @@
-import multiprocessing
 from typing import Self
+import multiprocessing as mp
 
 import datetime as dt
 
-from .. import KeyType, KeyValTypes, KeyDefInterface, AppProcessBase
-
+from ..common import KeyType, KeyValTypes, KeyDefInterface
 from .KeyValues import KeyValues
 
+#from ..proc.AppProcessBase import AppProcessBase
+
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
-    def __init__( self: Self, json_key: str, log_key: str, key_type: KeyType, groups: list[str] | str | None = None ) -> None:
+    def __init__( self: Self, key: str, alias: str, key_type: KeyType, groups: list[str ] | str | None = None ) -> None:
         super(KeyDefBase, self).__init__()
-        self.json_key:       str = json_key
-        self.log_key:        str = log_key
+        self.key:            str = key
+        self.alias:          str = alias
         self._skip:          bool = True
         self._event_trigger: bool = False
         self.key_type:       KeyType = key_type
-        self.groups:         list[str] | None = None
+        self.groupids:       list[str] | None = None
 
         self.key_values: KeyValues[T] = KeyValues[T]( self )
-        self._queue: multiprocessing.Queue | None = None
+        self._queue: mp.Queue | None = None
 
         match groups:
             case str() if groups in ["skip", ""]:
                 pass
             case str():
-                self.groups = [groups]
+                self.groupids = [ groups ]
                 self._skip = False
             case [] if len(groups) > 0:
-                self.groups = groups
+                self.groupids = groups
                 self._skip = False
 
     @property
     def dologing( self: Self ) -> bool:
         return not self._skip
 
-    @property
-    def queue( self: Self ) -> multiprocessing.Queue | None:
-        if self._queue is None:
-            self._queue = AppProcessBase.instance.create_queue(f"{self.key}-queue")
+    def queue( self: Self ) -> mp.Queue:
+        self._queue = mp.Queue()
         return self._queue
 
     def visit( self: Self, visitor ) -> None:
@@ -46,27 +45,27 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
 
 
 class StrKeyDef( KeyDefBase[str] ):
-    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(StrKeyDef, self).__init__( json_key, log_key, KeyType.KStr, groups )
+    def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
+        super(StrKeyDef, self).__init__( key, alias, KeyType.KStr, groups )
 
 class IntKeyDef( KeyDefBase[int] ):
-    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(IntKeyDef, self).__init__( json_key, log_key, KeyType.KInt, groups )
+    def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
+        super(IntKeyDef, self).__init__( key, alias, KeyType.KInt, groups )
 
 
 class BoolKeyDef( KeyDefBase[bool] ):
-    def __init__( self: Self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(BoolKeyDef, self).__init__( json_key, log_key, KeyType.KBool, groups )
+    def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
+        super(BoolKeyDef, self).__init__( key, alias, KeyType.KBool, groups )
 
 class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
-    def __init__( self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(TmstKeyDef, self).__init__( json_key, log_key, KeyType.KTmst, groups )
+    def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
+        super(TmstKeyDef, self).__init__( key, alias, KeyType.KTmst, groups )
 
 class FloatKeyDef( KeyDefBase[float] ):
-    def __init__( self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(FloatKeyDef, self).__init__( json_key, log_key, KeyType.KFloat, groups )
+    def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
+        super(FloatKeyDef, self).__init__( key, alias, KeyType.KFloat, groups )
 
 
 class KeyDict( dict[str, KeyDefBase ] ):

@@ -20,9 +20,9 @@ from .. import (
 #from .. import GNodeInterface
 
 class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface ):
-    def __init__(self: Self, _key_def: KeyDefInterface[T]) -> None:
+    def __init__(self: Self, _key_def: KeyDefInterface) -> None:
         super(KeyValues, self).__init__()
-        self.key_def: KeyDefInterface[T] = _key_def
+        self.key_def: KeyDefInterface = _key_def
         self.id: str = _key_def.key
         self.keytype: KeyType
         self.unique: bool = True
@@ -36,22 +36,22 @@ class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface 
         return f'{{ json_key: "{self.json_key}", log_key: "{self.log_key}", unique:{self.unique} }}'
 
 class StrKeyValueSet( KeyValues[str] ):
-    def __init__( self: Self, _key_def: KeyDefInterface[str] ) -> None:
+    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
         super(StrKeyValueSet, self).__init__( _key_def )
 
 class IntKeyValueSet( KeyValues[int ] ):
-    def __init__( self: Self, _key_def: KeyDefInterface[int] ) -> None:
+    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
         super(IntKeyValueSet, self).__init__( _key_def )
 
 class BoolKeyValueSet( KeyValues[bool] ):
-    def __init__( self: Self, _key_def: KeyDefInterface[bool] ) -> None:
+    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
         super(BoolKeyValueSet, self).__init__( _key_def )
 
 class FloatKeyValueSet( KeyValues[float] ):
-    def __init__( self: Self, _key_def: KeyDefInterface[float] ) -> None:
+    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
         super(FloatKeyValueSet, self).__init__( _key_def )
 
 class TmstKeyValueSet( KeyValues[dt.datetime] ):
-    def __init__( self: Self, _key_def: KeyDefInterface[dt.datetime] ) -> None:
+    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
         super(TmstKeyValueSet, self).__init__( _key_def )
 

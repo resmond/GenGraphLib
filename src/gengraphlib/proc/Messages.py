@@ -18,7 +18,7 @@ class MessageBase:
         self.msg_type: MsgType = MsgType.Status
         self.source_type: MsgSourceType = source_type
         self.source_id: str = source_id
-        self.message: str = message
+        self.message: str   = message
 
 class StatusMsg(MessageBase):
 
@@ -45,6 +45,10 @@ class DataMsg(MessageBase):
         self.msg_type = MsgType.Data
         self.data: dict[str, str] = data_dict
 
+#--------------------------------------------------------
+#
+#  testing
+#
 if __name__ == "__main__":
     import multiprocessing as mp
     import pickle as pkl

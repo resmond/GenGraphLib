@@ -37,7 +37,7 @@ class KeyValueStreamProc( ProcBase ):
 
         self.cmd_stream = CmdStdoutStream(f"jounalctl -b {specific_ndx} -o export")
 
-    def main_loop(self: Self) -> None:
+    async def main_loop(self: Self) -> None:
         async for line in self.cmd_stream.line_stream():
             self.recv_line(line)
 
