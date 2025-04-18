@@ -1,7 +1,7 @@
-from MainAppProc import MainAppProc
+from MainApp import MainApp
 
 if __name__ == "__main__":
     print("starting MainAppProc")
-    app = MainAppProc()
+    app = MainApp()
     app.start()
     #ret = aio.run( app.start() )

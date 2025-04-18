@@ -6,8 +6,9 @@ from gengraphlib import (
     InfoMsg,
     ErrorMsg,
     DataMsg,
-    KeyValueSchema,
     MsgQueueBase,
+    BootLogDir,
+    JounalCtlStreamSource,
     AppProcessBase
 )
 
@@ -27,10 +28,10 @@ class MainAppMsgQueue( MsgQueueBase ):
     def recv_data( self: Self, msg: DataMsg ) -> None:
         print(f"MainApp.DataMsg: {msg}")
 
-class MainAppProc( AppProcessBase ):
+class MainApp( AppProcessBase ):
     def __init__(self: Self):
-        super(MainAppProc, self).__init__( "app-main" )
-        self.keyval_schema: KeyValueSchema | None = None
+        self.keyval_schema: BootLogSchema | None = None
+        super( MainApp, self ).__init__( "app-main" )
 
     def init_internals( self: Self ) -> None:
         self.keyval_schema = BootLogSchema( id= "1", _log_root = "/home/richard/data/jctl-logs/" )
@@ -39,5 +40,8 @@ class MainAppProc( AppProcessBase ):
 
     def start(self: Self) -> bool:
         self.msg_queue.start()
+        self.launch_processing()
         return True
 
+    def launch_processing( self ):
+        self.keyval_schema.launch_processing( -1, True )

@@ -1,7 +1,7 @@
 from typing import Self
 
-from .. import DataMsg, KeyValTypes
-
+from ..common        import KeyValTypes
+from ..proc.Messages import DataMsg
 
 class IndexingProgressMsg(DataMsg):
 

@@ -3,6 +3,8 @@ from typing import Self
 import os
 import datetime as dt
 
+from ..streams.JounalCtlStreamSource import JounalCtlStreamSource
+
 class BootLogDir:
 
     def __init__( self: Self, root_dir: str, log_rec: str ) -> None:
@@ -30,6 +32,7 @@ class BootLogDir:
         return f'{{idx:{self.idx}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_filepath}}}'
 
     def __str__( self: Self ) -> str: return self.__repr__()
+
 
 
 

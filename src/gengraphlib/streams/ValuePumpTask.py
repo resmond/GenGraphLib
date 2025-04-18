@@ -23,6 +23,7 @@ class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
     def init_queues( self: Self ) -> None:
         KeyValueSchema.schema.visit_schema( self )
 
+    # noinspection PyTypeChecker
     def register_queue( self: Self, key_def: KeyDefBase ) -> bool:
         if "evt" in key_def.groupids:
             self.keydef_queues[ key_def.alias ] = key_def.queue

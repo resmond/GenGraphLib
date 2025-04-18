@@ -10,7 +10,7 @@ from gengraphlib import (
     KeyValueSchema,
     BootLogManager,
     StreamSinkProc,
-    KeyValueStreamProc
+    JounalCtlStreamSource
 )
 
 class BootLogSchema( KeyValueSchema ):
@@ -18,10 +18,12 @@ class BootLogSchema( KeyValueSchema ):
 
     def __init__( self: Self, id: str, _log_root: str ) -> None:
         super( BootLogSchema, self ).__init__( id=id, root_dir = _log_root )
-        BootLogSchema.instance = self
-        self.log_manager: BootLogManager = BootLogManager( _log_root )
-        self._log_keys: KeyDict = KeyDict()
+        self.log_manager:          BootLogManager        = BootLogManager( _log_root )
+        self.journal_streamsource: JounalCtlStreamSource = JounalCtlStreamSource( keyval_schema=self.keyval_schema )
+        self._log_keys:            KeyDict               = KeyDict()
         self.cnt: int = 0
+
+        BootLogSchema.instance = self
 
         self.add_keydefs(
             [
@@ -167,9 +169,9 @@ class BootLogSchema( KeyValueSchema ):
     def final_init( self ):
         super().final_init()
 
-    def init_procs( self: Self ) -> None:
-        KeyValueStreamProc( keyval_schema = self, bootlog_manager = self.log_manager )
-        StreamSinkProc(keyval_schema = self, bootlog_manager = self.log_manager)
+    def launch_processing( self: Self, specific_ndx: int, write_bin: bool ) -> None:
+        bootlog_dir = self.log_manager.get_bootlogdir( specific_ndx = specific_ndx )
+        self.journal_streamsource.launch_processing( bootlogdir = bootlog_dir, write_bin=write_bin)
 
 
     

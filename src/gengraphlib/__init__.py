@@ -35,8 +35,8 @@ from .proc import (
 )
 
 from .streams import (
-      IndexTaskBase, StrIndexingTask, IntIndexingTask, BoolIndexingTask, FloatIndexingTask, TmstIndexingTask
-    , ValueIndexManagerTask, ValuePumpTask, CmdStdoutStream, KeyValueStreamProc
+    IndexTaskBase, StrIndexingTask, IntIndexingTask, BoolIndexingTask, FloatIndexingTask, TmstIndexingTask
+    , ValueIndexManagerTask, ValuePumpTask, CmdStdoutStream, JounalCtlStreamSource
 )
 
 from .textlog import (
@@ -68,13 +68,13 @@ __all__ = [
     , "KeyValueSchema"
     , "VectorValue", "GraphVector", "GraphValueResult", "KeySchemaVisitor"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "KeyValueStreamProc", "StreamSinkProc"
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "JounalCtlStreamSource", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
     , "IndexTaskBase", "StrIndexingTask", "IntIndexingTask", "BoolIndexingTask", "FloatIndexingTask", "TmstIndexingTask"
-    , "ValuePumpTask", "ValueIndexManagerTask", "KeyValueStreamProc", "CmdStdoutStream"
+    , "ValuePumpTask", "ValueIndexManagerTask", "JounalCtlStreamSource", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
