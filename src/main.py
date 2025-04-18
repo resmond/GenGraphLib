@@ -1,5 +1,3 @@
-import asyncio as aio
-
 from MainAppProc import MainAppProc
 
 if __name__ == "__main__":

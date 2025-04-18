@@ -6,7 +6,7 @@ from .common import (
     , KeyFilter, KeyType, SerializationType, DictOfLists, value_event_fn, KeyValuesInterface
 )
 
-from .fileparse import (
+from .regex import (
       ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
     , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                          # RgxField
 )
@@ -19,24 +19,24 @@ from .fileparse import (
 # )
 
 from .graph import (
-      NodeDict, IndexedNodeList, GNodeInterface
+    NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase, KeyValues
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
     , KeyValueSchema, VectorValue, GraphVector, GraphValueResult
-    , KeyValueVisitorBase
+    , KeySchemaVisitor
 )
 
 from .proc import (
-      ProcType, ProcState, ProcBase
-    , TaskType, TaskState, TaskBase
-    , AppProcessBase, StreamSourceProc, StreamSinkProc
+      ProcType, ProcState, ProcBase, IndexTaskInterface, IndexManagerInterface
+    , TaskType, TaskState, TaskBase, AppProcessBase, StreamSinkProc
     , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
 )
 
-from .tasks import (
-    ValueIndexingTask
+from .streams import (
+      IndexTaskBase, StrIndexingTask, IntIndexingTask, BoolIndexingTask, FloatIndexingTask, TmstIndexingTask
+    , ValueIndexManagerTask, ValuePumpTask, CmdStdoutStream, KeyValueStreamProc
 )
 
 from .textlog import (
@@ -59,19 +59,22 @@ __all__ = [
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "NodeDict", "IndexedNodeList", "GNodeInterface", "value_event_fn", "KeyValuesInterface"
-    , "GraphRecordRoot", "RecordBase", "KeyDefInterface"
+    , "GraphRecordRoot", "RecordBase", "KeyDefInterface", "KeyDefInterface"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
     , "LineRefList", "KeyValues"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeyValueSchema"
-    , "VectorValue", "GraphVector", "GraphValueResult", "KeyValueVisitorBase"
+    , "VectorValue", "GraphVector", "GraphValueResult", "KeySchemaVisitor"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "StreamSourceProc", "StreamSinkProc"
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "KeyValueStreamProc", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
-    , "TaskType", "TaskState", "TaskBase", "ValueIndexingTask"
+    , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
+
+    , "IndexTaskBase", "StrIndexingTask", "IntIndexingTask", "BoolIndexingTask", "FloatIndexingTask", "TmstIndexingTask"
+    , "ValuePumpTask", "ValueIndexManagerTask", "KeyValueStreamProc", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
@@ -83,6 +86,7 @@ __all__ = [
 
     , "BootLogDir", "BootLogManager"
 ]
+
 
 
 #      "ChainableResult", "PipeChainType", "StreamType", "ChainErr", "ChainException", "PipedChainBase"

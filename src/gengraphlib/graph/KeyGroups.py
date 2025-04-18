@@ -22,7 +22,7 @@ class KeyGroup( KeyDefDict, GNodeInterface ):
         self.group_desc: str = group_desc
 
     def add_keydef( self: Self, key_def: KeyDefInterface ) -> None:
-        self[ key_def.json_key ] = key_def
+        self[ key_def.key ] = key_def
 
     def create_vector( self: Self, _key_filter: KeyFilter ) -> GraphVector:
 

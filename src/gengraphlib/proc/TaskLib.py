@@ -1,3 +1,4 @@
+from asyncio import Protocol
 from typing import Self
 
 from enum import IntEnum
@@ -6,6 +7,10 @@ from abc import ABC, abstractmethod
 
 import multiprocessing as mp
 from   threading import Thread
+
+from .AppProcessBase  import AppProcessBase, Startable
+from ..graph.GraphLib import KeyDefInterface
+
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -19,7 +24,27 @@ class TaskState( IntEnum ):
     Running = 2
     Stopped = 3
 
-class TaskBase( ABC ):
+class IndexTaskInterface(Protocol):
+
+    @property
+    @abstractmethod
+    def keydef( self: Self ) -> KeyDefInterface: ...
+
+    def start( self: Self ) -> None: ...
+    def stop( self: Self ) -> None: ...
+
+class IndexManagerInterface(Protocol):
+
+    @staticmethod
+    def start_indexes() -> None: ...
+
+    @staticmethod
+    def stop_indexes() -> None: ...
+
+    @staticmethod
+    def register_index( index: IndexTaskInterface ) -> None: ...
+
+class TaskBase( ABC, Startable ):
     default_queue_size: int = 1024 * 256
 
     def __init__( self: Self, task_id: str, queue_size: int | None = None ) -> None:
@@ -29,12 +54,22 @@ class TaskBase( ABC ):
         self.task_state: TaskState = TaskState.Init
         self.task_type:  TaskType = TaskType.Undefined
         self.thread:     Thread | None = None
+        AppProcessBase.instance.register_proc(self)
 
-    @abstractmethod
-    def start(self: Self) -> None: ...
+    def id( self ) -> str:
+        return self.task_id
+
+    def is_proc( self ) -> bool:
+        return False
+
+    def start(self: Self) -> None:
+        if self.thread is not None:
+            self.thread.start()
 
     def stop(self: Self) -> None:
-        pass
+        if self.thread is not None:
+            self.thread.join(timeout=1)
 
+    @abstractmethod
     def main_loop(self: Self) -> None:
         pass

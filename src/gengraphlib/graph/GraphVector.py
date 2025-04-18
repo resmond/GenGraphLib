@@ -10,7 +10,7 @@ class VectorValue:
         super().__init__()
         self.key_def: KeyDefInterface = key_def
         if _alias is None:
-            self.field_name: str = self.key_def.json_key
+            self.field_name: str = self.key_def.key
         else:
             self.field_name: str = _alias
 
@@ -22,9 +22,9 @@ class GraphVector( dict[str, VectorValue ] ):
         self._filter_map: KeyFilter = _key_filter
 
         for json_key, key_def in self._key_group.items():
-            if key_def.json_key in self._filter_map:
-                if self._filter_map[key_def.json_key ] is not None:
-                    self.add( key_def, self._filter_map[key_def.json_key ] )
+            if key_def.key in self._filter_map:
+                if self._filter_map[key_def.key ] is not None:
+                    self.add( key_def, self._filter_map[key_def.key ] )
             else:
                 self.add( key_def )
 

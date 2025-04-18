@@ -1,6 +1,6 @@
 from typing import Self
 
-from BootLogGraph import BootLogGraph
+from BootLogSchema import BootLogSchema
 from src.gengraphlib import (
     StatusMsg,
     InfoMsg,
@@ -17,7 +17,7 @@ class MainAppProc( AppProcessBase ):
         self.keyval_schema: KeyValueSchema | None = None
 
     def init_internals( self: Self ) -> None:
-        self.keyval_schema = BootLogGraph( id="1", _log_root = "/home/richard/data/jctl-logs/" )
+        self.keyval_schema = BootLogSchema( id= "1", _log_root = "/home/richard/data/jctl-logs/" )
         self.msg_queue = MainAppMsgQueue()
         super().init_internals()
 

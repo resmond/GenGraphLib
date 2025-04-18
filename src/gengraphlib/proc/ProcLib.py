@@ -9,7 +9,10 @@ from abc import ABC, abstractmethod
 import multiprocessing as mp
 from   threading import Thread
 
-from . import TaskBase
+from .TaskLib import TaskBase
+from .AppProcessBase import Startable
+from .. import AppProcessBase
+
 
 class ProcType(IntEnum):
     Undefined = 0
@@ -24,11 +27,9 @@ class ProcState(IntEnum):
     Stopped = 3
 
 class ProcRegistry(Protocol):
-    instance: Self
-
     def register_proc( self, proc: ProcBase ) -> None: ...
 
-class ProcBase(ABC):
+class ProcBase(ABC, Startable):
     default_queue_size: int = 1024 * 256
 
     def __init__(self: Self, proc_id: str, queue_size: int | None = None ) -> None:
@@ -37,19 +38,26 @@ class ProcBase(ABC):
         self.msg_queue: mp.SimpleQueue = mp.SimpleQueue()
         self.proc_state: ProcState = ProcState.Init
         self.proc_type: ProcType = ProcType.Undefined
-        self.process: mp.Process | None = None
+        self.process: mp.Process = mp.Process( target = self.main_loop, args=() )
         self.main_thread: Thread | None = None
         self.tasks: dict[str, TaskBase ] = {}
-        ProcRegistry.instance.register_proc(self)
+        AppProcessBase.instance.register_startable(self)
 
+    def id( self ) -> str:
+        return self.proc_id
+
+    def is_proc( self ) -> bool:
+        return True
+
+    def start(self: Self) -> None:
+        self.process.start()
 
     @abstractmethod
-    def start(self: Self) -> None: ...
-
     def main_loop(self: Self) -> None:
         pass
 
     def stop(self: Self) -> None:
+        self.process.terminate()
         pass
 
     def register_task( self, task: TaskBase ) -> None:

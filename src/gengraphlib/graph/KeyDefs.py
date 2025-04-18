@@ -1,8 +1,9 @@
+import multiprocessing
 from typing import Self
 
 import datetime as dt
 
-from .. import KeyType, KeyValTypes, KeyDefInterface
+from .. import KeyType, KeyValTypes, KeyDefInterface, AppProcessBase
 
 from .KeyValues import KeyValues
 
@@ -16,6 +17,7 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         self._skip:          bool = True
         self._event_trigger: bool = False
         self.key_values:     KeyValues[T] = KeyValues[T]( self )
+        self._queue: multiprocessing.Queue | None = None
 
         match groups:
             case str() if groups in ["skip", ""]:
@@ -30,6 +32,12 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     @property
     def dologing( self: Self ) -> bool:
         return not self._skip
+
+    @property
+    def queue( self ) -> multiprocessing.Queue | None:
+        if self._queue is None:
+            self._queue = AppProcessBase.instance.create_queue(f"{self.key}-queue")
+        return self._queue
 
     def visit( self: Self, visitor ) -> None:
         visitor.visit_key_def( self )
@@ -58,7 +66,7 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     now_datetime = dt.datetime.now()
 
     def __init__( self, json_key: str, log_key: str, groups: list[str ] | str | None = None ) -> None:
-        super(TmstKeyDef, self).__init__( json_key, log_key, KeyType.KTimeStamp, groups )
+        super(TmstKeyDef, self).__init__( json_key, log_key, KeyType.KTmst, groups )
 
     #def add_jvalue( self: Self, jvalue: str, line_num: int ) -> AddValueResult:
     #    try:

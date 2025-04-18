@@ -18,7 +18,7 @@ from . import (
     BoolKeyDef,
     FloatKeyDef,
     TmstKeyDef,
-    KeyValueVisitor,
+    KeySchemaVisitor,
 )
 
 from . import (
@@ -29,6 +29,8 @@ from . import (
 )
 
 class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
+    schema: Self
+
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super( KeyValueSchema, self ).__init__()
         self._log_keys: KeyDefDict = KeyDefDict()
@@ -38,9 +40,11 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         self.none_values: list[str] = []
         self.key_groups: KeyGroups = KeyGroups("key_groups",self)
 
+        KeyValueSchema.schema = self
+
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
-        self[_key_def.json_key] = _key_def
-        self._log_keys[_key_def.log_key] = _key_def
+        self[_key_def.key ] = _key_def
+        self._log_keys[_key_def.alias ] = _key_def
 
     def add_keydefs( self: Self, _keydefs: list[KeyDefBase ] ) -> None:
         for _key_def in _keydefs:
@@ -69,11 +73,11 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
 
     def init_repository( self ):
         for key, keydef in self.items():
-            match keydef.groups:
+            match keydef.groupids:
                 case str():
-                    self.add_key_to_group(keydef.groups, key)
+                    self.add_key_to_group( keydef.groupids, key )
                 case list():
-                    for group_id in keydef.groups:
+                    for group_id in keydef.groupids:
                         self.add_key_to_group(group_id, key)
 
         self.final_init()
@@ -156,7 +160,7 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
             print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
     #from src.gengraphlib.graph.KeyValVisitorBase import KeyValueVisitorBase
-    def visit_schema[ T: KeyValueVisitor ]( self: Self, visitor: T ) -> bool:
+    def visit_schema[ T: KeySchemaVisitor ]( self: Self, visitor: T ) -> bool:
         for key, key_def in self.items():
             #from src.gengraphlib.graph.KeyDefs import FloatKeyDef
             match key_def:

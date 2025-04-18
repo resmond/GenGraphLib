@@ -5,7 +5,7 @@ from collections.abc import AsyncGenerator
 import asyncio as aio
 import asyncio.subprocess as asub
 
-class CmdKeyValueStream:
+class CmdStdoutStream:
 
     def __init__(self: Self, cmd: str ):
         self.cmd: str = cmd

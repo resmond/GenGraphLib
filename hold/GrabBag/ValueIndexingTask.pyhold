@@ -1,0 +1,122 @@
+from abc import abstractmethod
+from typing import Self
+
+import multiprocessing as mp
+import datetime as dt
+
+from .. import RecordBase
+from ..common              import KeyValTypes, KeyType
+from ..graph.GraphMessages import KeyValRecordMsg
+from ..graph.KeyValVisitor import KeySchemaVisitor
+from ..graph.KeyDefs       import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
+from ..graph.KeyValues     import KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
+from ..proc.TaskLib        import TaskBase
+
+class ValueIndexingTask[T: KeyValTypes ]( TaskBase, KeySchemaVisitor[bool] ):
+    visitors_by_key:   dict[str, Self] = {}
+    visitors_by_alias: dict[str, Self] = {}
+
+    very_beginning = dt.datetime.fromisoformat("1970-01-01")
+
+    def __init__( self: Self, key_def: KeyDefBase, keyvalues: KeyValues   ) -> None:
+        super( ValueIndexingTask, self ).__init__( f"key-indexing-{key_def.key}" )
+        self.data_msgqueue: mp.Queue = mp.Queue()
+
+        self.key_def:   KeyDefBase   = key_def
+        self.keyvalues: KeyValues[T] = keyvalues
+        self.record_message: KeyValRecordMsg[T] = KeyValRecordMsg( source_id = "value-stream" )
+
+        ValueIndexingTask.visitors_by_key[   key_def.key  ] = self
+        ValueIndexingTask.visitors_by_alias[ key_def.alias] = self
+
+
+
+    def send_msg(self: Self, rec_num: int, alias: str, buffer: bytes) -> None:
+        self.msg_queue.put( self.current_values )
+
+    def main_loop(self: Self) -> None:
+        while True:
+            buffer: bytes = self.data_msgqueue.get()
+            self.recv_buffer( buffer )
+
+    def recv_buffer( self: Self, record: RecordBase | None,  buffer: bytes ) -> None:
+        match self.key_def.keytype:
+            case KeyType.KStr:
+                value_str: str = buffer.decode()
+                self.recv_value( record, buffer, value = value_str )
+
+            case KeyType.KInt:
+                value_int: int = int(buffer)
+                self.recv_value( record, buffer, value = value_int )
+
+            case KeyType.KBool:
+                value_bool: bool = bool( buffer )
+                self.recv_value( record, buffer, value = value_bool )
+
+            case KeyType.KFloat:
+                value_float: float = float( buffer )
+                self.recv_value( record, buffer, value = value_float )
+
+            case KeyType.KTmst:
+                value_int: int = int(buffer)
+                value_dt: dt.datetime = self.very_beginning + dt.timedelta( microseconds=value_int )
+                self.recv_value( record, buffer, value = value_dt )
+
+            case _:
+                pass
+
+    @abstractmethod
+    def recv_value( self: Self, record: RecordBase, buffer: bytes, value: T ) -> None: ...
+
+class StrValueIndexingTask( ValueIndexingTask[str] ):
+    def __init__( self: Self, key_def: StrKeyDef, keyvalues: StrKeyValueSet ) -> None:
+        super(StrValueIndexingTask, self).__init__(key_def, keyvalues)
+
+    def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> bool:
+        pass
+
+    def recv_value[str]( self: Self, buffer: bytes, value: str ) -> None:
+        pass
+
+class IntValueIndexingTask( ValueIndexingTask[int] ):
+    def __init__( self: Self, key_def: IntKeyDef, keyvalues: IntKeyValueSet ) -> None:
+        super(IntValueIndexingTask, self).__init__(key_def, keyvalues)
+
+    def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> bool:
+        pass
+
+    def recv_value( self: Self, buffer: bytes, value: int ) -> None:
+        pass
+
+class BoolValueIndexingTask( ValueIndexingTask[bool] ):
+    def __init__( self: Self, key_def: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> None:
+        super(BoolValueIndexingTask, self).__init__(key_def, keyvalues)
+
+    def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> bool:
+        pass
+
+    def recv_value( self: Self, buffer: bytes, value: bool ) -> None:
+        pass
+
+
+class FloatValueIndexingTask( ValueIndexingTask[float] ):
+    def __init__( self: Self, key_def: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> None:
+        super(FloatValueIndexingTask, self).__init__(key_def, keyvalues)
+
+    def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> bool:
+        pass
+
+    def recv_value( self: Self, buffer: bytes, value: float ) -> None:
+        pass
+
+class TmspValueIndexingTask( ValueIndexingTask[ dt.datetime ] ):
+    def __init__( self: Self, key_def: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> None:
+        super(TmspValueIndexingTask, self).__init__(key_def, keyvalues)
+
+    def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> bool:
+        pass
+
+    def recv_value( self: Self, buffer: bytes, value: dt.datetime ) -> bool:
+        pass
+
+

@@ -40,9 +40,10 @@ class InfoMsg(MessageBase):
 
 class DataMsg(MessageBase):
 
-    def __init__(self: Self, source_id: str, message: str, *kwargs):
-        super(DataMsg, self).__init__(source_id, message, kwargs)
+    def __init__(self: Self, source_id: str, message: str, data_dict: dict[str, str] | None = None):
+        super(DataMsg, self).__init__(source_id, message)
         self.msg_type = MsgType.Data
+        self.data: dict[str, str] = data_dict
 
 if __name__ == "__main__":
     import multiprocessing as mp

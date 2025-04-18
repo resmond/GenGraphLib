@@ -3,11 +3,10 @@ from typing import Self, AsyncGenerator
 
 import asyncio as aio
 
-from src.gengraphlib import KeyValueSchema, KeyValues, GraphVector, ChainSourceBase
+from src.gengraphlib import KeyValueSchema, KeyValues, GraphVector
 
 
-class FileChainSource( ChainSourceBase ):
-    pass
+#class FileChainSource( ChainSourceBase ): ...
 
 class GraphFileBase( ABC ):
 

@@ -23,8 +23,8 @@ class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface 
     def __init__(self: Self, _key_def: KeyDefInterface[T]) -> None:
         super(KeyValues, self).__init__()
         self.key_def: KeyDefInterface[T] = _key_def
-        self.id: str = _key_def.json_key
-        self.key_type: KeyType
+        self.id: str = _key_def.key
+        self.keytype: KeyType
         self.unique: bool = True
 
         self.value_event_fn: value_event_fn = self.value_event

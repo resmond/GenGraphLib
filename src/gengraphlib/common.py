@@ -3,48 +3,45 @@ import datetime as dt
 from enum import IntEnum
 from typing import Self, Protocol
 
+LineRefList: type = list[ int ]
+KeyFilter:   type = dict[ str, str | None ]
 
-KeyValTypes: type = type[str, int, bool, dt.datetime, float]
-process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
+KeyGroupRec  = tuple[str] | tuple[str, str] | tuple[ str, str, Iterable[str] ]
 keygroup_rec = tuple[str, str, str | None, list[str] | None]
-KeyFilter: type = dict[str, str | None ]
-KeyGroupRec = tuple[str] |tuple[str, str] | tuple[str, str, Iterable[str]]
 
 IValueTuple: type = tuple[int, str]
 SValueTuple: type = tuple[str, str]
 
+KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
+process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
+KValueDict: type  = dict[ str, KeyValTypes ]
+
 class KeyType( IntEnum ):
-    KStr         = 1
-    KInt         = 2
-    KBool        = 3
-    KTimeStamp   = 4
-    KFloat       = 5
-
-class KeyDefInterface[ T: KeyValTypes ]( Protocol ):
-    json_key: str
-    log_key: str
-    key_type: KeyType
-    groups: list[str] | None
-
-KeyDefDict:  type = dict[ str, KeyDefInterface ]
-LineRefList: type = list[ int ]
-
-KValueDict: type = dict[str, KeyValTypes]
-
-KeyValueEvent: type = tuple[int, int, memoryview]
-
-value_event_fn = Callable[ [ KeyValueEvent ], None ]
-
-class KeyValuesInterface( Protocol ):
-    key_type: KeyType
-    value_event_fn: value_event_fn
-
-    def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
+    KStr    = 1
+    KInt    = 2
+    KBool   = 3
+    KFloat  = 4
+    KTmst   = 5
 
 class SerializationType( IntEnum ):
-    CSV = 1
-    JArray = 2
+    CSV     = 1
+    JArray  = 2
     JObject = 3
+
+class KeyDefInterface( Protocol ):
+    key:      str
+    alias:    str
+    keytype:  KeyType
+    groupids: list[str] | None
+
+KeyDefDict:  type = dict[ str, KeyDefInterface ]
+
+KeyValueEvent: type = tuple[int, int, memoryview]
+value_event_fn = Callable[ [ KeyValueEvent ], None ]
+class KeyValuesInterface( Protocol ):
+    keytype: KeyType
+    value_event_fn: value_event_fn
+    def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 
 class DictOfLists[T]( dict[ str, list[T] ] ):
 
