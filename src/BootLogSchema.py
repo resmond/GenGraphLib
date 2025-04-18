@@ -19,7 +19,7 @@ class BootLogSchema( KeyValueSchema ):
     def __init__( self: Self, id: str, _log_root: str ) -> None:
         super( BootLogSchema, self ).__init__( id=id, root_dir = _log_root )
         self.log_manager:          BootLogManager        = BootLogManager( _log_root )
-        self.journal_streamsource: JounalCtlStreamSource = JounalCtlStreamSource( keyval_schema=self.keyval_schema )
+        self.journal_streamsource: JounalCtlStreamSource = JounalCtlStreamSource( keyval_schema=self )
         self._log_keys:            KeyDict               = KeyDict()
         self.cnt: int = 0
 
@@ -169,9 +169,9 @@ class BootLogSchema( KeyValueSchema ):
     def final_init( self ):
         super().final_init()
 
-    def launch_processing( self: Self, specific_ndx: int, write_bin: bool ) -> None:
+    def launch_processing( self: Self, specific_ndx: int, write_bin: bool, write_log: bool ) -> None:
         bootlog_dir = self.log_manager.get_bootlogdir( specific_ndx = specific_ndx )
-        self.journal_streamsource.launch_processing( bootlogdir = bootlog_dir, write_bin=write_bin)
+        self.journal_streamsource.launch_processing( bootlogdir = bootlog_dir, write_bin=write_bin, write_log = write_log)
 
 
     

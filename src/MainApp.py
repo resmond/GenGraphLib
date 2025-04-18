@@ -44,4 +44,4 @@ class MainApp( AppProcessBase ):
         return True
 
     def launch_processing( self ):
-        self.keyval_schema.launch_processing( -1, True )
+        self.keyval_schema.launch_processing( -1, True, write_log = True )

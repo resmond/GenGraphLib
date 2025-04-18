@@ -26,8 +26,5 @@ class CmdStdoutStream:
         print("beginnig stdout.read() - loop")
         while True:
             read_buffer = await exec_process.stdout.read( 4096 )
-            if read_buffer is None or len(read_buffer) == 0:
-                break
-            else:
-                yield read_buffer
+            yield read_buffer
 
