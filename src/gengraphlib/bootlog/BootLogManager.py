@@ -32,15 +32,16 @@ class BootLogManager:
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.txt" )
         self._bootrec_jfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.jline" )
-        self._bootdir_list: list[BootLogDir ] = list[BootLogDir ]()
-        self._bootdir_dict: dict[ dt.datetime, BootLogDir ] = {}
+        self._bootdir_list: list[BootLogDir] = list[BootLogDir]()
+        self._bootdir_dict: dict[dt.datetime, BootLogDir] = {}
+        self._bootdir_index: dict[int, BootLogDir] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
 
     """
         _log_querylist
             fqueries fresh list of boot records from journalctl --list-boots as text file
     """
-    def _query_bootlist( self: Self) -> bool:
+    def _query_bootlist( self: Self ) -> bool:
         try:
             if self.full_reparse and os.path.exists( self._bootlist_txtfilepath ):
                 os.remove( self._bootlist_txtfilepath )
@@ -66,6 +67,7 @@ class BootLogManager:
                         boot_log_dir = BootLogDir( self.root_dir, log_line )
                         self._bootdir_list.append( boot_log_dir )
                         self._bootdir_dict[ boot_log_dir.first_dt ] = boot_log_dir
+                        self._bootdir_index[boot_log_dir.index] = boot_log_dir
                     else:
                         first_line: bool = False
 
@@ -100,14 +102,14 @@ class BootLogManager:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    def get_bootlogdir( self: Self, specific_ndx: int, full_reparse: bool = True  ) -> BootLogDir | None:
+    def get_bootlogdir( self: Self, specific_index: int, full_reparse: bool = True ) -> BootLogDir | None:
         self.full_reparse = full_reparse
 
         if self.full_reparse or not self._load_txt():
             self._query_bootlist()
 
         if self._load_txt():
-            return self._bootdir_list[ specific_ndx ]
+            return self._bootdir_index[ specific_index ]
         else:
             return None
 

@@ -7,9 +7,7 @@ from io import BufferedWriter
 
 from ..proc.ProcLib import ProcBase
 from ..streams.CmdStdoutStream import CmdStdoutStream
-from ..proc.AppProcessBase import AppProcessBase
 from ..graph.KeyValueSchema import KeyValueSchema
-from ..graph.GraphMessages import IndexingProgressMsg
 from ..bootlog.BootLogDir import BootLogDir
 
 class JounalCtlStreamSource( ProcBase ):
@@ -32,15 +30,15 @@ class JounalCtlStreamSource( ProcBase ):
 
     def launch_processing( self: Self, bootlogdir: BootLogDir, write_bin: bool, write_log: bool ) -> None:
         self.bootlogdir = bootlogdir
-        self.cmd_stream = CmdStdoutStream(f"/bin/journalctl -b {self.bootlogdir.idx} -o export")
+        self.cmd_stream = CmdStdoutStream(f"/bin/journalctl -b {self.bootlogdir.id} -o export" )
         
         if write_bin:
             self.bin_filename = os.path.join( self.bootlogdir.dir_path, "bootlog.bin" )
             self.bin_writer: BufferedWriter = open( self.bin_filename, "wb" )
 
         if write_log:
-            self.log_writer = os.path.join( self.bootlogdir.dir_path, "bootlog.log" )
-            self.log_writer: BufferedWriter = open( self.log_writer, "wb" )
+            self.log_filename = os.path.join( self.bootlogdir.dir_path, "bootlog.log" )
+            self.log_writer: BufferedWriter = open( self.log_filename, "wb" )
 
         self.start()
 
@@ -58,7 +56,7 @@ class JounalCtlStreamSource( ProcBase ):
         async for line in self.cmd_stream.line_stream():
             self.recv_line(line)
 
-    def recv_line( self: Self, line: bytes ) -> None:
+    def recv_line( self: Self, line: str ) -> None:
         self.cnt += 1
         if self.bin_writer:
             self.bin_writer.write( line )
@@ -66,12 +64,15 @@ class JounalCtlStreamSource( ProcBase ):
             self.print_progress()
 
         if len(line) > 0:
-            split:       int   = line.find(b"=")
-            keybuffer:   bytes = line[:split]
-            valuebuffer: bytes = line[split+1:]
+            split:       int = line.find("=")
+            keybuffer:   str = line[:split]
+            valuebuffer: str = line[split+1:]
 
-            log_key: str = keybuffer.decode()
-            self.forward_keyvalue( log_key, valuebuffer )
+            #log_key: str = keybuffer.decode()
+
+            print(f"{keybuffer}")
+
+            self.forward_keyvalue( keybuffer, valuebuffer )
         else:
             self.forward_keyvalue(None, None)
 
@@ -86,10 +87,10 @@ class JounalCtlStreamSource( ProcBase ):
 
         return None
 
-    def forward_keyvalue( self: Self, log_key: str | None, valuebuffer: bytes | None ) -> None:
+    def forward_keyvalue( self: Self, log_key: str | None, valuebuffer: str | None ) -> None:
         if self.log_writer is not None:
             if log_key is not None and valuebuffer is not None:
-                log_str = f"{log_key} : {valuebuffer}"
+                log_str = f"{log_key}={valuebuffer}"
             else:
                 log_str = "--------------- next record --------------- next record "
 

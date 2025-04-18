@@ -170,7 +170,7 @@ class BootLogSchema( KeyValueSchema ):
         super().final_init()
 
     def launch_processing( self: Self, specific_ndx: int, write_bin: bool, write_log: bool ) -> None:
-        bootlog_dir = self.log_manager.get_bootlogdir( specific_ndx = specific_ndx )
+        bootlog_dir = self.log_manager.get_bootlogdir( specific_index = specific_ndx )
         self.journal_streamsource.launch_processing( bootlogdir = bootlog_dir, write_bin=write_bin, write_log = write_log)
 
 
