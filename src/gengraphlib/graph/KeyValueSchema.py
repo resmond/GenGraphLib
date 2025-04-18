@@ -14,7 +14,6 @@ from .KeyGroups import KeyGroups
 from .KeySchemaVisitor import KeySchemaVisitor
 
 class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
-    schema: Self
 
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super( KeyValueSchema, self ).__init__()
@@ -26,7 +25,6 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         self.none_values:  list[str] = []
         self.key_groups: KeyGroups = KeyGroups("key_groups",self)
 
-        KeyValueSchema.schema = self
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.key ]             = _key_def

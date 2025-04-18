@@ -1,4 +1,5 @@
 from typing import Self
+import multiprocessing as mp
 
 from gengraphlib import (
     KeyDefBase,
@@ -9,21 +10,27 @@ from gengraphlib import (
     KeyDict,
     KeyValueSchema,
     BootLogManager,
-    StreamSinkProc,
-    JounalCtlStreamSource
+    ValuePumpTask,
+    JounalCtlStreamSource,
+    BootLogDir,
+    IndexManagerTask
 )
 
+
 class BootLogSchema( KeyValueSchema ):
-    instance: Self | None = None
 
     def __init__( self: Self, id: str, _log_root: str ) -> None:
         super( BootLogSchema, self ).__init__( id=id, root_dir = _log_root )
         self.log_manager:          BootLogManager        = BootLogManager( _log_root )
-        self.journal_streamsource: JounalCtlStreamSource = JounalCtlStreamSource( keyval_schema=self )
         self._log_keys:            KeyDict               = KeyDict()
         self.cnt: int = 0
 
-        BootLogSchema.instance = self
+        self.journal_streamsource: JounalCtlStreamSource | None = None
+        self.indexmanager_task: IndexManagerTask | None = None
+        self.valuepump_task: ValuePumpTask | None = None
+        self.bootlog_dir: BootLogDir | None = None
+        self.active_keys: dict[str, bool] | None = None
+        self.record_queues: mp.Queue | None = None
 
         self.add_keydefs(
             [
@@ -169,9 +176,37 @@ class BootLogSchema( KeyValueSchema ):
     def final_init( self ):
         super().final_init()
 
-    def launch_processing( self: Self, specific_ndx: int, write_bin: bool, write_log: bool ) -> None:
-        bootlog_dir = self.log_manager.get_bootlogdir( specific_index = specific_ndx )
-        self.journal_streamsource.launch_processing( bootlogdir = bootlog_dir, write_bin=write_bin, write_log = write_log)
+    def get_activekeys( self, group_id: str ) -> dict[str,bool]:
+
+        active_keys: dict[str,bool] = {
+            keydef.alias: True
+                for key, keydef
+                in self.items()
+                if group_id in keydef.groupids
+        }
+
+        # for key, keydef in self.items():
+        #     if group_id in keydef.groupids:
+        #         active_keys[keydef.alias] = True
+
+        return active_keys
+
+    def launch_processing( self: Self, boot_index: int, write_bin: bool, write_log: bool ) -> None:
+
+        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = boot_index )
+        self.active_keys: dict[str,bool] = self.get_activekeys("evt")
+
+        self.indexmanager_task = IndexManagerTask(self)
+        self.valuepump_task = ValuePumpTask( self )
+        self.valuepump_task.init_queues(self.indexmanager_task)
+        self.indexmanager_task.init_indexes(self.active_keys)
+        self.record_queues = self.valuepump_task.init_queues( self.indexmanager_task )
+
+        self.journal_streamsource = JounalCtlStreamSource( self, self.active_keys, self.record_queues )
+
+        self.indexmanager_task.start_indexes()
+        self.valuepump_task.start()
+        self.journal_streamsource.launch_processing( bootlogdir = self.bootlog_dir, write_bin=write_bin, write_log = write_log)
 
 
     

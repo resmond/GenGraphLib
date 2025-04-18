@@ -18,11 +18,11 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         self.key_type:       KeyType = key_type
         self.groupids:       list[str] | None = None
 
-        self.key_values: KeyValues[T] = KeyValues[T]( self )
+        self.key_values: KeyValues[T] = KeyValues[T]( self, "" )
         self._queue: mp.Queue | None = None
 
         match groups:
-            case str() if groups in ["skip", ""]:
+            case str() if groups in ["noise", ""]:
                 pass
             case str():
                 self.groupids = [ groups ]

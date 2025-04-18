@@ -2,7 +2,8 @@
 
 from .common import (
       KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
-    , IValueTuple, SValueTuple, KValueDict, KeyValueEvent, KeyDefInterface, KeyDefDict, LineRefList
+    , IValueTuple, SValueTuple, KValueDict, KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
+    , KeyDefInterface, KeyDefDict, LineRefList
     , KeyFilter, KeyType, SerializationType, DictOfLists, value_event_fn, KeyValuesInterface
 )
 
@@ -36,7 +37,7 @@ from .proc import (
 
 from .streams import (
     IndexTaskBase, StrIndexingTask, IntIndexingTask, BoolIndexingTask, FloatIndexingTask, TmstIndexingTask
-    , ValueIndexManagerTask, ValuePumpTask, CmdStdoutStream, JounalCtlStreamSource
+    , IndexManagerTask, ValuePumpTask, CmdStdoutStream, JounalCtlStreamSource
 )
 
 from .textlog import (
@@ -55,11 +56,12 @@ from .bootlog import BootLogDir, BootLogManager
 
 __all__ = [
       "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType", "DictOfLists"
-    , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyDefInterface", "KeyDefDict", "LineRefList"
+    , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
+    , "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
     , "NodeDict", "IndexedNodeList", "GNodeInterface", "value_event_fn", "KeyValuesInterface"
-    , "GraphRecordRoot", "RecordBase", "KeyDefInterface", "KeyDefInterface"
+    , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups"
 
@@ -74,7 +76,7 @@ __all__ = [
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
     , "IndexTaskBase", "StrIndexingTask", "IntIndexingTask", "BoolIndexingTask", "FloatIndexingTask", "TmstIndexingTask"
-    , "ValuePumpTask", "ValueIndexManagerTask", "JounalCtlStreamSource", "CmdStdoutStream"
+    , "ValuePumpTask", "IndexManagerTask", "JounalCtlStreamSource", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

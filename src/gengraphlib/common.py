@@ -16,6 +16,11 @@ KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
 process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 KValueDict: type  = dict[ str, KeyValTypes ]
 
+KeyValueTuple: type = tuple[str, str]
+KeyRecordList: type = list[KeyValueTuple]
+KeyRecordPacket: type = tuple[ int, KeyRecordList ]
+KeyValuePacket: type = tuple[int, KeyValTypes]
+
 class KeyType( IntEnum ):
     KStr    = 1
     KInt    = 2
@@ -39,7 +44,10 @@ KeyDefDict:  type = dict[ str, KeyDefInterface ]
 KeyValueEvent: type = tuple[int, int, memoryview]
 value_event_fn = Callable[ [ KeyValueEvent ], None ]
 class KeyValuesInterface( Protocol ):
+    id: str
+    key_def: KeyDefInterface
     keytype: KeyType
+    index_dir: str
     value_event_fn: value_event_fn
     def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 

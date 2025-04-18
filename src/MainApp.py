@@ -7,8 +7,6 @@ from gengraphlib import (
     ErrorMsg,
     DataMsg,
     MsgQueueBase,
-    BootLogDir,
-    JounalCtlStreamSource,
     AppProcessBase
 )
 
@@ -44,4 +42,4 @@ class MainApp( AppProcessBase ):
         return True
 
     def launch_processing( self ):
-        self.keyval_schema.launch_processing( specific_ndx = -1, write_bin = False, write_log = True )
+        self.keyval_schema.launch_processing( boot_index = -1, write_bin = False, write_log = True )

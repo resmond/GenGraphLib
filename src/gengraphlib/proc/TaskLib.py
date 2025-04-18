@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 import multiprocessing as mp
 from   threading import Thread
 
-from ..graph.GraphLib import KeyDefInterface
+from ..common import KeyValTypes
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -22,14 +22,42 @@ class TaskState( IntEnum ):
     Running = 2
     Stopped = 3
 
-class IndexTaskInterface(Protocol):
+class Startable(Protocol):
+    @abstractmethod
+    def id( self ) -> str: ...
+    @abstractmethod
+    def is_proc( self ) -> bool: ...
+    def start( self: Self ) -> None: ...
+    def stop( self: Self ) -> None: ...
+    @abstractmethod
+    def main_loop( self: Self ) -> None: ...
+
+class IndexTaskInterface(Protocol, Startable):
 
     @property
     @abstractmethod
-    def keydef( self: Self ) -> KeyDefInterface: ...
+    def key( self: Self ) -> str: ...
 
-    def start( self: Self ) -> None: ...
-    def stop( self: Self ) -> None: ...
+    @property
+    @abstractmethod
+    def alias( self: Self ) -> str: ...
+
+    @property
+    @abstractmethod
+    def index_dir( self: Self ) -> str: ...
+
+    @property
+    @abstractmethod
+    def index_filepath( self: Self ) -> str: ...
+
+    @property
+    @abstractmethod
+    def queue( self: Self ) -> mp.Queue: ...
+
+    def get_tqueue[T: KeyValTypes]( self: Self ) -> mp.Queue[T] | None: ...
+
+    #def start( self: Self ) -> None: ...
+    #def stop( self: Self ) -> None: ...
 
 class IndexManagerInterface(Protocol):
 
@@ -42,26 +70,17 @@ class IndexManagerInterface(Protocol):
     @staticmethod
     def register_index( index: IndexTaskInterface ) -> None: ...
 
-class Startable(Protocol):
-    @abstractmethod
-    def id( self ) -> str: ...
-    @abstractmethod
-    def is_proc( self ) -> bool: ...
-    def start( self: Self ) -> None: ...
-    def stop( self: Self ) -> None: ...
-    @abstractmethod
-    def main_loop( self: Self ) -> None: ...
 
 class TaskBase( ABC, Startable ):
     default_queue_size: int = 1024 * 256
 
     def __init__( self: Self, task_id: str, queue_size: int | None = None ) -> None:
-        self.task_id:    str = task_id
         self.queue_size: int = queue_size or self.default_queue_size
-        self.msg_queue:  mp.Queue = mp.Queue()
         self.task_state: TaskState = TaskState.Init
         self.task_type:  TaskType = TaskType.Undefined
+        self.msg_queue:  mp.Queue | None = None
         self.thread:     Thread | None = None
+        self.task_id:    str = task_id
         #AppProcessBase.instance.register_proc(self)
 
     def id( self: Self ) -> str:

@@ -1,5 +1,6 @@
 from typing import Self
 
+import os
 import datetime as dt
 
 from sortedcontainers import SortedDict
@@ -20,14 +21,24 @@ from .. import (
 #from .. import GNodeInterface
 
 class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface ):
-    def __init__(self: Self, _key_def: KeyDefInterface) -> None:
+    def __init__(self: Self, _key_def: KeyDefInterface, index_dir: str) -> None:
         super(KeyValues, self).__init__()
         self.key_def: KeyDefInterface = _key_def
+        self.index_dir: str = index_dir
         self.id: str = _key_def.key
         self.keytype: KeyType
         self.unique: bool = True
 
         self.value_event_fn: value_event_fn = self.value_event
+
+    def init_index( self ) -> bool:
+        try:
+            os.mkdir( self.index_dir )
+            return True
+
+        except Exception as exc:
+            print(f"KeyValues[{self.id}] root_dir: {self.index_dir} Exception: {exc}")
+            return False
 
     def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None:
         pass

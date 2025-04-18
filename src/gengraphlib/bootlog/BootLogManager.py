@@ -102,14 +102,14 @@ class BootLogManager:
                 Refresh - processes of the last two boot records from fresh exports
             specific_ndx - index of specific boot record to process else it processes them all
     """
-    def get_bootlogdir( self: Self, specific_index: int, full_reparse: bool = True ) -> BootLogDir | None:
+    def get_bootlogdir( self: Self, boot_index: int, full_reparse: bool = True ) -> BootLogDir | None:
         self.full_reparse = full_reparse
 
         if self.full_reparse or not self._load_txt():
             self._query_bootlist()
 
         if self._load_txt():
-            return self._bootdir_index[ specific_index ]
+            return self._bootdir_index[ boot_index ]
         else:
             return None
 
