@@ -5,8 +5,8 @@ from .. import DataMsg, KeyValTypes
 
 class IndexingProgressMsg(DataMsg):
 
-    def __init__(self: Self, source_id: str, message: str | None = "", data_dict: dict[str, str] | None = None) -> None:
-        super(IndexingProgressMsg, self).__init__(source_id, message, data_dict)
+    def __init__( self: Self, source_id: str, message: str | None = "", data: dict[str, str ] | None = None ) -> None:
+        super(IndexingProgressMsg, self).__init__( source_id, message, data )
 
 # class KeyValueValue:
 #         def __init__(self, alias: str, value: bytes ) -> None:

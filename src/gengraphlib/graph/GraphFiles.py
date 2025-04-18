@@ -6,14 +6,12 @@ import asyncio as aio
 from src.gengraphlib import KeyValueSchema, KeyValues, GraphVector
 
 
-#class FileChainSource( ChainSourceBase ): ...
-
 class GraphFileBase( ABC ):
 
     def __init__( self: Self, _schema: KeyValueSchema, _vector: GraphVector, file_path: str ):
         super().__init__()
         self._schema: KeyValueSchema = _schema
-        self._vector: GraphVector = _vector
+        self._vector: GraphVector    = _vector
         self._file_path : str = file_path
 
     @abstractmethod
@@ -60,12 +58,6 @@ class GraphFileSink( GraphFileBase ):
         except Exception as exc:
             print(exc)
             return False
-
-    def pipe_in( self: Self, value_source: AsyncGenerator[KeyValues, None ] | None ) -> AsyncGenerator[KeyValues, None ] | None:
-        pass
-
-    def pipe_out( self: Self, value_source: AsyncGenerator[KeyValues, None ] | None ) -> AsyncGenerator[KeyValues, None ] | None:
-        pass
 
     async def loop_chain( self: Self ) -> bool:
         if self.value_source is not None:

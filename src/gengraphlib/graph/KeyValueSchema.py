@@ -33,17 +33,18 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
 
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super( KeyValueSchema, self ).__init__()
-        self._log_keys: KeyDefDict = KeyDefDict()
-        self._root_dir = root_dir
         self.id = id
+        self._root_dir = root_dir
+
+        self._log_keys: KeyDefDict = KeyDefDict()
         self.missing_keys: list[str] = []
-        self.none_values: list[str] = []
+        self.none_values:  list[str] = []
         self.key_groups: KeyGroups = KeyGroups("key_groups",self)
 
         KeyValueSchema.schema = self
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
-        self[_key_def.key ] = _key_def
+        self[_key_def.key ]             = _key_def
         self._log_keys[_key_def.alias ] = _key_def
 
     def add_keydefs( self: Self, _keydefs: list[KeyDefBase ] ) -> None:

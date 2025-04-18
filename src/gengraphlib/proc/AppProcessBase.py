@@ -44,25 +44,25 @@ class AppProcessBase( ProcRegistry ):
     def init_internals( self: Self ) -> None:
         pass
 
-    def create_queue( self, queue_id: str ):
+    def create_queue( self: Self, queue_id: str ):
         queue: mp.Queue =  self.manager.Queue()
-        self.queuess[ queue_id ] = queue
+        self.queues[ queue_id ] = queue
         return queue
 
     def register_startable( self: Self, startable: Startable ) -> None:
         self.startables[ startable.id() ] = startable
 
-    def start_proc( self, proc_id: str ):
+    def start_proc( self: Self, proc_id: str ):
         if proc_id in self.startables:
             self.startables[proc_id ].start()
         else:
             #throw_error(f"[ProcManager.start_proc] Unknown Proc ID: {proc_id}")
             print(f"[ProcManager.start_proc] Unknown Proc ID: {proc_id}")
 
-    def start( self ):
+    def start( self: Self ):
         pass
 
-    def stop( self ):
+    def stop( self: Self ):
 
         for proc in self.startables.values():
             if not proc.is_proc():

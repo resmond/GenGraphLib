@@ -50,23 +50,26 @@ class KeyValueStreamProc( ProcBase ):
 
         if len(line):
             if self.cnt % 1_000 == 0:
-                progress_msg = IndexingProgressMsg( "key-value-stream-proc", "Progress: ...", { "cnt": str(self.cnt) } )
-                AppProcessBase.instance.msg_queue.send_msg( progress_msg )
+                progress_msg =
 
-            split:       int   = line.find(b"=")
-            keybuffer:   bytes = line[:split]
-            valuebuffer: bytes = line[split+1:]
 
-            self.process_keyvalue(keybuffer, valuebuffer)
+        split:       int   = line.find(b"=")
+        keybuffer:   bytes = line[:split]
+        valuebuffer: bytes = line[split+1:]
+
+        self.process_keyvalue(keybuffer, valuebuffer)
 
     def print_progress( self: Self ) -> None:
-        if self.cnt % 10 == 0:
+        if self.cnt % 100 == 0:
             print(".", end="")
-        elif self.cnt % 100 == 0:
-            print(f"\ncnt: {self.cnt}")
         elif self.cnt % 1000 == 0:
             print(f"\ncnt: {self.cnt}")
-        pass
+            AppProcessBase.instance.msg_queue.send_msg(
+                IndexingProgressMsg( source_id= "key-value-stream-proc",
+                                     message = "Progress: ...",
+                                     data = {"cnt": str( self.cnt )} )
+            )
+
 
     def process_keyvalue( self: Self, keybuffer: bytes, valuebuffer: bytes) -> None:
         pass
