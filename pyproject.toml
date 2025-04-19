@@ -3,7 +3,7 @@ name = "GenGraphLib"
 description = "Node graph framework for journalctl logs."
 version = "0.1.0"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = {file = "LICENSE.md"}
 keywords = [
     "python",
@@ -27,10 +27,20 @@ dynamic = [
 
 ]
 dependencies = [
-    "regex","json_stream", "numpy", "numpydoc", "numba",
-    "sortedcontainers", "sortedcontainers-stubs","progress",
-    "pyside6","pyside6-addons", "pyside6-essentials", "pyside6-fluent-widgets", "pyside6-fluent-widgets-fix",
-    "pyside6-fluent-widgets-textinputdialog", "pyside6-fluentui-qml"
+    "regex",
+    "json_stream",
+    "numpy",
+    "numpydoc",
+    "numba",
+    "sortedcontainers",
+    "sortedcontainers-stubs",
+    "progress",
+    "pyside6",
+    "pyside6-addons",
+    "pyside6-essentials",
+    "pyside6-stubs",
+    "quickgraphlib>=0.1.0a8",
+    "pyqtgraph-ext",
 ]
 
 [build-system]
@@ -43,6 +53,9 @@ dependencies = {file = "requirements.txt"}
 [tool.setuptools.packages.find]
 include = ["GenGraphLib*"]
 namespaces = false
+
+[tool.uv.sources]
+pyside6 = { path = "../../Qt6/wheels/PySide6-6.9.0-cp39-abi3-manylinux_2_28_x86_64.whl" }
 
 [dependency-groups]
 dev = [

@@ -20,8 +20,8 @@ from ..proc.TaskLib import IndexTaskInterface, IndexManagerInterface
 
 class IndexManagerTask[ T: KeyValTypes ]( KeySchemaVisitor[None], IndexManagerInterface ):
 
-    index_queuemap: dict[str, mp.Queue[KeyValuePacket] ] = dict[str, mp.Queue[KeyValuePacket] ]()
-    index_taskmap:  dict[str, Startable ]                = dict[str, Startable ]()
+    index_queuemap: dict[str, mp.Queue  ] = dict[str, mp.Queue ]()
+    index_taskmap:  dict[str, Startable ] = dict[str, Startable ]()
 
     def __init__( self: Self, keyvalue_schema: KeyValueSchema ) -> None:
         super( IndexManagerTask, self ).__init__( "value-pump" )

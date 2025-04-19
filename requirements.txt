@@ -13,7 +13,5 @@ progress
 pyside6
 pyside6-addons
 pyside6-essentials
-pyside6-fluent-widgets
-pyside6-fluent-widgets-fix
-pyside6-fluent-widgets-textinputdialog
-pyside6-fluentui-qml
+quickgraphlib
+pyqtgraph-ext

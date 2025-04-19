@@ -12,19 +12,17 @@ from ..graph.KeyDefs import (
     IntKeyDef,
     BoolKeyDef,
     FloatKeyDef,
-    TmstKeyDef,
+    TmstKeyDef
 )
 from ..graph.KeyValues import (
     StrKeyValueSet,
     IntKeyValueSet,
     BoolKeyValueSet,
     FloatKeyValueSet,
-    TmstKeyValueSet,
+    TmstKeyValueSet
 )
 
-
 class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
-
 
     def __init__(self: Self, key: str, alias: str, root_dir: str ) -> None:
         super(IndexTaskBase,self).__init__( f"{key}-index" )
@@ -59,15 +57,13 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
     def queue( self: Self ) -> mp.Queue:
         return self._queue
 
-    def get_tqueue[T]( self: Self ) -> mp.Queue[T]:
-        return self._queue
 
     def start( self: Self ) -> None:
         super().start()
 
-    def main_loop( self: Self, safe_queue: mp.Queue[T] ) -> None:
+    def main_loop( self: Self, queue: mp.Queue ) -> None:
         while True:
-            rec_num, value = safe_queue.get()
+            rec_num, value = queue.get()
             self.recv_value(rec_num, value)
 
     def recv_value( self: Self, rec_num: int, value: T ) -> None:
