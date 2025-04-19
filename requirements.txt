@@ -7,8 +7,13 @@ json_stream
 numpy
 numpydoc
 numba
-pandas
 sortedcontainers
 sortedcontainers-stubs
 progress
-simsimd>=6.2.1
+pyside6
+pyside6-addons
+pyside6-essentials
+pyside6-fluent-widgets
+pyside6-fluent-widgets-fix
+pyside6-fluent-widgets-textinputdialog
+pyside6-fluentui-qml
