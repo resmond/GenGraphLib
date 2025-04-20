@@ -34,10 +34,7 @@ dependencies = [
     "numba",
     "sortedcontainers",
     "sortedcontainers-stubs",
-    "progress",
-    "quickgraphlib>=0.1.0a8",
-    "pyqtgraph-ext",
-    "pyqt6-tools",
+    "Pyside6"
 ]
 
 [build-system]
