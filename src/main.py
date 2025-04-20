@@ -1,10 +1,12 @@
-from MainApp import MainApp
+from .gengraphlib.qt.QtMainWin import Ui_MainWindow
 
 
 if __name__ == "__main__":
-    qt_app = MainApp()
-    qt_app.start()
+    qt_win = Ui_MainWindow()
+    qt_win.setupUi()
     
+
+
 
 # if __name__ == "__main__":
 #     print("starting MainAppProc")

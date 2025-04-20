@@ -35,12 +35,9 @@ dependencies = [
     "sortedcontainers",
     "sortedcontainers-stubs",
     "progress",
-    "pyside6",
-    "pyside6-addons",
-    "pyside6-essentials",
-    "pyside6-stubs",
     "quickgraphlib>=0.1.0a8",
     "pyqtgraph-ext",
+    "pyqt6-tools",
 ]
 
 [build-system]

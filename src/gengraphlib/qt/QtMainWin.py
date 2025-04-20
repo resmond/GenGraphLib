@@ -4,7 +4,6 @@ from PySide6.QtWidgets import (
     QMenuBar, QPushButton, QSizePolicy,
     QSpacerItem, QStatusBar, QTreeView, QWidget)
 
-
 # noinspection PyAttributeOutsideInit
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

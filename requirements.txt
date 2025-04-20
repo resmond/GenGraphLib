@@ -10,8 +10,6 @@ numba
 sortedcontainers
 sortedcontainers-stubs
 progress
-pyside6
-pyside6-addons
-pyside6-essentials
 quickgraphlib
 pyqtgraph-ext
+pyqt6-tools
