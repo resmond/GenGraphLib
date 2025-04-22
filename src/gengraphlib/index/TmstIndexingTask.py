@@ -25,10 +25,10 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
             self.sorted_index[datetime_value].append(rec_num)
 
         except ValueError as valexc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] ValueError: {valexc} - "{value.hex()}"' )
+            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] ValueError: {valexc} - "{value}"' )
 
         except Exception as exc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] Exception: {exc} - "{value.hex()}"' )
+            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] Exception: {exc} - "{value}"' )
 
     @staticmethod
     def convert_to_datetime( microsec_offset: int ) -> dt.datetime:

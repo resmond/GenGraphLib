@@ -3,7 +3,7 @@ from typing import Self
 import multiprocessing as mp
 import datetime as dt
 
-from ..common import KeyType, KeyRecordPacket
+from ..common import KeyRecordPacket, KeyValuePacket
 from ..proc.TaskLib import TaskBase
 from ..graph.KeySchemaVisitor import KeySchemaVisitor
 from ..graph.KeyValueSchema import KeyValueSchema
@@ -35,10 +35,13 @@ class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
 
         rec_num: int = record_packet[0]
 
-        for value in record_packet[1]:
-            alias, buffer = value
+        for keyvalue_pair in record_packet[1]:
+            alias, value = keyvalue_pair
             keyindex_queue: mp.Queue = self.queues_byalias[ alias ]
-            keyindex_queue.put(value)
+
+            value_packet: KeyValuePacket = ( rec_num, value )
+
+            keyindex_queue.put(value_packet)
 
             # match self.key_def.keytype:
             #     case KeyType.KStr:

@@ -48,9 +48,9 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
         super().start()
 
     def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
-        rec_num: int = 0
-        value:   str = ""
         while True:
+            rec_num: int
+            value: str
             rec_num, value = queue.get()
             self.recv_value( rec_num, value )
 
