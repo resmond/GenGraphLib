@@ -1,4 +1,6 @@
 from typing import Self
+import threading as th
+import multiprocessing as mp
 
 from sortedcontainers import SortedSet
 
@@ -9,6 +11,17 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         super( BoolIndexingTask, self ).__init__(key, alias, root_dir)
         self.positive_intersection: SortedSet[int] = SortedSet[int]()
         self.negative_intersection: SortedSet[int] = SortedSet[int]()
+        self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
+
+    def start( self: Self ) -> None:
+        self.thread.start()
+
+    def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
+        while True:
+            rec_num: int
+            value: str
+            rec_num, value = queue.get()
+            self.recv_value( rec_num, value )
 
     def recv_value( self: Self, rec_num: int, value: str ) -> None:
         try:

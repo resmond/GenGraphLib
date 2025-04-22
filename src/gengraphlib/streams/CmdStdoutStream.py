@@ -1,3 +1,4 @@
+from pydoc import replace
 from typing import Self
 
 from collections.abc import AsyncGenerator
@@ -10,12 +11,12 @@ class CmdStdoutStream:
     def __init__(self: Self, cmd: str ):
         self.cmd: str = cmd
 
-    async def line_stream( self: Self ) -> AsyncGenerator[ str, None ]:
+    async def line_stream( self: Self ) -> AsyncGenerator[ bytes, None ]:
         if self.cmd is None:
             print("CmdChainSource.pipe(): No command")
             return
 
-        exec_process: asub.Process = await aio.create_subprocess_shell( cmd=self.cmd, stdout=aio.subprocess.PIPE, limit = 4096 )
+        exec_process: asub.Process = await aio.create_subprocess_shell( cmd=self.cmd, stdout=aio.subprocess.PIPE, limit = 50*1024 )
 
         if exec_process is None:
             return
@@ -25,8 +26,8 @@ class CmdStdoutStream:
 
         while True:
             try:
-                stdout, stderr = await exec_process.communicate( )
-                yield stdout.decode(errors = "replace")
+                buffer = await exec_process.stdout.read()
+                yield buffer
             except Exception as exc:
                 print(exc)
 

@@ -57,23 +57,23 @@ class IndexManagerTask[ T: KeyValTypes ]( KeySchemaVisitor[None], IndexManagerIn
         return _queues_byalias
 
     def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> None:
-        if keydef.key in self.active_keys:
+        if keydef.alias in self.active_keys:
             self.register_index( StrIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> None:
-        if keydef.key in self.active_keys:
+        if keydef.alias in self.active_keys:
             self.register_index( IntIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> None:
-        if keydef.key in self.active_keys:
+        if keydef.alias in self.active_keys:
             self.register_index( BoolIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> None:
-        if keydef.key in self.active_keys:
+        if keydef.alias in self.active_keys:
             self.register_index( FloatIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> None:
-        if keydef.key in self.active_keys:
+        if keydef.alias in self.active_keys:
             self.register_index( TmstIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
 

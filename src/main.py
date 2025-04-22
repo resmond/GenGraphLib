@@ -5,6 +5,7 @@ if __name__ == "__main__":
     app = MainApp()
     app.start()
 
+
 # import sys
 # from PySide6 import QtWidgets as qtw
 # from gengraphlib.qt.MainWin import MyMainWindow

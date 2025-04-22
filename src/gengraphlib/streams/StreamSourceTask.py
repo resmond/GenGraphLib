@@ -23,7 +23,7 @@ class StreamSourceTask( TaskBase ):
         self.keyval_schema:   KeyValueSchema   = keyval_schema
         self.active_keys:     set[str]   = active_keys
 
-        self.record_queue:    mp.Queue[KeyRecordPacket] = record_queue
+        self.record_queue:    mp.Queue = record_queue
 
         self.cmd_stream:      CmdStdoutStream | None = None
         self.bootlogdir:      BootLogDir      | None = None
@@ -49,7 +49,7 @@ class StreamSourceTask( TaskBase ):
             self.log_filename = os.path.join( self.bootlogdir.dir_path, "bootlog.log" )
             self.log_writer: BufferedWriter = open( self.log_filename, "wb" )
 
-        self.start()
+        self.main_loop()
 
     def stop(self: Self) -> None:
         if self.log_writer is not None:
@@ -65,12 +65,16 @@ class StreamSourceTask( TaskBase ):
         async for line in self.cmd_stream.line_stream():
             self.recv_line(line)
 
-    def recv_line( self: Self, line: str ) -> None:
+    def recv_line( self: Self, buffer: bytes ) -> None:
         self.cnt += 1
+
+        line: str = buffer.decode()
+
         if self.bin_writer:
-            self.bin_writer.write( line.encode() )
-        if self.progress:
-            self.send_progress()
+            self.bin_writer.write( buffer )
+            
+        # if self.progress:
+        #     self.send_progress()
 
         if len(line) > 0:
             split:       int = line.find("=")
@@ -98,7 +102,7 @@ class StreamSourceTask( TaskBase ):
 
     def log_keyvalue( self: Self, log_key: str | None, valuebuffer: str | None ) -> None:
         if self.log_writer is not None:
-            if log_key is not None and valuebuffer is not None:
+            if log_key is not None and valuebuffer is not None and log_key in self.active_keys:
                 log_str = f"{log_key}={valuebuffer}"
             else:
                 log_str = "--------------- next record --------------- next record "

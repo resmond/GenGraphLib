@@ -2,7 +2,9 @@ from typing import Self
 
 import multiprocessing as mp
 
-from BootLogSchema import BootLogSchema, ParseProcessInfo
+from PySide6.QtWidgets import QApplication
+
+
 from gengraphlib import (
     StatusMsg,
     InfoMsg,
@@ -11,6 +13,9 @@ from gengraphlib import (
     MsgQueueBase,
     AppProcessBase
 )
+
+from BootLogSchema import BootLogSchema, ParseProcessInfo
+from MyMainWin import MyMainWindow
 
 class MainAppMsgQueue( MsgQueueBase ):
     def __init__(self: Self):
@@ -33,6 +38,10 @@ class MainApp( AppProcessBase ):
         super( MainApp, self ).__init__( "app-main" )
         self.parse_info: ParseProcessInfo | None = None
         self.process: mp.Process | None = None
+        self.qt_app: QApplication = QApplication()
+
+        self.main_window: MyMainWindow = MyMainWindow()
+        self.main_window.setWindowTitle( "Boot Log Parser" )
 
     def init_internals( self: Self ) -> None:
         self.msg_queue = MainAppMsgQueue()
@@ -53,6 +62,10 @@ class MainApp( AppProcessBase ):
 
         self.process: mp.Process = mp.Process( target = BootLogSchema.entrypoint, args=(self.parse_info,) )
         self.process.start()
+
+        self.main_window.show()
+        self.qt_app.setActiveWindow( self.main_window )
+        self.qt_app.exec()
 
         return True
 

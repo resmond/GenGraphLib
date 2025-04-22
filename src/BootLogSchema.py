@@ -203,19 +203,19 @@ class BootLogSchema( KeyValueSchema ):
 
     def launch_processing( self: Self ) -> None:
 
-        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = self.boot_index )
         self.active_keys = self.get_activekeys( "evt" )
-
-        self.indexmanager_task = IndexManagerTask(self, self.root_dir )
+        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = self.boot_index )
         self.valuepump_task = ValuePumpTask( self )
-        self.valuepump_task.init_queues( self.indexmanager_task )
+        self.indexmanager_task = IndexManagerTask(self, self.log_root )
+
+
         self.indexmanager_task.init_indexes( self.active_keys )
         self.record_queues = self.valuepump_task.init_queues( self.indexmanager_task )
-
         self.journal_streamsource = StreamSourceTask( self, self.active_keys, self.record_queues )
 
         self.indexmanager_task.start_indexes()
         self.valuepump_task.start()
+        
         self.journal_streamsource.launch_processing( bootlogdir = self.bootlog_dir, write_bin=self.write_bin, write_log = self.write_log )
 
 
