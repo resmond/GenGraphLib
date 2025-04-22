@@ -14,10 +14,9 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         super( TmstIndexingTask, self ).__init__(key, alias, root_dir)
         self.sorted_index: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
+    def recv_value( self: Self, rec_num: int, value: str ) -> None:
         try:
-            str_value: str = buffer.decode()
-            int_value = int(str_value)
+            int_value = int(value)
             datetime_value: dt.datetime = TmstIndexingTask.convert_to_datetime(int_value)
 
             if datetime_value not in self.sorted_index:
@@ -26,10 +25,10 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
             self.sorted_index[datetime_value].append(rec_num)
 
         except ValueError as valexc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] ValueError: {valexc} - "{buffer.hex()}"' )
+            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] ValueError: {valexc} - "{value.hex()}"' )
 
         except Exception as exc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] Exception: {exc} - "{buffer.hex()}"' )
+            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] Exception: {exc} - "{value.hex()}"' )
 
     @staticmethod
     def convert_to_datetime( microsec_offset: int ) -> dt.datetime:

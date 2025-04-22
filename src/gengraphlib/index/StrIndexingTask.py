@@ -10,11 +10,13 @@ class StrIndexingTask( IndexTaskBase[str] ):
         super( StrIndexingTask, self ).__init__(key, alias, root_dir)
         self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
-        str_value: str = buffer.decode()
+    def recv_value( self: Self, rec_num: int, value: str ) -> None:
 
-        if str_value not in self.sorted_index:
-            self.sorted_index[str_value] = LineRefList()
+        try:
+            if value not in self.sorted_index:
+                self.sorted_index[value] = LineRefList()
 
-        self.sorted_index[str_value].append( rec_num )
+            self.sorted_index[value].append( rec_num )
 
+        except ValueError:
+            print(f"StrIndexingTask.recv_value - rec_num: {rec_num}  value: {value}")

@@ -7,19 +7,19 @@ import multiprocessing as mp
 from io import BufferedWriter
 
 from ..common import KeyRecordList, KeyRecordPacket
-from ..proc.ProcLib import ProcBase
+from ..proc.TaskLib import TaskBase
 from ..streams.CmdStdoutStream import CmdStdoutStream
 from ..graph.KeyValueSchema import KeyValueSchema
 from ..bootlog.BootLogDir import BootLogDir
 
-class StreamSourceProcess( ProcBase ):
+class StreamSourceTask( TaskBase ):
 
     def __init__( self: Self,
             keyval_schema:   KeyValueSchema,
             active_keys:     set[str],
             record_queue:    mp.Queue
         ) -> None:
-        super( StreamSourceProcess, self ).__init__( "keyval-source" )
+        super( StreamSourceTask, self ).__init__( "keyval-source" )
         self.keyval_schema:   KeyValueSchema   = keyval_schema
         self.active_keys:     set[str]   = active_keys
 

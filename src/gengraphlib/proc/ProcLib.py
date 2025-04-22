@@ -24,13 +24,13 @@ class ProcRegistry(Protocol):
 class ProcBase(ABC, Startable):
     default_queue_size: int = 1024 * 256
 
-    def __init__(self: Self, proc_id: str, queue_size: int | None = None ) -> None:
+    def __init__(self: Self, proc_id: str ) -> None:
         self.proc_id: str = proc_id
-        self.queue_size: int = queue_size or self.default_queue_size
+        self.queue_size: int = self.default_queue_size
         self.msg_queue: mp.SimpleQueue = mp.SimpleQueue()
         self.proc_state: ProcState = ProcState.Init
         self.proc_type: ProcType = ProcType.Undefined
-        self.process: mp.Process = mp.Process( target = self.main_loop, args=() )
+        self.process: mp.Process = mp.Process( name=proc_id, target = self.main_loop, args=() )
         self.main_thread: Thread | None = None
         self.tasks: dict[str, TaskBase ] = {}
         #AppProcessBase.instance.register_startable(self)

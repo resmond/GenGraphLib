@@ -18,8 +18,8 @@ KValueDict: type  = dict[ str, KeyValTypes ]
 
 KeyValueTuple: type = tuple[str, str]
 KeyRecordList: type = list[KeyValueTuple]
-KeyRecordPacket: type = tuple[ int, KeyRecordList ]
-KeyValuePacket: type = tuple[int, KeyValTypes]
+KeyRecordPacket: type = tuple[int, KeyRecordList ]
+KeyValuePacket: type = tuple[int, str]
 
 class KeyType( IntEnum ):
     KStr    = 1

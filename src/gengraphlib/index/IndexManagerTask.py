@@ -76,7 +76,5 @@ class IndexManagerTask[ T: KeyValTypes ]( KeySchemaVisitor[None], IndexManagerIn
         if keydef.key in self.active_keys:
             self.register_index( TmstIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
-#-------------------------------------------------------------------
-
 
 

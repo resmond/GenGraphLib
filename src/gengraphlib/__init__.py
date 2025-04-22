@@ -39,7 +39,7 @@ from .proc import (
 )
 
 from .streams import (
-    ValuePumpTask, CmdStdoutStream, StreamSourceProcess
+    ValuePumpTask, CmdStdoutStream, StreamSourceTask
 )
 
 from .textlog import (
@@ -76,13 +76,13 @@ __all__ = [
     , "IndexTaskBase", "IndexManagerTask"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSourceProcess", "StreamSinkProc"
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSourceTask", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
 
-    , "ValuePumpTask", "StreamSourceProcess", "CmdStdoutStream"
+    , "ValuePumpTask", "StreamSourceTask", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

@@ -10,13 +10,16 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         self.positive_intersection: SortedSet[int] = SortedSet[int]()
         self.negative_intersection: SortedSet[int] = SortedSet[int]()
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
-        str_value:  str  = buffer.decode()
-        bool_value: bool = bool( str_value )
+    def recv_value( self: Self, rec_num: int, value: str ) -> None:
+        try:
+            bool_value: bool = bool( value )
 
-        if bool_value:
-            self.positive_intersection.add( rec_num )
-        else:
-            self.negative_intersection.add( rec_num )
+            if bool_value:
+                self.positive_intersection.add( rec_num )
+            else:
+                self.negative_intersection.add( rec_num )
+
+        except ValueError:
+            print(f"BoolIndexingTask.recv_value - rec_num: {rec_num}  value: {value}")
 
 

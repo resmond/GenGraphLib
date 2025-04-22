@@ -10,9 +10,13 @@ class MsgQueueBase(ABC):
 
     def __init__(self: Self, queue_id, threaded: bool = True ) -> None:
         self.queue_id: str = queue_id
-        self.msg_queue: mp.Queue = mp.Queue(4096)
+        self._inner_queue: mp.Queue = mp.Queue( 4096 )
         self.thread: th.Thread | None = None
         self.threaded: bool = threaded
+
+    @property
+    def inner_queue( self: Self ) -> mp.Queue:
+        return self._inner_queue
 
     def start( self: Self ) -> None:
         if self.threaded:
@@ -22,12 +26,12 @@ class MsgQueueBase(ABC):
             self.msg_loop()
 
     def send_msg( self: Self, msg: MessageBase ) -> None:
-        self.msg_queue.put(msg)
+        self._inner_queue.put( msg )
 
     def msg_loop( self: Self ) -> None:
         #print("[MsgQueBase.msg_loop] Started")
         while True:
-            incoming_message = self.msg_queue.get()
+            incoming_message = self._inner_queue.get()
             #print("[MsgQueBase.msg_loop] Started")
             match incoming_message:
                 case StatusMsg(status_msg):

@@ -11,21 +11,43 @@ from gengraphlib import (
     KeyValueSchema,
     BootLogManager,
     ValuePumpTask,
-    StreamSourceProcess,
+    StreamSourceTask,
     BootLogDir,
     IndexManagerTask
 )
 
+class ParseProcessInfo:
+    def __init__( self: Self, app_msgqueue: mp.Queue, id: str, log_root: str, boot_index: int, write_bin: bool, write_log: bool ) -> None:
+        self.app_msgqueue: mp.Queue = app_msgqueue
+
+        self.id: str         = id
+        self.log_root: str   = log_root
+        self.boot_index: int = boot_index
+        self.write_bin: bool = write_bin
+        self.write_log: bool = write_log
 
 class BootLogSchema( KeyValueSchema ):
 
-    def __init__( self: Self, id: str, _log_root: str ) -> None:
-        super( BootLogSchema, self ).__init__( id=id, root_dir = _log_root )
-        self.log_manager:          BootLogManager        = BootLogManager( _log_root )
+    @staticmethod
+    def entrypoint( parse_info: ParseProcessInfo ) -> None:
+        BootLogSchema( parse_info )
+
+    def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
+        super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
+
+        self.id: str = parse_info.id
+        self.log_root: str = parse_info.log_root
+        self.boot_index: int = parse_info.boot_index
+        self.write_bin: bool = parse_info.write_bin
+        self.write_log: bool = parse_info.write_log
+
+        self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
+
+        self.log_manager:          BootLogManager        = BootLogManager( parse_info.log_root )
         self._log_keys:            KeyDict               = KeyDict()
         self.cnt: int = 0
 
-        self.journal_streamsource: StreamSourceProcess | None = None
+        self.journal_streamsource: StreamSourceTask | None = None
         self.indexmanager_task: IndexManagerTask | None = None
         self.valuepump_task: ValuePumpTask | None = None
         self.bootlog_dir: BootLogDir | None = None
@@ -174,35 +196,27 @@ class BootLogSchema( KeyValueSchema ):
         return self._log_keys[_log_key_str]
 
     def final_init( self ):
-        super().final_init()
+        self.launch_processing()
 
     def get_activekeys( self, group_id: str ) -> set[str]:
+        return { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
 
+    def launch_processing( self: Self ) -> None:
 
-        active_keys: set[str] = { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
-
-        # for key, keydef in self.items():
-        #     if group_id in keydef.groupids:
-        #         active_keys[keydef.alias] = True
-
-        return active_keys
-
-    def launch_processing( self: Self, boot_index: int, root_dir: str, write_bin: bool, write_log: bool ) -> None:
-
-        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = boot_index )
+        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = self.boot_index )
         self.active_keys = self.get_activekeys("evt")
 
-        self.indexmanager_task = IndexManagerTask(self, root_dir)
+        self.indexmanager_task = IndexManagerTask(self, self.root_dir)
         self.valuepump_task = ValuePumpTask( self )
         self.valuepump_task.init_queues(self.indexmanager_task)
         self.indexmanager_task.init_indexes(self.active_keys)
         self.record_queues = self.valuepump_task.init_queues( self.indexmanager_task )
 
-        self.journal_streamsource = StreamSourceProcess( self, self.active_keys, self.record_queues )
+        self.journal_streamsource = StreamSourceTask( self, self.active_keys, self.record_queues )
 
         self.indexmanager_task.start_indexes()
         self.valuepump_task.start()
-        self.journal_streamsource.launch_processing( bootlogdir = self.bootlog_dir, write_bin=write_bin, write_log = write_log)
+        self.journal_streamsource.launch_processing( bootlogdir = self.bootlog_dir, write_bin=self.write_bin, write_log = self.write_log)
 
 
     

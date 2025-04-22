@@ -4,22 +4,8 @@ import os.path
 import threading as th
 import multiprocessing as mp
 
-from src.gengraphlib.common import KeyValTypes
-from src.gengraphlib.proc.TaskLib import TaskBase, IndexTaskInterface
-# from ..graph.KeyDefs import (
-#     StrKeyDef,
-#     IntKeyDef,
-#     BoolKeyDef,
-#     FloatKeyDef,
-#     TmstKeyDef
-# )
-# from ..graph.KeyValues import (
-#     StrKeyValueSet,
-#     IntKeyValueSet,
-#     BoolKeyValueSet,
-#     FloatKeyValueSet,
-#     TmstKeyValueSet
-# )
+from ..common import KeyValTypes
+from ..proc.TaskLib import TaskBase, IndexTaskInterface
 
 class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
 
@@ -62,11 +48,13 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
         super().start()
 
     def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
+        rec_num: int = 0
+        value:   str = ""
         while True:
-            rec_num, buffer = queue.get()
-            self.recv_value( rec_num, buffer )
+            rec_num, value = queue.get()
+            self.recv_value( rec_num, value )
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
+    def recv_value( self: Self, rec_num: int, value: str ) -> None:
         pass
 
 

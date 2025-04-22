@@ -38,61 +38,24 @@ class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
         for value in record_packet[1]:
             alias, buffer = value
             keyindex_queue: mp.Queue = self.queues_byalias[ alias ]
+            keyindex_queue.put(value)
 
-            match self.key_def.keytype:
-                case KeyType.KStr:
-                    keyindex_queue.put( value )
+            # match self.key_def.keytype:
+            #     case KeyType.KStr:
+            #         keyindex_queue.put( value )
+            #
+            #     case KeyType.KInt:
+            #         keyindex_queue.put( value )
+            #
+            #     case KeyType.KBool:
+            #         keyindex_queue.put( value )
+            #
+            #     case KeyType.KFloat:
+            #         keyindex_queue.put( value )
+            #
+            #     case KeyType.KTmst:
+            #         keyindex_queue.put( value )
+            #
+            #     case _:
+            #         print(f"ValuePumpTask.send_valuemsgs - rec_num: {rec_num}  key: {alias} value: {value}")
 
-                case KeyType.KInt:
-                    keyindex_queue.put( value )
-
-                case KeyType.KBool:
-                    keyindex_queue.put( value )
-
-                case KeyType.KFloat:
-                    keyindex_queue.put( value )
-
-                case KeyType.KTmst:
-                    keyindex_queue.put( value )
-
-                case _:
-                    print(f"ValuePumpTask.send_valuemsgs - rec_num: {rec_num}  key: {alias} value: {value}")
-
-    # from ..graph.KeyDefs import (
-    #     KeyDefBase,
-    #     StrKeyDef,
-    #     IntKeyDef,
-    #     BoolKeyDef,
-    #     FloatKeyDef,
-    #     TmstKeyDef,
-    # )
-    # from ..graph.KeyValues import (
-    #     StrKeyValueSet,
-    #     IntKeyValueSet,
-    #     BoolKeyValueSet,
-    #     FloatKeyValueSet,
-    #     TmstKeyValueSet,
-    # )
-
-    # def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> bool:
-    #     return self.register_queue( keydef )
-    #
-    # def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> bool:
-    #     return self.register_queue( keydef )
-    #
-    # def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> bool:
-    #     return self.register_queue( keydef )
-    #
-    # def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> bool:
-    #     return self.register_queue( keydef )
-    #
-    # def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> bool:
-    #     return self.register_queue( keydef )
-    #
-    # def send_msg( self: Self, record_message: RecordDataMsg ) -> None:
-    #     self.msg_queue.put( record_message )
-    #
-    # def main_loop(self: Self) -> None:
-    #     while True:
-    #         record_msg: RecordDataMsg = self.record_queue.get()
-    #         self.send_valuemsgs( record_msg )

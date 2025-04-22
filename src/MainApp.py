@@ -1,6 +1,8 @@
 from typing import Self
 
-from BootLogSchema import BootLogSchema
+import multiprocessing as mp
+
+from BootLogSchema import BootLogSchema, ParseProcessInfo
 from gengraphlib import (
     StatusMsg,
     InfoMsg,
@@ -28,16 +30,29 @@ class MainAppMsgQueue( MsgQueueBase ):
 
 class MainApp( AppProcessBase ):
     def __init__(self: Self):
-        self.keyval_schema: BootLogSchema | None = None
         super( MainApp, self ).__init__( "app-main" )
+        self.parse_info: ParseProcessInfo | None = None
+        self.process: mp.Process | None = None
 
     def init_internals( self: Self ) -> None:
-        self.keyval_schema = BootLogSchema( id= "1", _log_root = "/home/richard/data/jctl-logs/" )
         self.msg_queue = MainAppMsgQueue()
         super().init_internals()
 
     def start(self: Self) -> bool:
         self.msg_queue.start()
-        self.keyval_schema.launch_processing( boot_index = -1, root_dir = "/home/richard/data/jctl-logs/", write_bin = False, write_log = True )
+
+        self.parse_info: ParseProcessInfo = \
+            ParseProcessInfo(
+                app_msgqueue=self.msg_queue.inner_queue,
+                id="parse-proc",
+                log_root= "/home/richard/data/jctl-logs/",
+                boot_index = -1,
+                write_bin = False,
+                write_log = True
+            )
+
+        self.process: mp.Process = mp.Process( target = BootLogSchema.entrypoint, args=(self.parse_info,) )
+        self.process.start()
+
         return True
 
