@@ -1,14 +1,8 @@
-from asyncio import Protocol
-from typing import Self
-
-from enum import IntEnum
-
+from typing import Self, Protocol
 from abc import ABC, abstractmethod
-
+from enum import IntEnum
 import multiprocessing as mp
-from   threading import Thread
-
-from ..common import KeyValTypes
+from threading import Thread
 
 class TaskType( IntEnum ):
     Undefined = 0
@@ -30,7 +24,7 @@ class Startable(Protocol):
     def start( self: Self ) -> None: ...
     def stop( self: Self ) -> None: ...
     @abstractmethod
-    def main_loop( self: Self ) -> None: ...
+    def main_loop( self: Self, *args, **kargs ) -> None: ...
 
 class IndexTaskInterface(Startable):
 
@@ -97,6 +91,5 @@ class TaskBase( ABC, Startable ):
         if self.thread is not None:
             self.thread.join(timeout=1)
 
-    @abstractmethod
-    def main_loop(self: Self) -> None:
+    def main_loop(self: Self, *args, **kargs) -> None:
         pass

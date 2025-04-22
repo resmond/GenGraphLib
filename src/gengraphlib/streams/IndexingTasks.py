@@ -28,11 +28,13 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
         super(IndexTaskBase,self).__init__( f"{key}-index" )
         #self.key_def:   KeyDefBase   = key_def
         #self.keyvalues: KeyValues[T] = keyvalues
+
+        self._type: type = type(T)
         self._key:   str = key
         self._alias: str = alias
-        self._queue: mp.Queue[T] = mp.Queue[T]()
+        self._queue: mp.Queue = mp.Queue()
         self._root_dir: str = root_dir
-        self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key)
+        self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
 
         self._index_dir: str = os.path.join( root_dir, "keys", f"{self._key}" )
         self._index_filepath: str = os.path.join( self._index_dir, f"{self._key}.bin" )
@@ -57,49 +59,48 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
     def queue( self: Self ) -> mp.Queue:
         return self._queue
 
-
     def start( self: Self ) -> None:
         super().start()
 
-    def main_loop( self: Self, queue: mp.Queue ) -> None:
+    def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
         while True:
-            rec_num, value = queue.get()
-            self.recv_value(rec_num, value)
+            rec_num, buffer = queue.get()
+            self.recv_value( rec_num, buffer )
 
-    def recv_value( self: Self, rec_num: int, value: T ) -> None:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
         pass
 
 class StrIndexingTask( IndexTaskBase[str] ):
     def __init__( self: Self, key_def: StrKeyDef, keyvalues: StrKeyValueSet ) -> None:
         super( StrIndexingTask, self ).__init__( key_def, keyvalues )
 
-    def recv_value[str]( self: Self, rec_num: int, buffer: bytes, value: str ) -> None:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
         pass
 
 class IntIndexingTask( IndexTaskBase[int] ):
     def __init__( self: Self, key_def: IntKeyDef, keyvalues: IntKeyValueSet ) -> None:
         super( IntIndexingTask, self ).__init__( key_def, keyvalues )
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes, value: int ) -> None:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
         pass
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
     def __init__( self: Self, key_def: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> None:
         super( BoolIndexingTask, self ).__init__( key_def, keyvalues )
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes, value: bool ) -> None:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
         pass
 
 class FloatIndexingTask( IndexTaskBase[float] ):
     def __init__( self: Self, key_def: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> None:
         super( FloatIndexingTask, self ).__init__( key_def, keyvalues )
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes, value: float ) -> None:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> None:
         pass
 
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
     def __init__( self: Self, key_def: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> None:
         super( TmstIndexingTask, self ).__init__( key_def, keyvalues )
 
-    def recv_value( self: Self, rec_num: int, buffer: bytes, value: dt.datetime ) -> bool:
+    def recv_value( self: Self, rec_num: int, buffer: bytes ) -> bool:
         pass

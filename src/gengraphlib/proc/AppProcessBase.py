@@ -8,6 +8,7 @@ from .ProcLib import ProcRegistry, Startable
 from .MsgQueueBase import MsgQueueBase
 
 class AppProcessBase( ProcRegistry ):
+    instance: Self | None = None
 
     def __init__(self: Self, app_id: str) -> None:
         super( AppProcessBase, self ).__init__()

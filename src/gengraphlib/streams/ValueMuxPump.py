@@ -16,15 +16,13 @@ class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
         super( ValuePumpTask, self ).__init__( "value-pump" )
         self.keyvalue_schema: KeyValueSchema = keyvalue_schema
         self.indexmanager_task: IndexManagerTask | None = None
-        self.record_queue: mp.Queue[KeyRecordPacket] = mp.Queue[KeyRecordPacket]()
-
+        self.record_queue: mp.Queue = mp.Queue()
         self.queues_byalias: dict[str, mp.Queue] | None = None
 
     # noinspection PyTypeChecker
     def init_queues( self: Self, indexmanager_task: IndexManagerTask ) -> mp.Queue:
         self.indexmanager_task = indexmanager_task
         self.queues_byalias = self.indexmanager_task.queues_byalias()
-
         return self.record_queue
 
     def start(self: Self) -> None:
@@ -39,7 +37,6 @@ class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
 
         for value in record_packet[1]:
             alias, buffer = value
-
             keyindex_queue: mp.Queue = self.queues_byalias[ alias ]
 
             match self.key_def.keytype:

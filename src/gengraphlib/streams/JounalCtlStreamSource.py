@@ -16,12 +16,12 @@ class JounalCtlStreamSource( ProcBase ):
 
     def __init__( self: Self,
             keyval_schema:   KeyValueSchema,
-            active_keys:     dict[str,bool],
+            active_keys:     set[str],
             record_queue:    mp.Queue
         ) -> None:
         super( JounalCtlStreamSource, self ).__init__( "keyval-source" )
         self.keyval_schema:   KeyValueSchema   = keyval_schema
-        self.active_keys:     dict[str,bool]   = active_keys
+        self.active_keys:     set[str]   = active_keys
 
         self.record_queue:    mp.Queue[KeyRecordPacket] = record_queue
 

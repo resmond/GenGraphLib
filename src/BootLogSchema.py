@@ -29,7 +29,7 @@ class BootLogSchema( KeyValueSchema ):
         self.indexmanager_task: IndexManagerTask | None = None
         self.valuepump_task: ValuePumpTask | None = None
         self.bootlog_dir: BootLogDir | None = None
-        self.active_keys: dict[str, bool] | None = None
+        self.active_keys: set[str] | None = None
         self.record_queues: mp.Queue | None = None
 
         self.add_keydefs(
@@ -176,14 +176,10 @@ class BootLogSchema( KeyValueSchema ):
     def final_init( self ):
         super().final_init()
 
-    def get_activekeys( self, group_id: str ) -> dict[str,bool]:
+    def get_activekeys( self, group_id: str ) -> set[str]:
 
-        active_keys: dict[str,bool] = {
-            keydef.alias: True
-                for key, keydef
-                in self.items()
-                if group_id in keydef.groupids
-        }
+
+        active_keys: set[str] = { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
 
         # for key, keydef in self.items():
         #     if group_id in keydef.groupids:
@@ -194,7 +190,7 @@ class BootLogSchema( KeyValueSchema ):
     def launch_processing( self: Self, boot_index: int, write_bin: bool, write_log: bool ) -> None:
 
         self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = boot_index )
-        self.active_keys: dict[str,bool] = self.get_activekeys("evt")
+        self.active_keys = self.get_activekeys("evt")
 
         self.indexmanager_task = IndexManagerTask(self)
         self.valuepump_task = ValuePumpTask( self )

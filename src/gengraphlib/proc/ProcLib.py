@@ -45,7 +45,7 @@ class ProcBase(ABC, Startable):
         self.process.start()
 
     @abstractmethod
-    def main_loop(self: Self) -> None:
+    def main_loop(self: Self, *args, **kargs) -> None:
         pass
 
     def stop(self: Self) -> None:

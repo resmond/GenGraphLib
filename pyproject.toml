@@ -34,7 +34,8 @@ dependencies = [
     "numba",
     "sortedcontainers",
     "sortedcontainers-stubs",
-    "Pyside6"
+    "Pyside6",
+    "slint",
 ]
 
 [build-system]

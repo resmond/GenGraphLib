@@ -38,8 +38,6 @@ class MainApp( AppProcessBase ):
 
     def start(self: Self) -> bool:
         self.msg_queue.start()
-        self.launch_processing()
+        self.keyval_schema.launch_processing( boot_index = -1, write_bin = False, write_log = True )
         return True
 
-    def launch_processing( self ):
-        self.keyval_schema.launch_processing( boot_index = -1, write_bin = False, write_log = True )

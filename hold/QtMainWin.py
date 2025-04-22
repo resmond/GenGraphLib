@@ -1,12 +1,13 @@
 from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect)
 from PySide6.QtWidgets import (
+    QMainWindow,
     QHBoxLayout, QListView,
     QMenuBar, QPushButton, QSizePolicy,
     QSpacerItem, QStatusBar, QTreeView, QWidget)
 
 # noinspection PyAttributeOutsideInit
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+class Ui_MainWindow(QMainWindow):
+    def setupUi(self, main_win: QMainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(2276, 1270)

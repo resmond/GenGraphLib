@@ -35,6 +35,12 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def dologing( self: Self ) -> bool:
         return not self._skip
 
+    def in_group( self: Self, group_id: str ) -> bool:
+        if self.groupids is None:
+            return False
+        else:
+            return group_id in self.groupids
+
     def queue( self: Self ) -> mp.Queue:
         self._queue = mp.Queue()
         return self._queue

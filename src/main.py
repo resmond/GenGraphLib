@@ -1,15 +1,15 @@
-from .gengraphlib.qt.QtMainWin import Ui_MainWindow
-
+from MainApp import MainApp
 
 if __name__ == "__main__":
-    qt_win = Ui_MainWindow()
-    qt_win.setupUi()
-    
+    print("starting MainAppProc")
+    app = MainApp()
+    app.start()
 
-
-
+# import sys
+# from PySide6 import QtWidgets as qtw
+# from gengraphlib.qt.MainWin import MyMainWindow
 # if __name__ == "__main__":
-#     print("starting MainAppProc")
-#     app = MainApp()
-#     app.start()
-#     #ret = aio.run( app.start() )
+#     mainapp = qtw.QApplication()
+#     mainwin = MyMainWindow()
+#     mainwin.show()
+#     sys.exit(mainapp.exec())
