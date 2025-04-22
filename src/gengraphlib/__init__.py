@@ -1,23 +1,16 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
 from .common import (
-      KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
+    KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
     , IValueTuple, SValueTuple, KValueDict, KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
     , KeyDefInterface, KeyDefDict, LineRefList
-    , KeyFilter, KeyType, SerializationType, DictOfLists, value_event_fn, KeyValuesInterface
+    , KeyFilter, KeyType, SerializationType, DefaultMapOfLists, value_event_fn, KeyValuesInterface
 )
 
 from .regex import (
       ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
     , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                          # RgxField
 )
-
-
-# from hold.streamio import (
-#       ChainableResult, PipeChainType, StreamType, ChainErr, ChainException
-#     , PipedChainBase, ChainSinkBase, ChainSourceBase, ChainFilterBase
-#     , CmdKeyValueStream
-# )
 
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
@@ -29,6 +22,16 @@ from .graph import (
     , KeySchemaVisitor
 )
 
+from .index import (
+    IndexTaskBase,
+    IndexManagerTask,
+    IntIndexingTask,
+    StrIndexingTask,
+    TmstIndexingTask,
+    BoolIndexingTask,
+    FloatIndexingTask
+)
+
 from .proc import (
       ProcType, ProcState, ProcBase, IndexTaskInterface, IndexManagerInterface
     , TaskType, TaskState, TaskBase, AppProcessBase, StreamSinkProc
@@ -36,8 +39,7 @@ from .proc import (
 )
 
 from .streams import (
-    IndexTaskBase, StrIndexingTask, IntIndexingTask, BoolIndexingTask, FloatIndexingTask, TmstIndexingTask
-    , IndexManagerTask, ValuePumpTask, CmdStdoutStream, JounalCtlStreamSource
+    ValuePumpTask, CmdStdoutStream, StreamSourceProcess
 )
 
 from .textlog import (
@@ -55,7 +57,8 @@ from .codegen import (
 from .bootlog import BootLogDir, BootLogManager
 
 __all__ = [
-      "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType", "DictOfLists"
+      "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType",
+    "DefaultMapOfLists"
     , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
     , "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
@@ -70,13 +73,16 @@ __all__ = [
     , "KeyValueSchema"
     , "VectorValue", "GraphVector", "GraphValueResult", "KeySchemaVisitor"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "JounalCtlStreamSource", "StreamSinkProc"
+    , "IndexTaskBase", "IndexManagerTask"
+    , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
+
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSourceProcess", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
-    , "IndexTaskBase", "StrIndexingTask", "IntIndexingTask", "BoolIndexingTask", "FloatIndexingTask", "TmstIndexingTask"
-    , "ValuePumpTask", "IndexManagerTask", "JounalCtlStreamSource", "CmdStdoutStream"
+
+    , "ValuePumpTask", "StreamSourceProcess", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
@@ -88,8 +94,3 @@ __all__ = [
 
     , "BootLogDir", "BootLogManager"
 ]
-
-
-
-#      "ChainableResult", "PipeChainType", "StreamType", "ChainErr", "ChainException", "PipedChainBase"
-#    , "ChainSinkBase", "ChainSourceBase", "ChainFilterBase", "CmdKeyValueStream"

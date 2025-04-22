@@ -7,7 +7,7 @@ from ..common import KeyType, KeyRecordPacket
 from ..proc.TaskLib import TaskBase
 from ..graph.KeySchemaVisitor import KeySchemaVisitor
 from ..graph.KeyValueSchema import KeyValueSchema
-from .IndexManagerTask import IndexManagerTask
+from src.gengraphlib.index.IndexManagerTask import IndexManagerTask
 
 class ValuePumpTask( TaskBase, KeySchemaVisitor[bool] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")

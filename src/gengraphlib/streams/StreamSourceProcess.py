@@ -12,14 +12,14 @@ from ..streams.CmdStdoutStream import CmdStdoutStream
 from ..graph.KeyValueSchema import KeyValueSchema
 from ..bootlog.BootLogDir import BootLogDir
 
-class JounalCtlStreamSource( ProcBase ):
+class StreamSourceProcess( ProcBase ):
 
     def __init__( self: Self,
             keyval_schema:   KeyValueSchema,
             active_keys:     set[str],
             record_queue:    mp.Queue
         ) -> None:
-        super( JounalCtlStreamSource, self ).__init__( "keyval-source" )
+        super( StreamSourceProcess, self ).__init__( "keyval-source" )
         self.keyval_schema:   KeyValueSchema   = keyval_schema
         self.active_keys:     set[str]   = active_keys
 

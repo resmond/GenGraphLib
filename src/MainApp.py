@@ -38,6 +38,6 @@ class MainApp( AppProcessBase ):
 
     def start(self: Self) -> bool:
         self.msg_queue.start()
-        self.keyval_schema.launch_processing( boot_index = -1, write_bin = False, write_log = True )
+        self.keyval_schema.launch_processing( boot_index = -1, root_dir = "/home/richard/data/jctl-logs/", write_bin = False, write_log = True )
         return True
 

@@ -29,9 +29,13 @@ class KeyType( IntEnum ):
     KTmst   = 5
 
 class SerializationType( IntEnum ):
-    CSV     = 1
-    JArray  = 2
-    JObject = 3
+    CSV             = 1
+    JArray          = 2
+    JObject         = 3
+    Pickle          = 4
+    Jline           = 5
+    EqualKeyValLine = 6
+    ColonKeyValLine = 7
 
 class KeyDefInterface( Protocol ):
     key:      str
@@ -43,6 +47,7 @@ KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
 KeyValueEvent: type = tuple[int, int, memoryview]
 value_event_fn = Callable[ [ KeyValueEvent ], None ]
+
 class KeyValuesInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
@@ -51,12 +56,9 @@ class KeyValuesInterface( Protocol ):
     value_event_fn: value_event_fn
     def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 
-class DictOfLists[T]( dict[ str, list[T] ] ):
-
-    def __init__( self: Self ) -> None:
-        super().__init__()
+class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
 
     def add_entry( self: Self, key: str, value: T ) -> None:
         if key not in self:
-            self[key] = []
+            self[key] = list[T]()
         self[key].append( value )

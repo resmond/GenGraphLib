@@ -11,7 +11,7 @@ from gengraphlib import (
     KeyValueSchema,
     BootLogManager,
     ValuePumpTask,
-    JounalCtlStreamSource,
+    StreamSourceProcess,
     BootLogDir,
     IndexManagerTask
 )
@@ -25,7 +25,7 @@ class BootLogSchema( KeyValueSchema ):
         self._log_keys:            KeyDict               = KeyDict()
         self.cnt: int = 0
 
-        self.journal_streamsource: JounalCtlStreamSource | None = None
+        self.journal_streamsource: StreamSourceProcess | None = None
         self.indexmanager_task: IndexManagerTask | None = None
         self.valuepump_task: ValuePumpTask | None = None
         self.bootlog_dir: BootLogDir | None = None
@@ -187,18 +187,18 @@ class BootLogSchema( KeyValueSchema ):
 
         return active_keys
 
-    def launch_processing( self: Self, boot_index: int, write_bin: bool, write_log: bool ) -> None:
+    def launch_processing( self: Self, boot_index: int, root_dir: str, write_bin: bool, write_log: bool ) -> None:
 
         self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = boot_index )
         self.active_keys = self.get_activekeys("evt")
 
-        self.indexmanager_task = IndexManagerTask(self)
+        self.indexmanager_task = IndexManagerTask(self, root_dir)
         self.valuepump_task = ValuePumpTask( self )
         self.valuepump_task.init_queues(self.indexmanager_task)
         self.indexmanager_task.init_indexes(self.active_keys)
         self.record_queues = self.valuepump_task.init_queues( self.indexmanager_task )
 
-        self.journal_streamsource = JounalCtlStreamSource( self, self.active_keys, self.record_queues )
+        self.journal_streamsource = StreamSourceProcess( self, self.active_keys, self.record_queues )
 
         self.indexmanager_task.start_indexes()
         self.valuepump_task.start()

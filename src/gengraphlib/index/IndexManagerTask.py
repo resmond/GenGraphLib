@@ -2,29 +2,29 @@ from typing import Self
 
 import multiprocessing as mp
 
-from .. import KeyValueSchema
 from ..common import KeyValTypes
+
+from ..graph.KeyValueSchema import KeyValueSchema
 from ..graph.KeySchemaVisitor import KeySchemaVisitor
 from ..graph.KeyDefs import StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from ..graph.KeyValues import StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
-from .IndexingTasks import (
-    StrIndexingTask,
-    IntIndexingTask,
-    BoolIndexingTask,
-    FloatIndexingTask,
-    TmstIndexingTask,
-)
+from StrIndexingTask import StrIndexingTask
+from IntIndexingTask import IntIndexingTask
+from BoolIndexingTask import BoolIndexingTask
+from FloatIndexingTask import FloatIndexingTask
+from TmstIndexingTask import TmstIndexingTask
 
-from ..proc.TaskLib import IndexTaskInterface, IndexManagerInterface
+from src.gengraphlib.proc.TaskLib import IndexTaskInterface, IndexManagerInterface
 
 class IndexManagerTask[ T: KeyValTypes ]( KeySchemaVisitor[None], IndexManagerInterface ):
 
     index_queuemap: dict[str, mp.Queue  ]          = dict[str, mp.Queue ]()
     index_taskmap:  dict[str, IndexTaskInterface ] = dict[str, IndexTaskInterface ]()
 
-    def __init__( self: Self, keyvalue_schema: KeyValueSchema ) -> None:
+    def __init__( self: Self, keyvalue_schema: KeyValueSchema, root_dir: str ) -> None:
         super( IndexManagerTask, self ).__init__()
         self.keyvalue_schema: KeyValueSchema = keyvalue_schema
+        self.root_dir: str = root_dir
         self.active_keys: set[str] | None = None
         self.state: str = "Init"
 
@@ -58,23 +58,23 @@ class IndexManagerTask[ T: KeyValTypes ]( KeySchemaVisitor[None], IndexManagerIn
 
     def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> None:
         if keydef.key in self.active_keys:
-            self.register_index( StrIndexingTask( keydef, keyvalues ) )
+            self.register_index( StrIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> None:
         if keydef.key in self.active_keys:
-            self.register_index( IntIndexingTask( keydef, keyvalues ) )
+            self.register_index( IntIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> None:
         if keydef.key in self.active_keys:
-            self.register_index( BoolIndexingTask( keydef, keyvalues ) )
+            self.register_index( BoolIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> None:
         if keydef.key in self.active_keys:
-            self.register_index( FloatIndexingTask( keydef, keyvalues ) )
+            self.register_index( FloatIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
     def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet ) -> None:
         if keydef.key in self.active_keys:
-            self.register_index( TmstIndexingTask( keydef, keyvalues ) )
+            self.register_index( TmstIndexingTask( keydef.key, keydef.alias, self.root_dir ) )
 
 #-------------------------------------------------------------------
 
