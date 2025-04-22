@@ -8,11 +8,11 @@ from ..graph.KeyValueSchema import KeyValueSchema
 from ..graph.KeySchemaVisitor import KeySchemaVisitor
 from ..graph.KeyDefs import StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from ..graph.KeyValues import StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
-from StrIndexingTask import StrIndexingTask
-from IntIndexingTask import IntIndexingTask
-from BoolIndexingTask import BoolIndexingTask
-from FloatIndexingTask import FloatIndexingTask
-from TmstIndexingTask import TmstIndexingTask
+from .StrIndexingTask import StrIndexingTask
+from .IntIndexingTask import IntIndexingTask
+from .BoolIndexingTask import BoolIndexingTask
+from .FloatIndexingTask import FloatIndexingTask
+from .TmstIndexingTask import TmstIndexingTask
 
 from src.gengraphlib.proc.TaskLib import IndexTaskInterface, IndexManagerInterface
 

@@ -4,8 +4,8 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from IndexTaskBase import IndexTaskBase
-from src.gengraphlib import LineRefList
+from ..common import LineRefList
+from .IndexTaskBase import IndexTaskBase
 
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")

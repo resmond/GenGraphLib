@@ -3,7 +3,7 @@ from ..common import LineRefList
 
 from sortedcontainers import SortedDict
 
-from IndexTaskBase import IndexTaskBase
+from .IndexTaskBase import IndexTaskBase
 
 class StrIndexingTask( IndexTaskBase[str] ):
     def __init__( self: Self, key: str, alias: str, root_dir: str  ) -> None:

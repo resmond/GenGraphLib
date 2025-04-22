@@ -2,7 +2,7 @@ from typing import Self
 
 from sortedcontainers import SortedSet
 
-from IndexTaskBase import IndexTaskBase
+from .IndexTaskBase import IndexTaskBase
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
     def __init__( self: Self, key: str, alias: str, root_dir: str  ) -> None:
