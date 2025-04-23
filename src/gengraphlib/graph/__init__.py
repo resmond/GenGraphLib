@@ -3,10 +3,10 @@ from .KeyValSchemaInfo import KeyInfo, KeyValSchemaInfo
 from .KeyValues import KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
 from .KeyGroups import KeyGroup, KeyGroups
-from .GraphVector import VectorValue, GraphVector, GraphValueResult
 from .KeyValueSchema import KeyValueSchema
 from .KeySchemaVisitor import KeySchemaVisitor
 from .KeyValueSink import KeyValueSink
+from .KeyValVector import KeyValVector, VectorResult
 
 __all__ = [
       "GNodeInterface", "NodeDict", "IndexedNodeList", "GraphRecordRoot", "RecordBase", "KeyDefInterface"
@@ -16,7 +16,7 @@ __all__ = [
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeyDict", "KeyValueSchema"
     , "KeySchemaVisitor"
-    , "VectorValue", "GraphVector", "GraphValueResult"
+    , "KeyValVector", "VectorResult"
     , "KeyValueSink"
 
 ]

@@ -1,9 +1,16 @@
-from typing import Self
+from typing import Self, Protocol
 
 import os
 import datetime as dt
 
 from .BootLogInfo import BootLogInfo
+
+class RepoInterface(Protocol):
+
+    def get_sourcestream( self, repo_id: str, isbinary: bool, issource: bool ):
+        pass
+
+
 
 class BootLogDir:
 
@@ -19,6 +26,11 @@ class BootLogDir:
         self.dir_path: str = os.path.join(self.root_dir, "boots", self.dir_name)
         self.keys_path: str = os.path.join( self.root_dir, "keys" )
 
+    def boot_id( self: Self ) -> str:
+        yymmdd: str = self.first_dt.strftime("%y-%m-%d")
+        hhmm: str   = self.first_dt.strftime("%H-%M")
+        return f"{yymmdd}:{hhmm}"
+
     def make_dir( self: Self ) -> bool:
         try:
             os.makedirs( self.dir_path, exist_ok=True )
@@ -28,10 +40,6 @@ class BootLogDir:
             print(f'[BootLogDirBase._dir_exists] Exception: {e}')
             return False
 
-    def boot_id( self: Self ) -> str:
-        yymmdd: str = self.first_dt.strftime("%y-%m-%d")
-        hhmm: str = self.first_dt.strftime("%H-%M")
-        return f"{yymmdd}:{hhmm}"
 
     def get_info( self: Self ) -> BootLogInfo:
         return BootLogInfo( schema_bootid=self.boot_id(), first_dt=self.first_dt, last_dt=self.last_dt, dir_name=self.dir_name, dir_path=self.dir_path, keys_path=self.keys_path )

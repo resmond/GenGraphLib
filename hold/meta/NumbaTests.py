@@ -1,5 +1,7 @@
 from enum import IntEnum
 from typing import Self, NamedTuple
+from collections import namedtuple
+from dataclasses import dataclass
 
 import sys
 import pickle as pk
@@ -39,20 +41,19 @@ class Keydef:
         print(f'sizeof: {sys.getsizeof(self)}')
         dir(self)
 
-class KeydefSlot:
-    __slots__ = ('json_key', 'log_key', 'key_type', 'clen')
 
-    def __init__(self: Self, _json_key: str, _log_key: str, _key_type: int ):
-        self.json_key: str = _json_key
-        self.log_key:  str = _log_key
-        self.key_type: int = _key_type
+@dataclass
+class KeydefData:
+    json_key: str
+    log_key:  str
+    key_type: int
 
     def totuple( self: Self ) -> tuple:
         return self.json_key, self.log_key, self.key_type
 
     def pickel( self ) -> bytes:
         buffer = pk.dumps( self )
-        print(f'KeydefSlot buffer sizeof: {sys.getsizeof( buffer )}')
+        print(f'KeyDefData buffer sizeof: {sys.getsizeof( buffer )}')
 
         return buffer
 
@@ -69,37 +70,37 @@ class KeydefTuple(NamedTuple):
     log_key:  str
     key_type: int
 
-#    def init( self, _json_key: str, _log_key: str, _key_type: int ) -> None:
-#        self.json_key: str = _json_key
-#        self.log_key: str = _log_key
-#        self.key_type: int = _key_type
-
-    def totuple( self: Self ) -> tuple:
-        return self.json_key, self.log_key, self.key_type
-
-    def pickel( self: Self ) -> bytes:
-        buffer = pk.dumps( self )
-        print(f'KeydefSlot buffer sizeof: {sys.getsizeof( buffer )}')
-        return buffer
-
-    def show( self: Self ):
-        print("")
-        print("KeydefTuple")
-        print(f'json_key[{sys.getsizeof(self.json_key)}] = {self.json_key}')
-        print(f'log_key[{sys.getsizeof(self.log_key)}] = {self.log_key}')
-        print(f'sizeof: {sys.getsizeof(self)}')
-        dir(self)
+    # def totuple( self: Self ) -> tuple:
+    #     return self.json_key, self.log_key, self.key_type
+    #
+    # def pickel( self: Self ) -> bytes:
+    #     buffer = pk.dumps( self )
+    #     print(f'KeydefSlot buffer sizeof: {sys.getsizeof( buffer )}')
+    #     return buffer
+    #
+    # def show( self: Self ):
+    #     print("")
+    #     print("KeydefTuple")
+    #     print(f'json_key[{sys.getsizeof(self.json_key)}] = {self.json_key}')
+    #     print(f'log_key[{sys.getsizeof(self.log_key)}] = {self.log_key}')
+    #     print(f'sizeof: {sys.getsizeof(self)}')
+    #     dir(self)
 
 if __name__ == '__main__':
 
     msg_key = Keydef( "msg", "MESSAGE", CType.CStr )
     msg_key.show()
 
-    msg_key_slot = KeydefSlot( "msg", "MESSAGE", CType.CStr )
+    msg_key_slot = KeydefData( "msg", "MESSAGE", CType.CStr )
     msg_key_slot.show()
 
-    msg_key_tuple = KeydefTuple( "msg", "MESSAGE", CType.CStr )
-    msg_key_tuple.show()
+    msg_key_tuple = KeydefTuple( "msg", "MESSAGE", 0  )
+    #msg_key_tuple.show()
+
+    print(msg_key_tuple.json_key)
+    print(msg_key_tuple)
+    msg_key_tuple.json_key = "foo"
+    print(msg_key_tuple)
     print("")
 
     keydefs_tup_native = (

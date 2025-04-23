@@ -1,7 +1,7 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
 from .common import (
-      KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict
+      KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict, VectorValTypes
     , KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
     , KeyDefInterface, KeyDefDict, LineRefList
     , KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
@@ -20,7 +20,7 @@ from .graph import (
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
-    , KeyValueSchema, VectorValue, GraphVector, GraphValueResult
+    , KeyValueSchema, KeyValVector, VectorResult
     , KeySchemaVisitor
 )
 
@@ -61,7 +61,7 @@ from .bootlog import BootLogDir, BootLogManager, BootLogInfo, BootLogContext
 __all__ = [
       "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
     , "SerializationType", "DefaultMapOfLists"
-    , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
+    , "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
     , "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
@@ -73,7 +73,7 @@ __all__ = [
     , "LineRefList", "KeyValues"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeyValueSchema"
-    , "VectorValue", "GraphVector", "GraphValueResult", "KeySchemaVisitor"
+    , "KeyValVector", "VectorResult", "KeySchemaVisitor"
 
     , "IndexTaskBase", "IndexManager"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"

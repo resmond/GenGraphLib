@@ -92,3 +92,39 @@ class GraphValueResult:
 
 
 
+# KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
+#
+# class KeyType( IntEnum ):
+#     KStr    = 1
+#     KInt    = 2
+#     KBool   = 3
+#     KFloat  = 4
+#     KTmst   = 5
+#
+#
+# @dataclass
+# class KeyInfo:
+#     schema_id: str
+#     key: str
+#     alias: str
+#     keytype: KeyType
+#     groupids: list[str] = field(default_factory=list)
+#
+#     @property
+#     def keyinfo_id( self: Self ) -> str:
+#         return f"{self.schema_id}@{self.key}"
+#
+# process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
+#
+# str_fn = Callable[ str, bytes ]
+# int_fn = Callable[ int, bytes ]
+# bool_fn = Callable[ bool, bytes ]
+# float_fn = Callable[ float, bytes ]
+# tmst_fn = Callable[ dt.datetime, bytes ]
+#
+# KeyValFn = Callable[ KeyValTypes, bytes ]
+#
+# KeyFuncDispatch: type = type[ str_fn, int_fn, bool_fn, float_fn, tmst_fn ]
+
+#VectorValTypes: type = type[ None, str, int, bool, float, dt.datetime ]
+

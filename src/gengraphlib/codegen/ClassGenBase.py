@@ -45,7 +45,7 @@ class ClassGenBase:
         self.fluent: GenCodeRenderer = GenCodeRenderer( filepath )
 
     def add_initdef( self: Self, info: KeyValInfo ):
-        self.instances.append( InfoPattern( info, f"    self.{info.json_key}: {info.pytype_str} = _{info.json_key}" ) )
+        self.instances.append( InfoPattern( info, f"    self.{info.key}: {info.pytype} = _{info.key}" ) )
 
     def init_template( self: Self ) -> None:
         typing_import = ImportPattern( _info = ImportsInfo( module="typing", objlist=["Self"] ) )

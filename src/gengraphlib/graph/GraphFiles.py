@@ -3,15 +3,15 @@ from typing import Self, AsyncGenerator
 
 import asyncio as aio
 
-from src.gengraphlib import KeyValueSchema, KeyValues, GraphVector
+from src.gengraphlib import KeyValueSchema, KeyValues, KeyValVector
 
 
 class GraphFileBase( ABC ):
 
-    def __init__( self: Self, _schema: KeyValueSchema, _vector: GraphVector, file_path: str ):
+    def __init__( self: Self, _schema: KeyValueSchema, _vector: KeyValVector, file_path: str ):
         super().__init__()
         self._schema: KeyValueSchema = _schema
-        self._vector: GraphVector    = _vector
+        self._vector: KeyValVector    = _vector
         self._file_path : str = file_path
 
     @abstractmethod
@@ -23,7 +23,7 @@ class GraphFileBase( ABC ):
         pass
 
 class GraphFileSource( GraphFileBase ):
-    def __init__( self: Self, key_graph: KeyValueSchema, _vector: GraphVector, file_path: str ):
+    def __init__( self: Self, key_graph: KeyValueSchema, _vector: KeyValVector, file_path: str ):
         super().__init__( key_graph, _vector, file_path )
         self.input_stream : aio.StreamReader | None = None
 
@@ -46,7 +46,7 @@ class GraphFileSource( GraphFileBase ):
 
 class GraphFileSink( GraphFileBase ):
 
-    def __init__( self: Self, key_graph: KeyValueSchema, _vector: GraphVector, file_path: str ):
+    def __init__( self: Self, key_graph: KeyValueSchema, _vector: KeyValVector, file_path: str ):
         super(GraphFileSink, self).__init__( key_graph, _vector, file_path )
         self.output_stream : aio.StreamWriter | None = None
         self.value_source: AsyncGenerator[KeyValues, None ] | None

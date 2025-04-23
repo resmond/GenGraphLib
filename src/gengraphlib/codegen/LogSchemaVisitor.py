@@ -21,11 +21,10 @@ from .. import (
 
 @dataclass
 class KeyValInfo:
-    json_key: str
-    log_key: str
+    key: str
+    alias: str
     keytype: KeyType
-    pytype_str: str
-    py_type: type
+    pytype: type
 
 class LogSchemaVisitor( KeySchemaVisitor ):
 
@@ -44,22 +43,22 @@ class LogSchemaVisitor( KeySchemaVisitor ):
             self.info_evt_list.append(keyval_info)
 
     def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> bool:
-        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, "str", str ) )
+        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, str ) )
         return True
 
     def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> bool:
-        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, "int", int ) )
+        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, int ) )
         return True
 
     def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> bool:
-        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, "bool", bool ) )
+        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, bool ) )
         return True
 
     def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> bool:
-        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, "float", float ) )
+        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, float ) )
         return True
 
     def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet) -> bool:
-        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, "dt.datetime", dt.datetime ) )
+        self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, dt.datetime ) )
         return True
 

@@ -15,6 +15,8 @@ keygroup_rec = tuple[str, str, str | None, list[str] | None]
 IValueTuple: type = tuple[int, str]
 SValueTuple: type = tuple[str, str]
 
+VectorValTypes: type = type[ None, str, int, bool, float, dt.datetime ]
+
 KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
 #process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 KValueDict: type  = dict[ str, KeyValTypes ]
