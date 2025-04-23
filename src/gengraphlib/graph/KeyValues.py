@@ -8,8 +8,7 @@ from sortedcontainers import SortedDict
 from .. import (
     KeyType,
     KeyValTypes,
-    LineRefList,
-    value_event_fn
+    LineRefList
 )
 
 from .. import (
@@ -28,8 +27,6 @@ class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface 
         self.id: str = _key_def.key
         self.keytype: KeyType
         self.unique: bool = True
-
-        self.value_event_fn: value_event_fn = self.value_event
 
     def init_index( self ) -> bool:
         try:

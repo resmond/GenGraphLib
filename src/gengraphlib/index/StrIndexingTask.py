@@ -2,15 +2,22 @@ from typing import Self
 import threading as th
 import multiprocessing as mp
 
-from ..common import LineRefList
-
 from sortedcontainers import SortedDict
+
+from ..common import LineRefList, KeyType, KeyIndexType
+from ..graph.KeyValSchemaInfo import KeyInfo
+from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
 
 class StrIndexingTask( IndexTaskBase[str] ):
-    def __init__( self: Self, key: str, alias: str, root_dir: str  ) -> None:
-        super( StrIndexingTask, self ).__init__(key, alias, root_dir)
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
+        super( StrIndexingTask, self ).__init__(key_info, bootlog_info )
+
+        self._type: type = str
+        self._keytype: KeyType.KStr
+        self.index_type: KeyIndexType = KeyIndexType.StrSorted
+
         self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
         self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
 

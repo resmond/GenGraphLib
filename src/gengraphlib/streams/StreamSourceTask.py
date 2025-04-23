@@ -9,18 +9,18 @@ from io import BufferedWriter
 from ..common import KeyRecordList, KeyRecordPacket
 from ..proc.TaskLib import TaskBase
 from ..streams.CmdStdoutStream import CmdStdoutStream
-from ..graph.KeyValueSchema import KeyValueSchema
 from ..bootlog.BootLogDir import BootLogDir
 
 class StreamSourceTask( TaskBase ):
 
-    def __init__( self: Self,
-            keyval_schema:   KeyValueSchema,
-            active_keys:     set[str],
-            record_queue:    mp.Queue
-        ) -> None:
+    def __init__(
+        self: Self,
+        bootlogdir: BootLogDir,
+        active_keys: set[str],
+        record_queue: mp.Queue,
+    ) -> None:
         super( StreamSourceTask, self ).__init__( "keyval-source" )
-        self.keyval_schema:   KeyValueSchema   = keyval_schema
+        self.bootlogdir = bootlogdir
         self.active_keys:     set[str]   = active_keys
 
         self.record_queue:    mp.Queue = record_queue
@@ -37,8 +37,7 @@ class StreamSourceTask( TaskBase ):
 
         self.cnt: int  = -1
 
-    def launch_processing( self: Self, bootlogdir: BootLogDir, write_bin: bool, write_log: bool ) -> None:
-        self.bootlogdir = bootlogdir
+    def launch_processing( self: Self, write_bin: bool, write_log: bool ) -> None:
         self.cmd_stream = CmdStdoutStream(f"/bin/journalctl -b {self.bootlogdir.id} -o export" )
         
         if write_bin:

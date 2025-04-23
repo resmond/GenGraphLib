@@ -1,7 +1,10 @@
-from collections.abc import Callable, Iterable
-import datetime as dt
-from enum import IntEnum
 from typing import Self, Protocol
+
+import datetime as dt
+
+from collections.abc import Iterable
+from dataclasses import dataclass
+from enum import IntEnum, StrEnum
 
 LineRefList: type = list[ int ]
 KeyFilter:   type = dict[ str, str | None ]
@@ -13,7 +16,7 @@ IValueTuple: type = tuple[int, str]
 SValueTuple: type = tuple[str, str]
 
 KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
-process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
+#process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 KValueDict: type  = dict[ str, KeyValTypes ]
 
 KeyValueTuple: type = tuple[str, str]
@@ -27,6 +30,35 @@ class KeyType( IntEnum ):
     KBool   = 3
     KFloat  = 4
     KTmst   = 5
+
+class KeyIndexType(StrEnum):
+    Undetermined      = "Undetermined"
+    IntIdent          = "IntIdent"
+    IntSorted         = "IntSorted"
+    StrTokens         = "StrTokens"
+    StrSorted         = "StrSorted"
+    StrParsed         = "StrParsed"
+    StrLogged         = "StrLogged"
+    FloatSorted       = "FloatSorted"
+    BoolDualIntersect = "BoolDualIntersect"
+    TmstSorted        = "TmstSorted"
+
+@dataclass
+class KeyIndexState(IntEnum):
+    Uninitialized = 0
+    Initialized   = 1
+    Running       = 2
+    Finished      = 3
+    Error         = 4
+
+@dataclass
+class keyIndexInfo:
+    keyinfo_id: str
+    index_type: KeyIndexType = KeyIndexType.Undetermined
+    state: KeyIndexState = KeyIndexState.Uninitialized
+    valuecnt: int = 0
+    instancecnt: int = 0
+    unique: bool = False
 
 class SerializationType( IntEnum ):
     CSV             = 1
@@ -46,14 +78,13 @@ class KeyDefInterface( Protocol ):
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
 KeyValueEvent: type = tuple[int, int, memoryview]
-value_event_fn = Callable[ [ KeyValueEvent ], None ]
+#value_event_fn = Callable[ [ KeyValueEvent ], None ]
 
 class KeyValuesInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
     keytype: KeyType
     index_dir: str
-    value_event_fn: value_event_fn
     def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 
 class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):

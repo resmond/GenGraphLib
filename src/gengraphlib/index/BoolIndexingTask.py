@@ -4,11 +4,20 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedSet
 
+from ..graph.KeyValSchemaInfo import KeyInfo
+from ..common import KeyType, KeyIndexType
+from ..bootlog import BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
-    def __init__( self: Self, key: str, alias: str, root_dir: str  ) -> None:
-        super( BoolIndexingTask, self ).__init__(key, alias, root_dir)
+
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
+        super( BoolIndexingTask, self ).__init__(key_info, bootlog_info)
+
+        self._type: type = bool
+        self._keytype: KeyType.KBool
+        self.index_type: KeyIndexType = KeyIndexType.BoolDualIntersect
+
         self.positive_intersection: SortedSet[int] = SortedSet[int]()
         self.negative_intersection: SortedSet[int] = SortedSet[int]()
         self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )

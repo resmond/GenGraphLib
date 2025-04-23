@@ -1,4 +1,3 @@
-from pydoc import replace
 from typing import Self
 
 from collections.abc import AsyncGenerator
@@ -16,17 +15,22 @@ class CmdStdoutStream:
             print("CmdChainSource.pipe(): No command")
             return
 
-        exec_process: asub.Process = await aio.create_subprocess_shell( cmd=self.cmd, stdout=aio.subprocess.PIPE, limit = 50*1024 )
+        exec_process: asub.Process = await aio.create_subprocess_shell( cmd=self.cmd, stdout=aio.subprocess.PIPE, limit = 16*1024 )
 
         if exec_process is None:
             return
 
         print("beginnig stdout.read() - loop")
 
-
         while True:
+            cnt: int = 0
             try:
                 buffer = await exec_process.stdout.read()
+                cnt += 1
+                if cnt % 100 == 0:
+                   print( ".", end="" )
+                elif cnt % 1000 == 0:
+                   print( "*" )
                 yield buffer
             except Exception as exc:
                 print(exc)

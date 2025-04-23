@@ -6,14 +6,22 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList
+from ..common import LineRefList, KeyType, KeyIndexType
+from ..graph.KeyValSchemaInfo import KeyInfo
+from ..bootlog.BootLogInfo import BootLogInfo
+
 from .IndexTaskBase import IndexTaskBase
 
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
-    def __init__( self: Self, key: str, alias: str, root_dir: str  ) -> None:
-        super( TmstIndexingTask, self ).__init__(key, alias, root_dir)
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
+        super( TmstIndexingTask, self ).__init__(key_info, bootlog_info )
+
+        self._type: type = dt.datetime
+        self._keytype: KeyType.KTmst
+        self.index_type: KeyIndexType = KeyIndexType.TmstSorted
+
         self.sorted_index: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
         self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
 

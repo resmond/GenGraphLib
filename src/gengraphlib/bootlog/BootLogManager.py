@@ -10,7 +10,7 @@ from .BootLogDir import BootLogDir
     LogDirManagerBase __init__()
         root_dir - root of all log data
             root_dir/boots/{fulldate}/ files - being primary log data for a single boot history
-            root_dir/keys - being primary key analysis data for ALL boots
+            root_dir/keys - being primary key stats data for ALL boots
     
         self.root_dir = rot_dir
         self._cmd - last command executed
@@ -109,7 +109,9 @@ class BootLogManager:
             self._query_bootlist()
 
         if self._load_txt():
-            return self._bootdir_index[ boot_index ]
+            boot_dir = self._bootdir_index[ boot_index ]
+            boot_dir.make_dir()
+            return boot_dir
         else:
             return None
 

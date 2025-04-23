@@ -10,10 +10,10 @@ from gengraphlib import (
     KeyDict,
     KeyValueSchema,
     BootLogManager,
-    ValuePumpTask,
+    ValueMuxTask,
     StreamSourceTask,
     BootLogDir,
-    IndexManagerTask
+    IndexManager
 )
 
 class ParseProcessInfo:
@@ -48,11 +48,11 @@ class BootLogSchema( KeyValueSchema ):
         self.cnt: int = 0
 
         self.journal_streamsource: StreamSourceTask | None = None
-        self.indexmanager_task: IndexManagerTask | None = None
-        self.valuepump_task: ValuePumpTask | None = None
+        self.indexmanager_task: IndexManager | None = None
+        self.valuepump_task: ValueMuxTask | None = None
         self.bootlog_dir: BootLogDir | None = None
         self.active_keys: set[str] | None = None
-        self.record_queues: mp.Queue | None = None
+        self.record_queue: mp.Queue | None = None
 
         self.add_keydefs(
             [
@@ -205,18 +205,18 @@ class BootLogSchema( KeyValueSchema ):
 
         self.active_keys = self.get_activekeys( "evt" )
         self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = self.boot_index )
-        self.valuepump_task = ValuePumpTask( self )
-        self.indexmanager_task = IndexManagerTask(self, self.log_root )
 
+        self.indexmanager_task = IndexManager( self.get_schema_info(), self.bootlog_dir.get_info() )
+        self.valuepump_task = ValueMuxTask( self.indexmanager_task.queues_byalias() )
 
         self.indexmanager_task.init_indexes( self.active_keys )
-        self.record_queues = self.valuepump_task.init_queues( self.indexmanager_task )
-        self.journal_streamsource = StreamSourceTask( self, self.active_keys, self.record_queues )
+        self.record_queue = self.valuepump_task.get_queue()
+        self.journal_streamsource = StreamSourceTask( bootlogdir = self.bootlog_dir, active_keys=self.active_keys, record_queue=self.record_queue )
 
         self.indexmanager_task.start_indexes()
         self.valuepump_task.start()
         
-        self.journal_streamsource.launch_processing( bootlogdir = self.bootlog_dir, write_bin=self.write_bin, write_log = self.write_log )
+        self.journal_streamsource.launch_processing( write_bin=self.write_bin, write_log = self.write_log )
 
 
     

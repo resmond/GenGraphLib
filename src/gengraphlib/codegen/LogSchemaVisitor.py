@@ -29,7 +29,7 @@ class KeyValInfo:
 
 class LogSchemaVisitor( KeySchemaVisitor ):
 
-    def __init__( self: Self  ) -> None:
+    def __init__( self: Self ) -> None:
         super( LogSchemaVisitor, self ).__init__()
         self.info_list: list[KeyValInfo] = []
         self.info_evt_list: list[KeyValInfo] = []

@@ -12,6 +12,7 @@ from .GraphLib import RecordBase, GraphRecordRoot
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from .KeyGroups import KeyGroups
 from .KeySchemaVisitor import KeySchemaVisitor
+from .KeyValSchemaInfo import KeyInfo, KeyValSchemaInfo
 
 class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
 
@@ -85,6 +86,12 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
             if isinstance(key_def, KeyDefBase):
                 return key_def
         return None
+
+    def get_schema_info( self: Self ) -> KeyValSchemaInfo:
+
+        keys: list[KeyInfo] = [ key.get_keyinfo() for key in self.values() ]
+        groupids: list[str] = [ group.id for group in self.key_groups.values() ]
+        return KeyValSchemaInfo( self._bootlog_info, keys, groupids )
 
     def read_json(self: Self, filepath: str):
         try:

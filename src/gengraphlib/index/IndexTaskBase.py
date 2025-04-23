@@ -1,25 +1,37 @@
+from abc import abstractmethod
 from typing import Self
 
 import os.path
 import multiprocessing as mp
 
-from ..common import KeyValTypes
+from ..common import KeyValTypes, KeyType, KeyIndexType, keyIndexInfo, KeyIndexState
+from ..graph.KeyValSchemaInfo import KeyInfo
 from ..proc.TaskLib import TaskBase, IndexTaskInterface
+from ..bootlog.BootLogContext import BootLogInfo, BootLogContext
 
 class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
 
-    def __init__(self: Self, key: str, alias: str, root_dir: str ) -> None:
-        super(IndexTaskBase,self).__init__( f"{key}-index" )
+    def __init__(self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo ) -> None:
+        super(IndexTaskBase,self).__init__( f"{key_info.key}-index" )
         #self.key_def:   KeyDefBase   = key_def
         #self.keyvalues: KeyValues[T] = keyvalues
 
+        self._bootlog_info: BootLogInfo = bootlog_info
+        self._bootlog_context: BootLogContext = BootLogContext( bootlog_info )
+        self._keytype: KeyType
         self._type: type = type(T)
-        self._key:   str = key
-        self._alias: str = alias
-        self._queue: mp.Queue = mp.Queue()
-        self._root_dir: str = root_dir
+        self._key_info: KeyInfo = key_info
+        self._key:   str = key_info.key
+        self._alias: str = key_info.alias
+        self._index_type: KeyIndexType = KeyIndexType.Undetermined
+        self._index_state: KeyIndexState = KeyIndexState.Uninitialized
+        self._keyinfo_id: str = f"{self._bootlog_info.schema_bootid}@{self._key}"
+        self._unique_values: int = 0
+        self._value_instances: int = 0
+        self._all_unique_values: bool = False
 
-        self._index_dir: str = os.path.join( root_dir, "keys", f"{self._key}" )
+        self._queue: mp.Queue = mp.Queue()
+        self._index_dir: str = self._bootlog_info.keys_path
         self._index_filepath: str = os.path.join( self._index_dir, f"{self._key}.bin" )
 
     @property
@@ -42,6 +54,10 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
     def queue( self: Self ) -> mp.Queue:
         return self._queue
 
+    def get_index_info( self: Self ) -> keyIndexInfo:
+        return keyIndexInfo( keyinfo_id=self._keyinfo_id, index_type=self._index_type, valuecnt =self._unique_values, instancecnt =self._value_instances, unique =self._all_unique_values )
+
+    @abstractmethod
     def main_loop(self: Self, queue: mp.Queue, val_type: type) -> None:
         pass
 

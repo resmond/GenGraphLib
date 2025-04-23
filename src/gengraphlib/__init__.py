@@ -1,10 +1,11 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
 from .common import (
-    KeyValTypes, process_fields_fn, keygroup_rec, KeyGroupRec
-    , IValueTuple, SValueTuple, KValueDict, KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
+      KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict
+    , KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
     , KeyDefInterface, KeyDefDict, LineRefList
-    , KeyFilter, KeyType, SerializationType, DefaultMapOfLists, value_event_fn, KeyValuesInterface
+    , KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
+    , SerializationType, DefaultMapOfLists, KeyValuesInterface
 )
 
 from .regex import (
@@ -15,6 +16,7 @@ from .regex import (
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase, KeyValues
+    , KeyInfo, KeyValSchemaInfo
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
@@ -24,7 +26,7 @@ from .graph import (
 
 from .index import (
     IndexTaskBase,
-    IndexManagerTask,
+    IndexManager,
     IntIndexingTask,
     StrIndexingTask,
     TmstIndexingTask,
@@ -39,7 +41,7 @@ from .proc import (
 )
 
 from .streams import (
-    ValuePumpTask, CmdStdoutStream, StreamSourceTask
+    ValueMuxTask, CmdStdoutStream, StreamSourceTask
 )
 
 from .textlog import (
@@ -54,26 +56,26 @@ from .codegen import (
     , ImportsInfo , ImportPattern, ClsLineInfo, ClsLinePattern
 )
 
-from .bootlog import BootLogDir, BootLogManager
+from .bootlog import BootLogDir, BootLogManager, BootLogInfo, BootLogContext
 
 __all__ = [
-      "KeyValTypes", "process_fields_fn", "keygroup_rec", "KeyFilter", "KeyType", "SerializationType",
-    "DefaultMapOfLists"
+      "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
+    , "SerializationType", "DefaultMapOfLists"
     , "IValueTuple", "SValueTuple", "KValueDict", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
     , "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
-    , "NodeDict", "IndexedNodeList", "GNodeInterface", "value_event_fn", "KeyValuesInterface"
+    , "NodeDict", "IndexedNodeList", "GNodeInterface", "KeyValuesInterface"
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
-    , "KeyGroupRec", "KeyGroup", "KeyGroups"
+    , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo"
 
     , "LineRefList", "KeyValues"
     , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
     , "KeyValueSchema"
     , "VectorValue", "GraphVector", "GraphValueResult", "KeySchemaVisitor"
 
-    , "IndexTaskBase", "IndexManagerTask"
+    , "IndexTaskBase", "IndexManager"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
 
     , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSourceTask", "StreamSinkProc"
@@ -82,7 +84,7 @@ __all__ = [
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
 
-    , "ValuePumpTask", "StreamSourceTask", "CmdStdoutStream"
+    , "ValueMuxTask", "StreamSourceTask", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
@@ -92,5 +94,5 @@ __all__ = [
     , "CodePattern", "GenCodeRenderer", "InfoPattern", "ImportsInfo"
     , "ImportPattern" , "ClsLineInfo", "ClsLinePattern",  "ClassGenBase"
 
-    , "BootLogDir", "BootLogManager"
+    , "BootLogDir", "BootLogManager", "BootLogInfo", "BootLogContext"
 ]
