@@ -3,9 +3,8 @@ import multiprocessing as mp
 
 import datetime as dt
 
-from ..common import KeyType, KeyValTypes, KeyDefInterface
+from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
 from .KeyValues import KeyValues
-from .KeyValSchemaInfo import KeyInfo
 
 #from ..proc.AppProcessBase import AppProcessBase
 
@@ -47,12 +46,10 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         return self._queue
 
     def get_keyinfo( self: Self, schema_id: str ) -> KeyInfo:
-        return KeyInfo( schema_id=f"{schema_id}@{self.key}", key=self.key, alias=self.alias, keytype=self.key_type, groupids=self.groupids )
+        return KeyInfo(f"{schema_id}@{self.key}",self.key,self.alias,self.key_type,self.groupids )
 
     def visit( self: Self, visitor ) -> None:
         visitor.visit_key_def( self )
-
-
 
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:

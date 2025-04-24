@@ -6,8 +6,7 @@ from typing import Self
 
 import pickle as pk
 
-from ..common import KeyValTypes, VectorValTypes
-from .KeyValSchemaInfo import KeyInfo
+from ..common import KeyValTypes, KeyInfo, VectorValTypes
 
 class KeyValVector:
 

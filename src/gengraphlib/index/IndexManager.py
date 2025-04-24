@@ -2,9 +2,7 @@ from typing import Self
 
 import multiprocessing as mp
 
-from ..common import KeyValTypes, KeyType
-
-from ..graph.KeyValSchemaInfo import KeyValSchemaInfo
+from ..common import KeyValTypes, KeyType, KeyValSchemaInfo
 
 from ..bootlog import BootLogInfo
 from ..proc.TaskLib import IndexTaskInterface, IndexManagerInterface

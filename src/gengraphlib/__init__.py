@@ -2,10 +2,10 @@
 
 from .common import (
       KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict, VectorValTypes
-    , KeyValueEvent, KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
+    , KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
     , KeyDefInterface, KeyDefDict, LineRefList
     , KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
-    , SerializationType, DefaultMapOfLists, KeyValuesInterface
+    , SerializationType, DefaultMapOfLists, KeyValuesInterface, KeyInfo, KeyValSchemaInfo
 )
 
 from .regex import (
@@ -16,7 +16,6 @@ from .regex import (
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase, KeyValues
-    , KeyInfo, KeyValSchemaInfo
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
     , KeyGroup, KeyGroups
     , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
@@ -61,7 +60,7 @@ from .bootlog import BootLogDir, BootLogManager, BootLogInfo, BootLogContext
 __all__ = [
       "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
     , "SerializationType", "DefaultMapOfLists"
-    , "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes", "KeyValueEvent", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
+    , "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
     , "KeyDefInterface", "KeyDefDict", "LineRefList"
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"

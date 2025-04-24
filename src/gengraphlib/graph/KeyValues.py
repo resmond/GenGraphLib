@@ -5,17 +5,14 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from .. import (
+from ..common import (
     KeyType,
     KeyValTypes,
-    LineRefList
+    LineRefList,
+    KeyDefInterface,
+    KeyValuesInterface
 )
 
-from .. import (
-    KeyDefInterface,
-    KeyValuesInterface,
-    KeyValueEvent
-)
 
 #from .. import GNodeInterface
 
@@ -36,9 +33,6 @@ class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface 
         except Exception as exc:
             print(f"KeyValues[{self.id}] root_dir: {self.index_dir} Exception: {exc}")
             return False
-
-    def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None:
-        pass
 
     def __repr__(self: Self) -> str:
         return f'{{ json_key: "{self.json_key}", log_key: "{self.log_key}", unique:{self.unique} }}'

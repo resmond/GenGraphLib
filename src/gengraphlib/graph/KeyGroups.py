@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
 
-from . import KeyValVector
+from .KeyValVector import KeyValVector
 from ..common import (
     KeyFilter,
     KeyGroupRec,

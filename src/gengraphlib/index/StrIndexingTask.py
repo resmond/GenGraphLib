@@ -4,10 +4,8 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType
-from ..graph.KeyValSchemaInfo import KeyInfo
+from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo
 from ..bootlog.BootLogInfo import BootLogInfo
-
 from .IndexTaskBase import IndexTaskBase
 
 class StrIndexingTask( IndexTaskBase[str] ):
@@ -19,7 +17,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
         self.index_type: KeyIndexType = KeyIndexType.StrSorted
 
         self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
-        self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
+        self.thread: th.Thread = th.Thread( target=self.main_loop, name=self.key, args = (self._queue, self._type,) )
 
     def start(self: Self) -> None:
         self.thread.start()

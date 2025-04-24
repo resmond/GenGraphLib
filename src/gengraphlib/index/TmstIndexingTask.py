@@ -6,8 +6,7 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType
-from ..graph.KeyValSchemaInfo import KeyInfo
+from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo
 from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
@@ -23,7 +22,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         self.index_type: KeyIndexType = KeyIndexType.TmstSorted
 
         self.sorted_index: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
-        self.thread: th.Thread = th.Thread(target=self.main_loop, name=self._key, args = (self._queue, self._type, ) )
+        self.thread: th.Thread = th.Thread( target=self.main_loop, name=self.key, args = (self._queue, self._type,) )
 
     def start(self: Self) -> None:
         self.thread.start()
@@ -46,10 +45,10 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
             self.sorted_index[datetime_value].append(rec_num)
 
         except ValueError as valexc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] ValueError: {valexc} - "{value}"' )
+            print( f'[TmstIndexingTask.recv_value({self.key}:{self.alias})] ValueError: {valexc} - "{value}"' )
 
         except Exception as exc:
-            print( f'[TmstIndexingTask.recv_value({self._key}:{self._alias})] Exception: {exc} - "{value}"' )
+            print( f'[TmstIndexingTask.recv_value({self.key}:{self.alias})] Exception: {exc} - "{value}"' )
 
     @staticmethod
     def convert_to_datetime( microsec_offset: int ) -> dt.datetime:

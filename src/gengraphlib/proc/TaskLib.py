@@ -27,30 +27,15 @@ class Startable(Protocol):
 
 class IndexTaskInterface(Startable):
 
-    @property
-    @abstractmethod
-    def key( self: Self ) -> str: ...
-
-    @property
-    @abstractmethod
-    def alias( self: Self ) -> str: ...
-
-    @property
-    @abstractmethod
-    def index_dir( self: Self ) -> str: ...
-
-    @property
-    @abstractmethod
-    def index_filepath( self: Self ) -> str: ...
+    def __init( self: Self ) -> None:
+        self.key: str            = ""
+        self.alias: str          = ""
+        self.index_dir: str      = ""
+        self.index_filepath: str = ""
 
     @property
     @abstractmethod
     def queue( self: Self ) -> mp.Queue: ...
-
-    #def get_tqueue[T: KeyValTypes]( self: Self ) -> mp.Queue[T] | None: ...
-
-    #def start( self: Self ) -> None: ...
-    #def stop( self: Self ) -> None: ...
 
 class IndexManagerInterface(Protocol):
 
@@ -69,11 +54,11 @@ class TaskBase:
 
     def __init__( self: Self, task_id: str, queue_size: int | None = None ) -> None:
         super(TaskBase,self).__init__()
+        self.task_id:    str = task_id
         self.queue_size: int = queue_size or self.default_queue_size
         self.task_state: TaskState = TaskState.Init
         self.task_type:  TaskType = TaskType.Undefined
         self.msg_queue:  mp.Queue | None = None
-        self.task_id:    str = task_id
         #AppProcessBase.instance.register_proc(self)
 
     def id( self: Self ) -> str:

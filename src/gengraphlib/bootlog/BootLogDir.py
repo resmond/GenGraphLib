@@ -22,7 +22,7 @@ class BootLogDir:
         self.id: str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
         self.last_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
-        self.dir_name: str = self.shema_bootid()
+        self.dir_name: str = self.boot_id()
         self.dir_path: str = os.path.join(self.root_dir, "boots", self.dir_name)
         self.keys_path: str = os.path.join( self.root_dir, "keys" )
 

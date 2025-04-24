@@ -1,9 +1,9 @@
-from typing import Self, Protocol
+from collections import namedtuple
+from typing import Self, Protocol, NamedTuple
 
 import datetime as dt
 
 from collections.abc import Iterable
-from dataclasses import dataclass
 from enum import IntEnum, StrEnum
 
 LineRefList: type = list[ int ]
@@ -18,7 +18,6 @@ SValueTuple: type = tuple[str, str]
 VectorValTypes: type = type[ None, str, int, bool, float, dt.datetime ]
 
 KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
-#process_fields_fn = Callable[ [ dict[ str, KeyValTypes ], int, str], bool ]
 KValueDict: type  = dict[ str, KeyValTypes ]
 
 KeyValueTuple: type = tuple[str, str]
@@ -45,7 +44,6 @@ class KeyIndexType(StrEnum):
     BoolDualIntersect = "BoolDualIntersect"
     TmstSorted        = "TmstSorted"
 
-@dataclass
 class KeyIndexState(IntEnum):
     Uninitialized = 0
     Initialized   = 1
@@ -53,14 +51,63 @@ class KeyIndexState(IntEnum):
     Finished      = 3
     Error         = 4
 
-@dataclass
 class keyIndexInfo:
-    keyinfo_id: str
-    index_type: KeyIndexType = KeyIndexType.Undetermined
-    state: KeyIndexState = KeyIndexState.Uninitialized
-    valuecnt: int = 0
-    instancecnt: int = 0
-    unique: bool = False
+
+    def __init__(
+            self: Self,
+            keyinfo_id: str,
+            key: str,
+            alias: str,
+            index_type: KeyIndexType,
+            valuecnt: int = 0,
+            instancecnt: int = 0,
+            unique: bool = False
+        ) -> None:
+        super().__init__()
+
+        self.keyinfo_id: str          = keyinfo_id
+        self.key: str                 = key
+        self.alias: str               = alias
+        self.index_type: KeyIndexType = index_type
+        self.value_cnt: int           = valuecnt
+        self.instance_cnt: int        = instancecnt
+        self.is_unique: bool          = unique
+
+#"KeyIndexPacket",
+# [ "keyinfo_id",  -  str
+#   "index_type",  -  KeyIndexType
+#   "index_state", -  KeyIndexState
+#   "value_cnt",   -  int
+#   "instance_cnt",-  int
+#   "is_unique"    -  bool
+# ]
+KeyIndexPacket: type = namedtuple(
+        "KeyIndexPacket",
+        [
+                    "keyinfo_id",
+                    "index_type",
+                    "index_state",
+                    "value_cnt",
+                    "instance_cnt",
+                    "is_unique"
+                   ])
+
+class KeyIndexMsg(NamedTuple):
+    keyinfo_id:    str
+    index_type:    KeyIndexType
+    index_state:   KeyIndexState
+    value_cnt:     int
+    instance_cnt:  int
+    is_unique:     bool
+
+    def to_packet( self: Self ) -> KeyIndexPacket:
+        packet = KeyIndexPacket( *self )
+        return packet
+
+    @classmethod
+    def from_packet( cls, keyindex_packet: KeyIndexPacket ):
+        message = cls( *keyindex_packet )
+        return message
 
 class SerializationType( IntEnum ):
     CSV             = 1
@@ -79,15 +126,13 @@ class KeyDefInterface( Protocol ):
 
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
-KeyValueEvent: type = tuple[int, int, memoryview]
-#value_event_fn = Callable[ [ KeyValueEvent ], None ]
+#KeyValueEvent: type = tuple[int, int, memoryview]
 
 class KeyValuesInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
     keytype: KeyType
     index_dir: str
-    def value_event( self: Self, keyvalue_event: KeyValueEvent ) -> None: ...
 
 class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
 
@@ -95,3 +140,25 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
         if key not in self:
             self[key] = list[T]()
         self[key].append( value )
+
+class KeyInfo:
+
+    def __init__( self: Self, schema_id: str, key: str, alias: str, keytype: KeyType, groupids: list[str] ):
+        super().__init__()
+        self.schema_id: str = schema_id
+        self.key: str = key
+        self.alias: str = alias
+        self.keytype: KeyType = keytype
+        self.groupids: list[str] = groupids
+
+    @property
+    def keyinfo_id( self: Self ) -> str:
+        return f"{self.schema_id}@{self.key}"
+
+class KeyValSchemaInfo:
+
+    def __init__( self: Self, keys: list[KeyInfo], groups: list[str], active_groups: list[str] | None = None, active_keys: list[str] | None = None ):
+        self.keys:          list[KeyInfo] = keys
+        self.groups:        list[str] = groups
+        self.active_groups: list[str] | None = active_groups
+        self.active_keys:   list[str] | None = active_keys

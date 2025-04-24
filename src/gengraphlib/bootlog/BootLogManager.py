@@ -50,7 +50,7 @@ class BootLogManager:
             return process.returncode == 0
 
         except Exception as ext:
-            print(f'[LogDirManagerBase._query_bootlist] Exception: {ext}')
+            print(f'[BootLogManager._query_bootlist] Exception: {ext}')
             return False
 
     """
@@ -67,7 +67,7 @@ class BootLogManager:
                         boot_log_dir = BootLogDir( self.root_dir, log_line )
                         self._bootdir_list.append( boot_log_dir )
                         self._bootdir_dict[ boot_log_dir.first_dt ] = boot_log_dir
-                        self._bootdir_index[boot_log_dir.index] = boot_log_dir
+                        self._bootdir_index[ boot_log_dir.index ] = boot_log_dir
                     else:
                         first_line: bool = False
 
@@ -75,7 +75,7 @@ class BootLogManager:
             return True
 
         except Exception as exc:
-            print(f"[LogDirManagerBase._load_txt] Exception: {exc}")
+            print(f"[BootLogManager._load_txt] Exception: {exc}")
 
         return False
 
@@ -92,7 +92,7 @@ class BootLogManager:
             return True
 
         except Exception as exc:
-            print(f"[LogDirManagerBase._write_jfile] Exception: {exc}")
+            print(f"[BootLogManager._write_jfile] Exception: {exc}")
             return False
 
     """

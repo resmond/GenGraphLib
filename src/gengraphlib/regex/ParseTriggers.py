@@ -52,7 +52,7 @@ class ParseTriggers( dict[ str, MatchTrigger ] ):
     def execute( self: Self, input_str: str ) -> LineParseResult:
         result: LineParseResult = LineParseResult( state=ResultState.NoneFound, message=input_str )
         for key, trigger in self.items():
-            match trigger.type:
+            match trigger.pytype:
 
                 case TriggerType.Scan:
                     phrase: str = self[ key ].match_phrase
