@@ -9,24 +9,20 @@ from io import BufferedWriter
 from ..common import KeyRecordList, KeyRecordPacket
 from ..proc.TaskLib import TaskBase
 from ..streams.CmdStdoutStream import CmdStdoutStream
-from ..bootlog.BootLogDir import BootLogDir
+from ..bootlog.BootLogInfo import BootLogInfo
 
 class StreamSourceTask( TaskBase ):
 
-    def __init__(
-        self: Self,
-        bootlogdir: BootLogDir,
-        active_keys: set[str],
-        record_queue: mp.Queue,
-    ) -> None:
+    def __init__( self: Self, bootlog_info: BootLogInfo, write_bin: bool, write_log: bool ) -> None:
         super( StreamSourceTask, self ).__init__( "keyval-source" )
-        self.bootlogdir = bootlogdir
-        self.active_keys:     set[str]   = active_keys
+        self.bootlog_info = bootlog_info
+        self.write_bin: bool = write_bin
+        self.write_log: bool = write_log
 
-        self.record_queue:    mp.Queue = record_queue
+        self.active_keys:     set[str] | None = None
+        self.record_queue:    mp.Queue | None = None
 
         self.cmd_stream:      CmdStdoutStream | None = None
-        self.bootlogdir:      BootLogDir      | None = None
         self.bin_writer:      BufferedWriter  | None = None
         self.log_writer:      BufferedWriter  | None = None
 
@@ -37,18 +33,8 @@ class StreamSourceTask( TaskBase ):
 
         self.cnt: int  = -1
 
-    def launch_processing( self: Self, write_bin: bool, write_log: bool ) -> None:
-        self.cmd_stream = CmdStdoutStream(f"/bin/journalctl -b {self.bootlogdir.id} -o export" )
-        
-        if write_bin:
-            self.bin_filename = os.path.join( self.bootlogdir.dir_path, "bootlog.bin" )
-            self.bin_writer: BufferedWriter = open( self.bin_filename, "wb" )
-
-        if write_log:
-            self.log_filename = os.path.join( self.bootlogdir.dir_path, "bootlog.log" )
-            self.log_writer: BufferedWriter = open( self.log_filename, "wb" )
-
-        self.main_loop()
+    def start_stream( self: Self, active_keys: set[str ], record_queue: mp.Queue ) -> None:
+        aio.run( self.spin_stream( active_keys, record_queue ) )
 
     def stop(self: Self) -> None:
         if self.log_writer is not None:
@@ -57,10 +43,20 @@ class StreamSourceTask( TaskBase ):
         if self.bin_writer is not None:
             self.bin_writer.close()
 
-    def main_loop(self: Self) -> None:
-        aio.run(self.spin_stream())
+    async def main_loop( self: Self, active_keys: set[str], record_queue: mp.Queue ) -> None:
+        self.active_keys  = active_keys
+        self.record_queue = record_queue
 
-    async def spin_stream( self: Self ) -> None:
+        if self.write_bin:
+            self.bin_filename = os.path.join( self.bootlog_info.dir_path, "bootlog.bin" )
+            self.bin_writer: BufferedWriter = open( self.bin_filename, "wb" )
+
+        if self.write_log:
+            self.log_filename = os.path.join( self.bootlog_info.dir_path, "bootlog.log" )
+            self.log_writer: BufferedWriter = open( self.log_filename, "wb" )
+
+        self.cmd_stream = CmdStdoutStream(f"/bin/journalctl -b {self.bootlog_info.boot_index} -o export" )
+
         async for line in self.cmd_stream.line_stream():
             self.recv_line(line)
 

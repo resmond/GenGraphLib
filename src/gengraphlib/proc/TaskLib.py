@@ -40,12 +40,6 @@ class IndexTaskInterface(Startable):
 class IndexManagerInterface(Protocol):
 
     @staticmethod
-    def start_indexes() -> None: ...
-
-    @staticmethod
-    def stop_indexes() -> None: ...
-
-    @staticmethod
     def register_index( index: IndexTaskInterface ) -> None: ...
 
 

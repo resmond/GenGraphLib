@@ -19,16 +19,15 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         super( KeyValueSchema, self ).__init__()
         self.id = id
         self._root_dir = root_dir
-
-        self._log_keys: KeyDefDict = KeyDefDict()
+        self._alias_map: KeyDefDict = KeyDefDict()
+        self.key_groups: KeyGroups = KeyGroups("key_groups",self)
+        self.keyval_schema_info: KeyValSchemaInfo | None = None
         self.missing_keys: list[str] = []
         self.none_values:  list[str] = []
-        self.key_groups: KeyGroups = KeyGroups("key_groups",self)
-
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.key ]             = _key_def
-        self._log_keys[_key_def.alias ] = _key_def
+        self._alias_map[_key_def.alias ] = _key_def
 
     def add_keydefs( self: Self, _keydefs: list[KeyDefBase ] ) -> None:
         for _key_def in _keydefs:
@@ -64,10 +63,19 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
                     for group_id in keydef.groupids:
                         self.add_key_to_group(group_id, key)
 
-        self.final_init()
+        self.keyval_schema_info = self.get_schema_info()
 
-    def final_init( self ):
-        pass
+    def get_schema_info( self: Self, ) -> KeyValSchemaInfo:
+        keys: list[KeyInfo] = [ key.get_keyinfo(self.id) for key in self.values() ]
+        groupids: list[str] = [ group.id for group in self.key_groups.values() ]
+        return KeyValSchemaInfo( keys, groupids )
+
+    def get_activekeys( self, group_id: str ) -> set[str]:
+        return { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
+
+    # noinspection PyTypeChecker
+    def by_alias( self: Self, alias: str ) -> KeyDefBase:
+        return self._alias_map[alias ]
 
     @property
     def graph_id(self: Self) -> str:
@@ -86,16 +94,6 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
                 return key_def
         return None
 
-    def get_schema_info( self: Self, ) -> KeyValSchemaInfo:
-
-        # test = list[KeyInfo]()
-        # for key in self.values():
-        #     key_info = key.get_keyinfo(self.id)
-        #     test.append(key_info)
-
-        keys: list[KeyInfo] = [ key.get_keyinfo(self.id) for key in self.values() ]
-        groupids: list[str] = [ group.id for group in self.key_groups.values() ]
-        return KeyValSchemaInfo( keys, groupids )
 
     def read_json(self: Self, filepath: str):
         try:

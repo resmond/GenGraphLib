@@ -1,9 +1,9 @@
 from .StreamSourceTask import StreamSourceTask
-from .ValueMuxTask import ValueMuxTask
+from .ValueMuxPumpTask import ValueMuxPumpTask
 from .CmdStdoutStream import CmdStdoutStream
 
 __all__ = [
-    "ValueMuxTask"
+    "ValueMuxPumpTask"
     , "StreamSourceTask"
     , "CmdStdoutStream"
 ]

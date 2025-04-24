@@ -4,7 +4,7 @@ from typing import Self
 import datetime as dt
 import os as os
 
-from .BootLogDir import BootLogDir
+from .BootLog import BootLog
 
 """--------------------------------------------------------
     LogDirManagerBase __init__()
@@ -28,13 +28,11 @@ class BootLogManager:
     def __init__(self: Self, root_dir: str ) -> None:
         super( BootLogManager, self ).__init__()
         self.root_dir: str = root_dir
-        self.full_reparse: bool = True
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.txt" )
-        self._bootrec_jfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.jline" )
-        self._bootdir_list: list[BootLogDir] = list[BootLogDir]()
-        self._bootdir_dict: dict[dt.datetime, BootLogDir] = {}
-        self._bootdir_index: dict[int, BootLogDir] = {}
+        self._bootlog_list: list[BootLog] = list[BootLog]()
+        self._logdate_map: dict[dt.datetime, BootLog] = {}
+        self._bootlog_index: dict[int, BootLog] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
 
     """
@@ -54,24 +52,24 @@ class BootLogManager:
             return False
 
     """
-        _load_txt
+        _load_bootlist
             loads the text file and parses it into useful data structures
     """
-    def _load_txt( self: Self ) -> bool:
+    def _load_bootlist( self: Self ) -> bool:
         try:
             with open( self._bootlist_txtfilepath ) as file:
                 first_line: bool = True
 
                 for log_line in file:
                     if not first_line:
-                        boot_log_dir = BootLogDir( self.root_dir, log_line )
-                        self._bootdir_list.append( boot_log_dir )
-                        self._bootdir_dict[ boot_log_dir.first_dt ] = boot_log_dir
-                        self._bootdir_index[ boot_log_dir.index ] = boot_log_dir
+                        boot_log_dir = BootLog( self.root_dir, log_line )
+                        self._bootlog_list.append( boot_log_dir )
+                        self._logdate_map[ boot_log_dir.first_dt ] = boot_log_dir
+                        self._bootlog_index[ boot_log_dir.index ] = boot_log_dir
                     else:
                         first_line: bool = False
 
-            self._bootdir_list.reverse()
+            self._bootlog_list.reverse()
             return True
 
         except Exception as exc:
@@ -79,37 +77,13 @@ class BootLogManager:
 
         return False
 
-    """
-        _write_jfile
-            serializes boot records as json lines
-    """
-    def _write_jfile( self: Self ) -> bool:
-        try:
-            with open( self._bootrec_jfilepath, "w", newline= "\n" ) as file:
-                for boot_rec in self._bootdir_list:
-                    file.write(boot_rec.__repr__())
-                    file.write("\n")
-            return True
+    def get_bootlog( self: Self, boot_index: int, skip_query: bool = False ) -> BootLog | None:
 
-        except Exception as exc:
-            print(f"[BootLogManager._write_jfile] Exception: {exc}")
-            return False
-
-    """
-        exec - starts LogDirManager execution
-            exec_cmd - either Full or Refresh
-                Full - processes all boot records from fresh exports from journalctl
-                Refresh - processes of the last two boot records from fresh exports
-            specific_ndx - index of specific boot record to process else it processes them all
-    """
-    def get_bootlogdir( self: Self, boot_index: int, full_reparse: bool = True ) -> BootLogDir | None:
-        self.full_reparse = full_reparse
-
-        if self.full_reparse or not self._load_txt():
+        if not skip_query:
             self._query_bootlist()
 
-        if self._load_txt():
-            boot_dir = self._bootdir_index[ boot_index ]
+        if self._load_bootlist():
+            boot_dir = self._bootlog_index[ boot_index ]
             boot_dir.make_dir()
             return boot_dir
         else:

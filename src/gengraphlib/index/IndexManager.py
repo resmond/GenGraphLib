@@ -16,10 +16,11 @@ from .TmstIndexingTask import TmstIndexingTask
 
 class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
 
-    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo, bootlog_info: BootLogInfo ) -> None:
+    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo ) -> None:
         super( IndexManager, self ).__init__()
+
         self.keyvalue_schema_info: KeyValSchemaInfo = keyval_schema_info
-        self._bootlog_info: BootLogInfo = bootlog_info
+        self._bootlog_info: BootLogInfo | None = None
 
         self.index_queuemap: dict[str, mp.Queue] = dict[str, mp.Queue]()
         self.index_taskmap: dict[str, IndexTaskInterface] = dict[str, IndexTaskInterface]()
@@ -31,7 +32,8 @@ class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
         self.index_queuemap[index.alias] = index.queue
         self.index_taskmap[index.id()] = index
 
-    def init_indexes( self: Self, active_keys: set[str] ) -> None:
+    def start_indexes( self: Self,  bootlog_info: BootLogInfo, active_keys: set[str] ) -> dict[str, mp.Queue ]:
+        self._bootlog_info = bootlog_info
         self.active_keys = active_keys
         for keyinfo in self.keyvalue_schema_info.keys:
             if keyinfo.alias in self.active_keys:
@@ -47,15 +49,23 @@ class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
                     case KeyType.KTmst:
                         self.register_index( TmstIndexingTask( keyinfo, self._bootlog_info ) )
 
-    def start_indexes(self: Self) -> None:
         for index in self.index_taskmap.values():
             index.start()
+
+        self.state = "indexes-started"
+
+        return self.index_queuemap
 
     def stop_indexes(self: Self) -> None:
         for index in self.index_taskmap.values():
             index.stop()
 
-    def queues_byalias( self: Self ) -> dict[str, mp.Queue]:
+    # def start_indexes(self: Self) -> None:
+    #     for index in self.index_taskmap.values():
+    #         index.start()
+
+
+    def getqueues_byalias( self: Self ) -> dict[str, mp.Queue ]:
         _queues_byalias: dict[str, mp.Queue] = dict[str, mp.Queue ]()
 
         for key, queue in self.index_queuemap.items():

@@ -1,9 +1,9 @@
 from .BootLogInfo    import BootLogInfo
 from .BootLogContext import BootLogContext
-from .BootLogDir     import BootLogDir
+from .BootLog     import BootLog
 from .BootLogManager import BootLogManager
 
 __all__ = [
-    "BootLogInfo", "BootLogContext", "BootLogDir" , "BootLogManager"
+    "BootLogInfo", "BootLogContext", "BootLog", "BootLogManager"
 ]
 

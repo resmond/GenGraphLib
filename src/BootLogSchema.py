@@ -2,7 +2,6 @@ from typing import Self
 import multiprocessing as mp
 
 from gengraphlib import (
-    KeyDefBase,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
@@ -10,21 +9,23 @@ from gengraphlib import (
     KeyDict,
     KeyValueSchema,
     BootLogManager,
-    ValueMuxTask,
-    StreamSourceTask,
-    BootLogDir,
+    ValueMuxPumpTask,
+    BootLog,
+    BootLogInfo,
     IndexManager
 )
 
 class ParseProcessInfo:
-    def __init__( self: Self, app_msgqueue: mp.Queue, id: str, log_root: str, boot_index: int, write_bin: bool, write_log: bool ) -> None:
+    def __init__( self: Self, app_msgqueue: mp.Queue, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
         self.app_msgqueue: mp.Queue = app_msgqueue
 
         self.id: str         = id
         self.log_root: str   = log_root
         self.boot_index: int = boot_index
+        self.groupid:    str = groupid
         self.write_bin: bool = write_bin
         self.write_log: bool = write_log
+        self.autostart: bool = autostart
 
 class BootLogSchema( KeyValueSchema ):
 
@@ -35,24 +36,30 @@ class BootLogSchema( KeyValueSchema ):
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
 
-        self.id: str = parse_info.id
-        self.log_root: str = parse_info.log_root
-        self.boot_index: int = parse_info.boot_index
-        self.write_bin: bool = parse_info.write_bin
-        self.write_log: bool = parse_info.write_log
+        self.cnt:           int  = 0
+        self.id:            str  = parse_info.id
+        self.log_root:      str  = parse_info.log_root
+        self.cur_bootindex: int  = parse_info.boot_index
+        self.cur_groupid:   str  = parse_info.groupid
+        self.write_bin:     bool = parse_info.write_bin
+        self.write_log:     bool = parse_info.write_log
 
         self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
 
-        self.log_manager:          BootLogManager        = BootLogManager( parse_info.log_root )
-        self._log_keys:            KeyDict               = KeyDict()
-        self.cnt: int = 0
+        self.log_manager:   BootLogManager  = BootLogManager( parse_info.log_root )
+        self._alias_map:    KeyDict         = KeyDict()
 
-        self.journal_streamsource: StreamSourceTask | None = None
-        self.indexmanager_task: IndexManager | None = None
-        self.valuepump_task: ValueMuxTask | None = None
-        self.bootlog_dir: BootLogDir | None = None
-        self.active_keys: set[str] | None = None
-        self.record_queue: mp.Queue | None = None
+        self.cur_bootlog:       BootLog              | None = None
+        self.bootlog_info:      BootLogInfo          | None = None
+
+        #self.log_source:        StreamSourceTask     | None = None
+
+        self.indexmanager_task: IndexManager         | None = None
+        self.muxpump_task:      ValueMuxPumpTask     | None = None
+        self.record_queue:      mp.Queue             | None = None
+
+        self.active_keys:       set[str]             | None = None
+        self.queues_byalias:    dict[str, mp.Queue ] | None = None
 
         self.add_keydefs(
             [
@@ -60,17 +67,17 @@ class BootLogSchema( KeyValueSchema ):
                 StrKeyDef("facility", "SYSLOG_FACILITY", "evt"),
                 StrKeyDef("comm", "_COMM", "evt"),
                 StrKeyDef("subsystem", "_KERNEL_SUBSYSTEM", "evt"),
-                StrKeyDef("device", "_KERNEL_DEVICE", ""),
-                StrKeyDef("dev", "DEVICE", ""),
+                StrKeyDef("device", "_KERNEL_DEVICE", "evt"),
+                StrKeyDef("dev", "DEVICE", "evt"),
                 #
-                StrKeyDef("rttime", "__REALTIME_TIMESTAMP", ""),
+                StrKeyDef("rttime", "__REALTIME_TIMESTAMP", "evt"),
                 StrKeyDef("logtime", "SYSLOG_TIMESTAMP", "evt"),
                 #
                 StrKeyDef("cmdline", "_CMDLINE", "evt"),
                 StrKeyDef("command", "COMMAND", "evt"),
                 StrKeyDef("exe", "_EXE", "evt"),
-                StrKeyDef("cfgfile", "CONFIG_FILE", ""),
-                StrKeyDef("codefn", "CODE_FUNC", ""),
+                StrKeyDef("cfgfile", "CONFIG_FILE", "evt"),
+                StrKeyDef("codefn", "CODE_FUNC", "evt"),
                 StrKeyDef("message", "MESSAGE", "evt"),
                 #
                 StrKeyDef("pid", "_PID", "evt"),
@@ -189,34 +196,35 @@ class BootLogSchema( KeyValueSchema ):
             ]
         )
 
+        self.init_repository()
+
+    def init_repository( self: Self ) -> None:
         super().init_repository()
 
-    # noinspection PyTypeChecker
-    def by_logkey(self: Self, _log_key_str: str) -> KeyDefBase:
-        return self._log_keys[_log_key_str]
+        self.indexmanager_task = IndexManager( self.keyval_schema_info )
+        self.muxpump_task      = ValueMuxPumpTask()
 
-    def final_init( self ):
-        self.launch_processing()
+    def launch_processing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
 
-    def get_activekeys( self, group_id: str ) -> set[str]:
-        return { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
+        if boot_index is not None:
+            self.cur_bootindex = boot_index
 
-    def launch_processing( self: Self ) -> None:
+        if group_id is not None:
+            self.cur_groupid = group_id
 
-        self.active_keys = self.get_activekeys( "evt" )
-        self.bootlog_dir = self.log_manager.get_bootlogdir( boot_index = self.boot_index )
+        self.active_keys = self.get_activekeys( self.cur_groupid )
 
-        self.indexmanager_task = IndexManager( self.get_schema_info(), self.bootlog_dir.get_info() )
-        self.valuepump_task = ValueMuxTask( self.indexmanager_task.queues_byalias() )
+        self.cur_bootlog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
+        self.bootlog_info = self.cur_bootlog.get_info()
 
-        self.indexmanager_task.init_indexes( self.active_keys )
-        self.record_queue = self.valuepump_task.get_queue()
-        self.journal_streamsource = StreamSourceTask( bootlogdir = self.bootlog_dir, active_keys=self.active_keys, record_queue=self.record_queue )
+        self.queues_byalias = self.indexmanager_task.start_indexes( self.bootlog_info, self.active_keys )
+        self.record_queue   = self.muxpump_task.start_muxpump( self.queues_byalias )
 
-        self.indexmanager_task.start_indexes()
-        self.valuepump_task.start()
-        
-        self.journal_streamsource.launch_processing( write_bin=self.write_bin, write_log = self.write_log )
+        self.cur_bootlog.start_streaming( self.record_queue, self.active_keys, self.write_bin, self.write_log )
+
+
+
+
 
 
     

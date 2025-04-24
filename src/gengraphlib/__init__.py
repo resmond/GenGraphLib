@@ -40,7 +40,7 @@ from .proc import (
 )
 
 from .streams import (
-    ValueMuxTask, CmdStdoutStream, StreamSourceTask
+    ValueMuxPumpTask, CmdStdoutStream, StreamSourceTask
 )
 
 from .textlog import (
@@ -55,7 +55,7 @@ from .codegen import (
     , ImportsInfo , ImportPattern, ClsLineInfo, ClsLinePattern
 )
 
-from .bootlog import BootLogDir, BootLogManager, BootLogInfo, BootLogContext
+from .bootlog import BootLog, BootLogManager, BootLogInfo, BootLogContext
 
 __all__ = [
       "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
@@ -83,7 +83,7 @@ __all__ = [
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
 
-    , "ValueMuxTask", "StreamSourceTask", "CmdStdoutStream"
+    , "ValueMuxPumpTask", "StreamSourceTask", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
@@ -93,5 +93,5 @@ __all__ = [
     , "CodePattern", "GenCodeRenderer", "InfoPattern", "ImportsInfo"
     , "ImportPattern" , "ClsLineInfo", "ClsLinePattern",  "ClassGenBase"
 
-    , "BootLogDir", "BootLogManager", "BootLogInfo", "BootLogContext"
+    , "BootLog", "BootLogManager", "BootLogInfo", "BootLogContext"
 ]

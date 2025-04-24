@@ -56,7 +56,7 @@ class MainApp( AppProcessBase ):
                 id="parse-proc",
                 log_root= "/home/richard/data/jctl-logs/",
                 boot_index = -1,
-                write_bin = False,
+                groupid = "evt",
                 write_log = True
             )
 
