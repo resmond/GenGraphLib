@@ -30,7 +30,8 @@ class BootLogSchema( KeyValueSchema ):
 
     @staticmethod
     def entrypoint( parse_info: ParseProcessInfo ) -> None:
-        BootLogSchema( parse_info )
+        bootlog_schema = BootLogSchema( parse_info )
+        bootlog_schema.launch_indexing( -1, "evt" )
 
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )

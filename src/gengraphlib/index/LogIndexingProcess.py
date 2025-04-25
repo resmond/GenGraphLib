@@ -56,8 +56,9 @@ class LogIndexingProcess:
             self._start_logwriter()
 
         self._start_indexes()
-
         self.state = "indexes-started"
+
+        aio.run( self._stream_exec() )
 
     def _start_logwriter( self ) -> None:
         log_filepath = os.path.join(self.bootlog_info.dir_path, "bootlog.log")
@@ -69,7 +70,7 @@ class LogIndexingProcess:
 
     def _register_indextask(self: Self, index: IndexTaskInterface) -> None:
         self.queues_byalias[ index.alias ] = index.queue
-        self.indextask_map[ index.id() ] = index
+        self.indextask_map[  index.id()  ] = index
         index.start()
 
     def _start_indexes( self: Self ) -> None:
@@ -77,22 +78,19 @@ class LogIndexingProcess:
             if keyinfo.alias in self.active_keys:
                 match keyinfo.keytype:
                     case KeyType.KStr:
-                        self._register_indextask( StrIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( StrIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KInt:
-                        self._register_indextask( IntIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( IntIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KBool:
-                        self._register_indextask( BoolIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( BoolIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KFloat:
-                        self._register_indextask( FloatIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( FloatIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KTmst:
-                        self._register_indextask( TmstIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( TmstIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
 
     def stop_indexes(self: Self) -> None:
         for index in self.indextask_map.values():
             index.stop()
-
-    def _start_chainstream( self: Self ) -> None:
-        aio.run( self.stream_exec() )
 
     async def _stream_exec( self: Self ) -> None:
 

@@ -25,18 +25,12 @@ from .graph import (
 )
 
 from .index import (
-    IndexTaskBase,
-    LogIndexingProcess,
-    IntIndexingTask,
-    StrIndexingTask,
-    TmstIndexingTask,
-    BoolIndexingTask,
-    FloatIndexingTask
+    IndexTaskBase, LogIndexingProcess, IntIndexingTask, StrIndexingTask, TmstIndexingTask, BoolIndexingTask, FloatIndexingTask
 )
 
 from .proc import (
-      ProcBase, TaskBase, MsgType
-    , MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
+      ProcBase, TaskBase
+    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
 )
 
 from .textlog import (
