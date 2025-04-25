@@ -76,17 +76,6 @@ class StreamSourceTask( TaskBase ):
             self.record_queue.put( keyrecord_packet )
             self.record_list = []
 
-    def send_progress( self: Self ) -> None:
-        if self.cnt % 100 == 0:
-            print(".", end="")
-
-        elif self.cnt % 1000 == 0:
-            print(f"\ncnt: {self.cnt}")
-            #msg = IndexingProgressMsg( source_id= "key-value-stream-proc", message = "Progress: ...", data = {"cnt": str( self.cnt )} )
-            #AppProcessBase.instance.msg_queue.send_msg( msg )
-
-        return None
-
     def log_keyvalue( self: Self, log_key: str | None, valuebuffer: str | None ) -> None:
         if self.log_writer is not None:
             if log_key is not None and valuebuffer is not None and log_key in self.active_keys:

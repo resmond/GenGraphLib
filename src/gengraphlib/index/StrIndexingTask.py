@@ -4,41 +4,60 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo
+from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo, keyIndexInfo, KeyIndexState
+
 from ..bootlog.BootLogInfo import BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class StrIndexingTask( IndexTaskBase[str] ):
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
-        super( StrIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super( StrIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
 
-        self._type: type = str
-        self._keytype: KeyType.KStr
-        self.index_type: KeyIndexType = KeyIndexType.StrSorted
+        self.keytype      = KeyType.KStr
+        self.index_type   = KeyIndexType.StrSorted
+        self._index_state = KeyIndexState.Running
 
-        self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
-        self.thread: th.Thread = th.Thread( target=self.main_loop, name=self.key, args = (self._queue, self._type,) )
+        self._queue: mp.Queue = mp.Queue()
+
+        self._sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
+        self._thread: th.Thread = th.Thread(
+            target=self.main_loop,
+            name=f"{self.key}-Str-index",
+            args = (self._queue, self._end_event, )
+        )
+
+    @property
+    def queue( self: Self ) -> mp.Queue:
+        return self._queue
 
     def start(self: Self) -> None:
-        self.thread.start()
+        self._thread.start()
 
-    def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
-        while True:
-            rec_num: int
-            value: str
-            rec_num, value = queue.get()
-            self.recv_value( rec_num, value )
+    def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
+        keyindex_info: keyIndexInfo = self.get_index_info()
+        self._app_msgqueue.put(keyindex_info)
 
-            if self._value_cnt % self.status_cnt == 0:
-                self.send_status()
-
-    def recv_value( self: Self, rec_num: int, value: str ) -> None:
-
+        rec_num: int = 0
+        value: str = ""
         try:
-            if value not in self.sorted_index:
-                self.sorted_index[value] = LineRefList()
+            while not end_event:
 
-            self.sorted_index[value].append( rec_num )
+                rec_num, value = queue.get()
 
-        except ValueError:
-            print(f"StrIndexingTask.recv_value - rec_num: {rec_num}  value: {value}")
+                if value not in self._sorted_index:
+                    self._sorted_index[value] = LineRefList()
+                else:
+                    self._is_unique = False
+
+                self._sorted_index[value].append( rec_num )
+
+                if self._instance_cnt % self.status_cnt == 0:
+                    keyindex_info: keyIndexInfo = self.get_index_info()
+                    self._app_msgqueue.put( keyindex_info )
+
+        except ValueError as valexc:
+            print(f'StrIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+
+        except Exception as exc:
+            print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+

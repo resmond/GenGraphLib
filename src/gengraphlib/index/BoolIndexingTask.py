@@ -4,46 +4,64 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedSet
 
-from ..common import KeyType, KeyInfo, KeyIndexType
-from ..bootlog import BootLogInfo
+from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo
+from ..bootlog.BootLogInfo import BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
-        super( BoolIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super( BoolIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
 
-        self._type: type = bool
-        self._keytype: KeyType.KBool
-        self.index_type: KeyIndexType = KeyIndexType.BoolDualIntersect
+        self.keytype      = KeyType.KBool
+        self.index_type   = KeyIndexType.BoolDualIntersect
+        self._index_state = KeyIndexState.Running
+        self._is_unique   = False
 
-        self.positive_intersection: SortedSet[int] = SortedSet[int]()
-        self.negative_intersection: SortedSet[int] = SortedSet[int]()
-        self.thread: th.Thread = th.Thread( target=self.main_loop, name=self.key, args = (self._queue, self._type,) )
+        self._queue: mp.Queue = mp.Queue()
 
-    def start( self: Self ) -> None:
-        self.thread.start()
+        self._positive_intersection: SortedSet[int ] = SortedSet[int ]()
+        self._negative_intersectio:  SortedSet[int ] = SortedSet[int ]()
 
-    def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
-        while True:
-            rec_num: int
-            value: str
-            rec_num, value = queue.get()
-            self.recv_value( rec_num, value )
+        self._thread: th.Thread = th.Thread(
+            target=self.main_loop,
+            name=f"{self.key}-Bool-index",
+            args = (self._queue, self._end_event, )
+        )
 
-            if self._value_cnt % self.status_cnt == 0:
-                self.send_status()
+    @property
+    def queue( self: Self ) -> mp.Queue:
+        return self._queue
 
-    def recv_value( self: Self, rec_num: int, value: str ) -> None:
+    def start(self: Self) -> None:
+        self._thread.start()
+
+    def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
+        rec_num: int = 0
+        value: str = ""
+
+        keyindex_info: keyIndexInfo = self.get_index_info()
+        self._app_msgqueue.put(keyindex_info)
+
         try:
-            bool_value: bool = bool( value )
+            while not end_event:
+                rec_num, value = queue.get()
 
-            if bool_value:
-                self.positive_intersection.add( rec_num )
-            else:
-                self.negative_intersection.add( rec_num )
+                bool_value: bool = bool( value )
 
-        except ValueError:
-            print(f"BoolIndexingTask.recv_value - rec_num: {rec_num}  value: {value}")
+                if bool_value:
+                    self._positive_intersection.add( rec_num )
+                else:
+                    self._negative_intersection.add( rec_num )
+
+                if self._value_cnt % self.status_cnt == 0:
+                    self.send_status()
+
+        except ValueError as valexc:
+            print(f'BoolIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+
+        except Exception as exc:
+            print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+
 
 

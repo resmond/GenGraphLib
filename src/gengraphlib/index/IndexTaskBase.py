@@ -17,30 +17,31 @@ from ..bootlog.BootLogContext import BootLogInfo, BootLogContext
 
 class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
 
-    def __init__(self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue ) -> None:
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         super(IndexTaskBase,self).__init__( f"{key_info.key}-index" )
-        self.pytype: type = type( T )
-        self._bootlog_info: BootLogInfo = bootlog_info
-        self.mainapp_msgqueue: mp.Queue = mainapp_msgqueue
+
+        self.status_cnt: int     = 100
+        self.key:        str     = key_info.key
+        self.alias:      str     = key_info.alias
+        self.key_info:   KeyInfo = key_info
+        self.keytype:    KeyType = key_info.keytype
+
+        self._app_msgqueue:    mp.Queue       = app_msgqueue
+        self._end_event:       mp.Event       = end_event
+
+        self._bootlog_info:    BootLogInfo    = bootlog_info
         self._bootlog_context: BootLogContext = BootLogContext( bootlog_info )
-        self._key_info: KeyInfo = key_info
 
-        self._keyindex_id: str = f"{self._bootlog_info.schema_bootid}@{key_info.key}"
-        self.keytype: KeyType = key_info.keytype
-        self.key:   str = key_info.key
-        self.alias: str = key_info.alias
-        self.index_type: KeyIndexType = KeyIndexType.Undetermined
-
-        self._index_state: KeyIndexState = KeyIndexState.Uninitialized
-        self._value_cnt: int = 0
-        self._instances_cnt: int = 0
-        self._is_unique: bool = False
-        self.status_cnt: int = 100
-
-        self._index_dir: str = self._bootlog_info.keys_path
+        self._index_dir:      str = self._bootlog_info.keys_path
         self._index_filepath: str = os.path.join( self._index_dir, f"{self.key}.index" )
+        self._keyindex_id:    str = f"{self._bootlog_info.schema_bootid}@{key_info.key}"
 
-        self._queue: mp.Queue = mp.Queue()
+        self.index_type:   KeyIndexType = KeyIndexType.Undetermined
+        self._index_state: KeyIndexState = KeyIndexState.Uninitialized
+
+        self._value_cnt:     int = 0
+        self._instances_cnt: int = 0
+        self._is_unique:     bool = True
 
     def get_index_info( self: Self ) -> keyIndexInfo:
         return keyIndexInfo(
@@ -53,20 +54,10 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
             unique=self._is_unique
         )
 
-    @property
-    def queue( self: Self ) -> mp.Queue:
-        return self._queue
-
-    def send_statusmsg( self: Self ):
-        keyindex_info: keyIndexInfo = self.get_index_info()
-        self.mainapp_msgqueue.put(keyindex_info)
-
     @abstractmethod
-    def main_loop(self: Self, queue: mp.Queue, val_type: type) -> None:
+    def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
         pass
 
-    def recv_value( self: Self, rec_num: int, value: str ) -> None:
-        pass
 
 
 

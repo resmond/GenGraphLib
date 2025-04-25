@@ -15,14 +15,12 @@ class QtMsgQueueReader( QObject ):
 
         self.reader_process = mp.Process(
             target=self._reader_process_func,
-            args=(self.msg_queue, self.end_event,)   #, self.should_stop
+            args=(self.msg_queue, self.end_event,)
         )
-        # Set as daemon so it doesn't block program exit
         self.reader_process.daemon = True
         self.reader_process.start()
 
     def _reader_process_func( self: Self, queue: mp.Queue, end_event: mp.Event ):
-        """Function that runs in the separate process"""
         try:
             while not end_event.is_set():
                 try:
@@ -42,21 +40,3 @@ class QtMsgQueueReader( QObject ):
     def _process_message(self: Self, message):
         print(f"Processing message: {message}")
         self.data_received.emit(message)
-
-
-        #self.reader, writer, rlock, wlock = self.msgqueue.__getstate__()
-        # self.notifier = QSocketNotifier(
-        #     self.reader.fileno(),
-        #     QSocketNotifier.Type.Read,
-        #     self
-        # )
-        #
-        # # noinspection PyUnresolvedReferences
-        # self.notifier.activated.connect(self.read_from_queue)
-        # self.notifier.setEnabled(True)
-
-    # def read_from_queue(self: Self):
-    #     while not self.msg_queue.empty():
-    #         data = self.msg_queue.get()
-    #         self.data_received.emit(data)
-

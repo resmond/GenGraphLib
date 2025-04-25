@@ -6,54 +6,75 @@ import datetime as dt
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo
+from ..common import (
+    LineRefList,
+    KeyType,
+    KeyIndexType,
+    KeyInfo,
+    KeyIndexState,
+    keyIndexInfo,
+)
+
 from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
 
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
-    very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
-        super( TmstIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super( TmstIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
 
-        self._type: type = dt.datetime
-        self._keytype: KeyType.KTmst
-        self.index_type: KeyIndexType = KeyIndexType.TmstSorted
+        self.keytype      = KeyType.KTmst
+        self.index_type   = KeyIndexType.TmstSorted
+        self._index_state = KeyIndexState.Running
+        self._is_unique   = False
+
+        self._queue: mp.Queue = mp.Queue()
 
         self.sorted_index: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
-        self.thread: th.Thread = th.Thread( target=self.main_loop, name=self.key, args = (self._queue, self._type,) )
+
+        self._thread: th.Thread = th.Thread(
+            target=self.main_loop,
+            name=f"{self.key}-Tmst-index",
+            args = (self._queue, self._end_event, )
+        )
+
+    @property
+    def queue( self: Self ) -> mp.Queue:
+        return self._queue
 
     def start(self: Self) -> None:
-        self.thread.start()
+        self._thread.start()
 
-    def main_loop( self: Self, queue: mp.Queue, val_type: type ) -> None:
-        while True:
-            rec_num: int
-            value: str
-            rec_num, value = queue.get()
-            self.recv_value( rec_num, value )
+    def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
+        very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
-            if self._value_cnt % self.status_cnt == 0:
-                self.send_status()
+        keyindex_info: keyIndexInfo = self.get_index_info()
+        self._app_msgqueue.put(keyindex_info)
 
-    def recv_value( self: Self, rec_num: int, value: str ) -> None:
+        rec_num: int = 0
+        value: str = ""
         try:
-            int_value = int(value)
-            datetime_value: dt.datetime = TmstIndexingTask.convert_to_datetime(int_value)
 
-            if datetime_value not in self.sorted_index:
-                self.sorted_index[datetime_value] = LineRefList()
+            while not end_event:
+                rec_num, value = queue.get()
 
-            self.sorted_index[datetime_value].append(rec_num)
+                int_value = int(value)
+                datetime_value: dt.datetime = very_beginning + dt.timedelta(microseconds=int_value)
+
+                if datetime_value not in self.sorted_index:
+                    self.sorted_index[datetime_value] = LineRefList()
+
+                self.sorted_index[datetime_value].append(rec_num)
+
+                if self._value_cnt % self.status_cnt == 0:
+                    keyindex_info: keyIndexInfo = self.get_index_info()
+                    self._app_msgqueue.put(keyindex_info)
 
         except ValueError as valexc:
-            print( f'[TmstIndexingTask.recv_value({self.key}:{self.alias})] ValueError: {valexc} - "{value}"' )
+            print(f'TmstIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
 
         except Exception as exc:
-            print( f'[TmstIndexingTask.recv_value({self.key}:{self.alias})] Exception: {exc} - "{value}"' )
+            print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
 
-    @staticmethod
-    def convert_to_datetime( microsec_offset: int ) -> dt.datetime:
-        return TmstIndexingTask.very_beginning + dt.timedelta( microseconds=microsec_offset )
 
