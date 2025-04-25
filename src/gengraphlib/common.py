@@ -102,7 +102,7 @@ class KeyIndexMsg(NamedTuple):
     instance_cnt:  int
     is_unique:     bool
 
-    def to_tuple( self: Self ) -> tuple:
+    def to_packet( self: Self ) -> tuple:
         return ( 
             self.keyinfo_id,
             self.index_type,

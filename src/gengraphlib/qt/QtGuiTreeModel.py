@@ -4,7 +4,7 @@ from typing import Self, Dict, List, Any
 from PySide6.QtCore import Signal, Property, Slot, QObject, QAbstractTableModel, QModelIndex
 
 # noinspection PyPep8Naming
-class QtGuiTreeModel( QObject, QAbstractTableModel, QModelIndex ):
+class QtGuiTreeModel( QAbstractTableModel, QModelIndex ):
     depthChanged      = Signal()
     isExpandedChanged = Signal()
     checkedChanged    = Signal()
@@ -104,7 +104,7 @@ class QtGuiTreeModel( QObject, QAbstractTableModel, QModelIndex ):
         self.childrenChanged.emit()
 
     def __init__(self: Self, parent: QObject | None = None) -> None:
-        QObject.__init__(self, parent)
+        super().__init__(parent)
         self._parent: Self | None = None
         self._data: Dict[str, Any] | None = None
         self._title: str = ""

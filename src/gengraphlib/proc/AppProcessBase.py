@@ -16,17 +16,19 @@ class AppProcessBase( ProcRegistry ):
         self.app_id: str = app_id
         self.startables: dict[str,Startable] = {}
         self.queue_map: dict[str, mp.Queue] = {}
-        self.mainapp_msgqueue: mp.Queue | None = None
         self.sync_manager: SyncManager | None = mp.Manager()
+        self._mainapp_msgqueue = self.sync_manager.Queue()
+        self._end_event: mp.Event = self.sync_manager.Event()
         self.threadpool_ex: cf.ThreadPoolExecutor | None = cf.ThreadPoolExecutor( max_workers=4 )
-        self.init_internals()
 
     def init_internals( self: Self ) -> None:
         pass
 
-    def create_mainapp_msgqueue( self: Self ):
-        self.mainapp_msgqueue =  self.sync_manager.Queue()
-        return self.mainapp_msgqueue
+    def mainapp_msgqueue( self: Self ) -> mp.Queue:
+        return self._mainapp_msgqueue
+    
+    def end_event( self: Self ) -> mp.Event:
+        return self._end_event
 
     def create_queue( self: Self, queue_id: str ) -> mp.Queue:
         self.queue_map[queue_id] = self.sync_manager.Queue()

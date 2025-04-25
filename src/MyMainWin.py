@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
-from .gengraphlib.qt import QtMsgQueueReader
+from gengraphlib.qt import QtMsgQueueReader
 
 
 class MyMainWindow(QMainWindow):
@@ -22,11 +22,12 @@ class MyMainWindow(QMainWindow):
     def process_data(self: Self, data: Any) -> None:
         print(f"[{self}] Received: ({type(data)}): {data}")
 
-    def __init__(self: Self, msg_queue: mp.Queue ) -> None:
+    def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:
         super(MyMainWindow, self).__init__()
 
         self.msg_queue: mp.Queue = msg_queue
-        self.queue_reader = QtMsgQueueReader( self.msg_queue, self )
+        self.end_event: mp.Event = end_event
+        self.queue_reader = QtMsgQueueReader( msg_queue=self.msg_queue, end_event=self.end_event, parent=self )
         self.queue_reader.data_received.connect(self.process_data)
 
         self.setWindowTitle(self.WINDOW_TITLE)

@@ -13,12 +13,12 @@ from MyMainWin import MyMainWindow
 class MainApp( AppProcessBase ):
     def __init__(self: Self):
         super( MainApp, self ).__init__( "app-main" )
-        self.msg_queue: mp.Queue = mp.Queue()
         self.parse_info: ParseProcessInfo | None = None
         self.parse_process: mp.Process | None = None
         self.qt_app: QApplication = QApplication()
-        self.main_window: MyMainWindow = MyMainWindow( self.msg_queue )
+        self.main_window: MyMainWindow = MyMainWindow( self.mainapp_msgqueue(), self.end_event() )
         self.main_window.setWindowTitle( "Boot Log Parser" )
+        self.init_internals()
 
     def init_internals( self: Self ) -> None:
         super().init_internals()
@@ -27,7 +27,8 @@ class MainApp( AppProcessBase ):
 
         self.parse_info: ParseProcessInfo = \
             ParseProcessInfo(
-                app_msgqueue=self.msg_queue,
+                app_msgqueue=self.mainapp_msgqueue(),
+                end_event=self.end_event(),
                 id="parse-proc",
                 log_root= "/home/richard/data/jctl-logs/",
                 boot_index = -1,

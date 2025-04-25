@@ -16,8 +16,9 @@ from gengraphlib import (
 )
 
 class ParseProcessInfo:
-    def __init__( self: Self, app_msgqueue: mp.Queue, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
+    def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
         self.app_msgqueue: mp.Queue = app_msgqueue
+        self.end_event: mp.Event = end_event
 
         self.id: str         = id
         self.log_root: str   = log_root
@@ -205,7 +206,7 @@ class BootLogSchema( KeyValueSchema ):
         self.indexmanager_task = IndexManager( self.keyval_schema_info, self.mainapp_msgqueue )
         self.muxpump_task      = ValueMuxPumpTask()
 
-        if self.boot_index and self.group_id and self.autostart:
+        if self.cur_bootindex and self.cur_groupid and self.autostart:
             self.launch_processing()
 
     def launch_processing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
