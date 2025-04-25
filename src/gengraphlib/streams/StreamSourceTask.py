@@ -43,7 +43,7 @@ class StreamSourceTask( TaskBase ):
         if self.bin_writer is not None:
             self.bin_writer.close()
 
-    async def main_loop( self: Self, active_keys: set[str], record_queue: mp.Queue ) -> None:
+    async def spin_stream( self: Self, active_keys: set[str], record_queue: mp.Queue ) -> None:
         self.active_keys  = active_keys
         self.record_queue = record_queue
 
@@ -60,18 +60,10 @@ class StreamSourceTask( TaskBase ):
         async for line in self.cmd_stream.line_stream():
             self.recv_line(line)
 
-    def recv_line( self: Self, buffer: bytes ) -> None:
-        self.cnt += 1
+    def recv_line( self: Self, line: str ) -> None:
 
-        line: str = buffer.decode()
-
-        if self.bin_writer:
-            self.bin_writer.write( buffer )
-            
-        # if self.progress:
-        #     self.send_progress()
-
-        if len(line) > 0:
+        #print(f"[{len(line)}]  {line}")
+        if len(line) > 2:
             split:       int = line.find("=")
             key:   str = line[:split]
             value: str = line[split+1:]

@@ -10,7 +10,7 @@ class CmdStdoutStream:
     def __init__(self: Self, cmd: str ):
         self.cmd: str = cmd
 
-    async def line_stream( self: Self ) -> AsyncGenerator[ bytes, None ]:
+    async def line_stream( self: Self ) -> AsyncGenerator[ str, None ]:
         if self.cmd is None:
             print("CmdChainSource.pipe(): No command")
             return
@@ -23,15 +23,23 @@ class CmdStdoutStream:
         print("beginnig stdout.read() - loop")
 
         while True:
-            cnt: int = 0
+            tail_text: str = ""
+            lines: list[str] = []
             try:
-                buffer = await exec_process.stdout.read()
-                cnt += 1
-                if cnt % 100 == 0:
-                   print( ".", end="" )
-                elif cnt % 1000 == 0:
-                   print( "*" )
-                yield buffer
+                buffer = await exec_process.stdout.read(1024*16)
+
+                new_text = buffer.decode(errors="replace")
+
+                lines = (tail_text + new_text).split("\n")
+
+                last_line: int = len(lines) - 1
+                cnt: int = -1
+                for line in lines:
+                    if ++cnt == last_line:
+                        tail_text = line
+                    else:
+                        yield line
+
             except Exception as exc:
                 print(exc)
 

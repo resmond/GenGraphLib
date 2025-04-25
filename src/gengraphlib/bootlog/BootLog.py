@@ -13,7 +13,7 @@ class BootLog:
         super( BootLog, self ).__init__()
         val_list: list[str] = log_rec.split()
         self.root_dir = root_dir
-        self.index: int = int( val_list[0 ] )
+        self.boot_index: int = int( val_list[0 ] )
         self.id: str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
         self.last_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
@@ -39,7 +39,7 @@ class BootLog:
             return False
 
     def __repr__( self: Self ) -> str:
-        return f'{{idx:{self.index}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_path}}}'
+        return f'{{idx:{self.boot_index}, id:{self.id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.dir_name}, dir_path:{self.dir_path}, keys_filepath:{self.keys_path}}}'
 
     def __str__( self: Self ) -> str: return self.__repr__()
 
