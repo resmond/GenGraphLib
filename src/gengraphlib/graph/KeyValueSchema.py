@@ -4,11 +4,9 @@ from collections.abc import Iterable
 import json
 import os
 
-from progress.bar import Bar
-
 from ..common import KeyValTypes, keygroup_rec, KeyDefDict, KeyInfo, KeyValSchemaInfo
 
-from .GraphLib import RecordBase, GraphRecordRoot
+from .GraphLib import GraphRecordRoot
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from .KeyGroups import KeyGroups
 from .KeySchemaVisitor import KeySchemaVisitor
@@ -24,6 +22,10 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         self.schema_info: KeyValSchemaInfo | None = None
         self.missing_keys: list[str] = []
         self.none_values:  list[str] = []
+
+    @property
+    def graph_id(self: Self) -> str:
+        return self.id
 
     def add_keydef( self: Self, _key_def: KeyDefBase ) -> None:
         self[_key_def.key ]             = _key_def
@@ -70,22 +72,12 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         groupids: list[str] = [ group.id for group in self.key_groups.values() ]
         return KeyValSchemaInfo( keys, groupids )
 
-    def get_activekeys( self, group_id: str ) -> set[str]:
+    def get_groupkeys( self, group_id: str ) -> set[str ]:
         return { keydef.alias for key, keydef in self.items() if keydef.in_group(group_id) }
 
     # noinspection PyTypeChecker
     def by_alias( self: Self, alias: str ) -> KeyDefBase:
         return self._alias_map[alias ]
-
-    @property
-    def graph_id(self: Self) -> str:
-        return self.id
-
-    def add_record( self: Self, graph_rec: RecordBase ) -> None:
-        pass
-
-    def apply_values( self: Self, graph_rec: RecordBase, _log_key: str, value: str ) -> None:
-        pass
 
     def get_typed_keydef[T: KeyValTypes]( self, key: str ) -> KeyDefBase[T] | None:
         if key in self:
@@ -94,52 +86,7 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
                 return key_def
         return None
 
-
-    def read_json(self: Self, filepath: str):
-        try:
-            line_num: int = 0
-            read_len: int = 0
-            file_size: int = os.path.getsize(filepath)
-            bar = Bar("Processing", max=file_size)
-            with open(filepath) as file:
-                for line in file:
-                    read_len += len(line)
-                    field_dict = json.loads(line)
-                    self.process_keyvalues( field_dict, line_num, line )
-                    bar.next(read_len )
-            bar.finish()
-        except FileNotFoundError as ext:
-            print(f'[KeySchemaBase.read_json]FileNotFoundError: {ext} - {filepath}')
-
-    def persist_data( self: Self ):
-        self._persist_keys()
-        self._log_traces()
-
-    # noinspection PyUnresolvedReferences
-    def _persist_keys( self: Self, source_id: str = "all", line_numbers: bool = False ) -> None:
-
-        key: str = ""
-        try:
-            keydef: KeyDefBase
-            for key, keydef in self.items():
-                key_dir: str = os.path.join(self._root_dir, "keys", f"{key}")
-
-                if not os.path.exists(key_dir):
-                    os.mkdir(key_dir)
-
-                with open(f'{key_dir}/{source_id}-{key}.jline', "w") as keyfile:
-                    for value, lines in keydef.key_values.items():
-                        if line_numbers:
-                            lines_json = json.dumps(lines)
-                            keyfile.write(f'{value}')
-                            keyfile.write(f'    {lines_json}')
-                        else:
-                            keyfile.write(f'[{len(lines):5}]: {value}\n')
-
-        except Exception as exc:
-            print(f'[KeySchemaBase.dump_key_values] ({key})  Exception: {exc}')
-
-    def _log_traces( self: Self ) -> None:
+    def log_traces( self: Self ) -> None:
         try:
             data_str = json.dumps( self.missing_keys, indent=4 )
             file_path = os.path.join( self._root_dir, "missedkeys.json" )

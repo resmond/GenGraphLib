@@ -42,12 +42,6 @@ class GraphRecordRoot( Protocol ):
     def graph_id(self: Self) -> str:
         pass
 
-    def add_record( self: Self, graph_rec: RecordBase ) -> None:
-        pass
-
-    def apply_logvalue( self: Self, graph_rec: RecordBase, _log_key: str, value: str ) -> None:
-        pass
-
     def __getitem__(self, key: str) -> KeyDefInterface:
         pass
 

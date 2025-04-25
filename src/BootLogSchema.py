@@ -206,7 +206,7 @@ class BootLogSchema( KeyValueSchema ):
         if group_id is not None:
             self.cur_groupid = group_id
 
-        self.active_keys = self.get_activekeys( self.cur_groupid )
+        self.active_keys = self.get_groupkeys( self.cur_groupid )
 
         self.cur_bootlog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
         self.bootlog_info = self.cur_bootlog.get_info()
