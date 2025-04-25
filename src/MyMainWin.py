@@ -1,6 +1,8 @@
-from typing import Self
+from typing import Self, Any
 
-from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect)
+import multiprocessing as mp
+
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect
 from PySide6.QtWidgets import (
     QMainWindow,
     QHBoxLayout, QListView,
@@ -8,14 +10,25 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
+from .gengraphlib.qt import QtMsgQueueReader
+
+
 class MyMainWindow(QMainWindow):
     # Class-level constants for configuration
     WINDOW_TITLE = "Main Window"
     MINIMUM_WIDTH = 800
     MINIMUM_HEIGHT = 600
-    
-    def __init__(self: Self) -> None:
+
+    def process_data(self: Self, data: Any) -> None:
+        print(f"[{self}] Received: ({type(data)}): {data}")
+
+    def __init__(self: Self, msg_queue: mp.Queue ) -> None:
         super(MyMainWindow, self).__init__()
+
+        self.msg_queue: mp.Queue = msg_queue
+        self.queue_reader = QtMsgQueueReader( self.msg_queue, self )
+        self.queue_reader.data_received.connect(self.process_data)
+
         self.setWindowTitle(self.WINDOW_TITLE)
         self.setObjectName("MainWindow")
         self.resize(self.MINIMUM_WIDTH, self.MINIMUM_HEIGHT)

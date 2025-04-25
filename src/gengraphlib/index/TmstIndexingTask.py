@@ -14,8 +14,8 @@ from .IndexTaskBase import IndexTaskBase
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
-        super( TmstIndexingTask, self ).__init__(key_info, bootlog_info )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
+        super( TmstIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
 
         self._type: type = dt.datetime
         self._keytype: KeyType.KTmst
@@ -33,6 +33,9 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
             value: str
             rec_num, value = queue.get()
             self.recv_value( rec_num, value )
+
+            if self._value_cnt % self.status_cnt == 0:
+                self.send_status()
 
     def recv_value( self: Self, rec_num: int, value: str ) -> None:
         try:

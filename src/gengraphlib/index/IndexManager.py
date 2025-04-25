@@ -16,10 +16,11 @@ from .TmstIndexingTask import TmstIndexingTask
 
 class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
 
-    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo ) -> None:
+    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo, mainapp_msgqueue: mp.Queue ) -> None:
         super( IndexManager, self ).__init__()
 
         self.keyvalue_schema_info: KeyValSchemaInfo = keyval_schema_info
+        self.mainapp_msgqueue: mp.Queue = mainapp_msgqueue
         self._bootlog_info: BootLogInfo | None = None
 
         self.index_queuemap: dict[str, mp.Queue] = dict[str, mp.Queue]()
@@ -39,15 +40,15 @@ class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
             if keyinfo.alias in self.active_keys:
                 match keyinfo.keytype:
                     case KeyType.KStr:
-                        self.register_index( StrIndexingTask( keyinfo, self._bootlog_info ) )
+                        self.register_index( StrIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
                     case KeyType.KInt:
-                        self.register_index( IntIndexingTask( keyinfo, self._bootlog_info ) )
+                        self.register_index( IntIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
                     case KeyType.KBool:
-                        self.register_index( BoolIndexingTask( keyinfo, self._bootlog_info ) )
+                        self.register_index( BoolIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
                     case KeyType.KFloat:
-                        self.register_index( FloatIndexingTask( keyinfo, self._bootlog_info ) )
+                        self.register_index( FloatIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
                     case KeyType.KTmst:
-                        self.register_index( TmstIndexingTask( keyinfo, self._bootlog_info ) )
+                        self.register_index( TmstIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
 
         for index in self.index_taskmap.values():
             index.start()

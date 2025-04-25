@@ -10,8 +10,8 @@ from .IndexTaskBase import IndexTaskBase
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
-        super( BoolIndexingTask, self ).__init__(key_info, bootlog_info)
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
+        super( BoolIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
 
         self._type: type = bool
         self._keytype: KeyType.KBool
@@ -30,6 +30,9 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
             value: str
             rec_num, value = queue.get()
             self.recv_value( rec_num, value )
+
+            if self._value_cnt % self.status_cnt == 0:
+                self.send_status()
 
     def recv_value( self: Self, rec_num: int, value: str ) -> None:
         try:

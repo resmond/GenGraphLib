@@ -1,8 +1,10 @@
-from typing import Self
+from typing import Self, Any
 from abc import ABC, abstractmethod
 
 import multiprocessing as mp
 import threading as th
+
+from PySide6.QtCore import QSocketNotifier
 
 from .Messages import MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg
 
@@ -13,6 +15,20 @@ class MsgQueueBase(ABC):
         self._inner_queue: mp.Queue = mp.Queue( 4096 )
         self.thread: th.Thread | None = None
         self.threaded: bool = threaded
+
+        self.reader: Any | None = None
+
+        self.reader, writer, rlock, wlock = self._inner_queue.__getstate__()
+
+        self.notifier = QSocketNotifier(
+            self.reader.fileno(), QSocketNotifier.Type.Read, self
+        )
+
+        # noinspection PyUnresolvedReferences
+        self.notifier.activated.connect(self.read_from_queue)
+
+        self.notifier.setEnabled(True)
+
 
     @property
     def inner_queue( self: Self ) -> mp.Queue:

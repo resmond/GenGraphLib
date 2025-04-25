@@ -54,7 +54,6 @@ class BootLog:
             keys_path=self.keys_path
         )
 
-
     def start_streaming( self, record_queue: mp.Queue, active_keys: set[str], write_bin: bool = False, write_log: bool = False ):
         self.active_keys = active_keys
         self.record_queue = record_queue

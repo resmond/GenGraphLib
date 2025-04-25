@@ -5,63 +5,39 @@ import multiprocessing as mp
 from PySide6.QtWidgets import QApplication
 
 
-from gengraphlib import (
-    StatusMsg,
-    InfoMsg,
-    ErrorMsg,
-    DataMsg,
-    MsgQueueBase,
-    AppProcessBase
-)
+from gengraphlib import AppProcessBase
 
 from BootLogSchema import BootLogSchema, ParseProcessInfo
 from MyMainWin import MyMainWindow
 
-class MainAppMsgQueue( MsgQueueBase ):
-    def __init__(self: Self):
-        super(MainAppMsgQueue, self).__init__( "app-main-msg-queue" )
-
-    def recv_status( self: Self, msg: StatusMsg ) -> None:
-        print(f"MainApp.StatusMsg: {msg}")
-
-    def recv_info( self: Self, msg: InfoMsg ) -> None:
-        print(f"MainApp.InfoMsg: {msg}")
-
-    def recv_error( self: Self, msg: ErrorMsg ) -> None:
-        print(f"MainApp.ErrorMsg: {msg}")
-
-    def recv_data( self: Self, msg: DataMsg ) -> None:
-        print(f"MainApp.DataMsg: {msg}")
-
 class MainApp( AppProcessBase ):
     def __init__(self: Self):
         super( MainApp, self ).__init__( "app-main" )
+        self.msg_queue: mp.Queue = mp.Queue()
         self.parse_info: ParseProcessInfo | None = None
-        self.process: mp.Process | None = None
+        self.parse_process: mp.Process | None = None
         self.qt_app: QApplication = QApplication()
-
-        self.main_window: MyMainWindow = MyMainWindow()
+        self.main_window: MyMainWindow = MyMainWindow( self.msg_queue )
         self.main_window.setWindowTitle( "Boot Log Parser" )
 
     def init_internals( self: Self ) -> None:
-        self.msg_queue = MainAppMsgQueue()
         super().init_internals()
 
     def start(self: Self) -> bool:
-        self.msg_queue.start()
 
         self.parse_info: ParseProcessInfo = \
             ParseProcessInfo(
-                app_msgqueue=self.msg_queue.inner_queue,
+                app_msgqueue=self.msg_queue,
                 id="parse-proc",
                 log_root= "/home/richard/data/jctl-logs/",
                 boot_index = -1,
                 groupid = "evt",
-                write_log = True
+                write_log = True,
+                autostart = True
             )
 
-        self.process: mp.Process = mp.Process( target = BootLogSchema.entrypoint, args=(self.parse_info,) )
-        self.process.start()
+        self.parse_process: mp.Process = mp.Process( target = BootLogSchema.entrypoint, args=(self.parse_info,) )
+        self.parse_process.start()
 
         self.main_window.show()
         self.qt_app.setActiveWindow( self.main_window )

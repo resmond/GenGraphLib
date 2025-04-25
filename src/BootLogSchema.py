@@ -41,10 +41,11 @@ class BootLogSchema( KeyValueSchema ):
         self.log_root:      str  = parse_info.log_root
         self.cur_bootindex: int  = parse_info.boot_index
         self.cur_groupid:   str  = parse_info.groupid
+        self.autostart:     bool = parse_info.autostart
         self.write_bin:     bool = parse_info.write_bin
         self.write_log:     bool = parse_info.write_log
 
-        self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
+        self.mainapp_msgqueue: mp.Queue = parse_info.app_msgqueue
 
         self.log_manager:   BootLogManager  = BootLogManager( parse_info.log_root )
         self._alias_map:    KeyDict         = KeyDict()
@@ -201,8 +202,11 @@ class BootLogSchema( KeyValueSchema ):
     def init_repository( self: Self ) -> None:
         super().init_repository()
 
-        self.indexmanager_task = IndexManager( self.keyval_schema_info )
+        self.indexmanager_task = IndexManager( self.keyval_schema_info, self.mainapp_msgqueue )
         self.muxpump_task      = ValueMuxPumpTask()
+
+        if self.boot_index and self.group_id and self.autostart:
+            self.launch_processing()
 
     def launch_processing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
 

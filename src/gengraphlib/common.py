@@ -92,6 +92,8 @@ KeyIndexPacket: type = namedtuple(
                     "is_unique"
                    ])
 
+keyIndexMsgTuple: type = tuple[str, KeyIndexType, KeyIndexState, int, int, bool ]
+
 class KeyIndexMsg(NamedTuple):
     keyinfo_id:    str
     index_type:    KeyIndexType
@@ -100,9 +102,15 @@ class KeyIndexMsg(NamedTuple):
     instance_cnt:  int
     is_unique:     bool
 
-    def to_packet( self: Self ) -> KeyIndexPacket:
-        packet = KeyIndexPacket( *self )
-        return packet
+    def to_tuple( self: Self ) -> tuple:
+        return ( 
+            self.keyinfo_id,
+            self.index_type,
+            self.index_state,
+            self.value_cnt,
+            self.instance_cnt,
+            self.is_unique
+        )
 
     @classmethod
     def from_packet( cls, keyindex_packet: KeyIndexPacket ):

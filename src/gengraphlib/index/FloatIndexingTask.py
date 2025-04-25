@@ -10,8 +10,8 @@ from ..bootlog.BootLogInfo import BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class FloatIndexingTask( IndexTaskBase[float] ):
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo  ) -> None:
-        super( FloatIndexingTask, self ).__init__(key_info, bootlog_info )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, mainapp_msgqueue: mp.Queue  ) -> None:
+        super( FloatIndexingTask, self ).__init__(key_info, bootlog_info, mainapp_msgqueue )
 
         self._type: type = float
         self._keytype: KeyType.KFloat
@@ -29,6 +29,9 @@ class FloatIndexingTask( IndexTaskBase[float] ):
             value: str
             rec_num, value = queue.get()
             self.recv_value( rec_num, value )
+
+            if self._value_cnt % self.status_cnt == 0:
+                self.send_status()
 
     def recv_value( self: Self, rec_num: int, value: str ) -> None:
         try:

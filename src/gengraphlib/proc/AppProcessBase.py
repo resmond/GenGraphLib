@@ -5,7 +5,6 @@ import multiprocessing as mp
 import concurrent.futures as cf
 
 from .ProcLib import ProcRegistry, Startable
-from .MsgQueueBase import MsgQueueBase
 
 class AppProcessBase( ProcRegistry ):
     instance: Self | None = None
@@ -13,21 +12,25 @@ class AppProcessBase( ProcRegistry ):
     def __init__(self: Self, app_id: str) -> None:
         super( AppProcessBase, self ).__init__()
         AppProcessBase.instance = self
+
         self.app_id: str = app_id
-        self.startables: dict[str, Startable ] = {}
-        self.queuess: dict[str, mp.Queue ] = {}
-        self.msg_queue: MsgQueueBase | None = None
-        self.manager: SyncManager | None = mp.Manager()
-        self.thread_exe: cf.ThreadPoolExecutor | None = cf.ThreadPoolExecutor(max_workers=4)
+        self.startables: dict[str,Startable] = {}
+        self.queue_map: dict[str, mp.Queue] = {}
+        self.mainapp_msgqueue: mp.Queue | None = None
+        self.sync_manager: SyncManager | None = mp.Manager()
+        self.threadpool_ex: cf.ThreadPoolExecutor | None = cf.ThreadPoolExecutor( max_workers=4 )
         self.init_internals()
 
     def init_internals( self: Self ) -> None:
         pass
 
-    def create_queue( self: Self, queue_id: str ):
-        queue: mp.Queue =  self.manager.Queue()
-        self.queues[ queue_id ] = queue
-        return queue
+    def create_mainapp_msgqueue( self: Self ):
+        self.mainapp_msgqueue =  self.sync_manager.Queue()
+        return self.mainapp_msgqueue
+
+    def create_queue( self: Self, queue_id: str ) -> mp.Queue:
+        self.queue_map[queue_id] = self.sync_manager.Queue()
+        return self.queue_map[queue_id]
 
     def register_startable( self: Self, startable: Startable ) -> None:
         self.startables[ startable.id() ] = startable
