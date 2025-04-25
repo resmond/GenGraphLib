@@ -10,10 +10,12 @@ from ..common import (
     KeyIndexType,
     keyIndexInfo,
     KeyIndexState,
-    KeyInfo
+    KeyInfo,
+    IndexTaskInterface,
+    BootLogInfo
 )
-from ..proc.TaskLib import TaskBase, IndexTaskInterface
-from ..bootlog.BootLogContext import BootLogInfo, BootLogContext
+from ..proc.TaskLib import TaskBase
+#from ..bootlog.BootLogContext import BootLogContext
 
 class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
 
@@ -30,7 +32,7 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
         self._end_event:       mp.Event       = end_event
 
         self._bootlog_info:    BootLogInfo    = bootlog_info
-        self._bootlog_context: BootLogContext = BootLogContext( bootlog_info )
+        #self._bootlog_context: BootLogContext = BootLogContext( bootlog_info )
 
         self._index_dir:      str = self._bootlog_info.keys_path
         self._index_filepath: str = os.path.join( self._index_dir, f"{self.key}.index" )

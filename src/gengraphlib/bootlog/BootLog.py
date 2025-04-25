@@ -4,11 +4,9 @@ import os
 import datetime as dt
 import multiprocessing as mp
 
-from ..common import KeyValSchemaInfo
+from ..common import KeyValSchemaInfo, BootLogInfo
 
 from ..index.LogIndexingProcess import LogIndexingProcess
-
-from .BootLogInfo import BootLogInfo
 
 
 class BootLog:

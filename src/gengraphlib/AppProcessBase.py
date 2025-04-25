@@ -1,14 +1,11 @@
 from multiprocessing.managers import SyncManager
 from typing import Self
 
+
 import multiprocessing as mp
 import concurrent.futures as cf
 
-from .ProcLib import ProcRegistry, Startable
-
-class AppInfo:
-    def __init__( self: Self ) -> None:
-        self.app_id: str = ""
+from .common import Startable, ProcRegistry
 
 class AppProcessBase( ProcRegistry ):
     instance: Self | None = None

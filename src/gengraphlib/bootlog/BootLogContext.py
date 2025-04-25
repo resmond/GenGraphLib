@@ -5,7 +5,8 @@ import os
 
 from io import BufferedWriter, TextIOWrapper, BufferedReader
 
-from .BootLogInfo import BootLogInfo
+from ..common import BootLogInfo
+
 
 class BootLogContext:
     def __init__(self: Self, boot_log_info: BootLogInfo) -> None:

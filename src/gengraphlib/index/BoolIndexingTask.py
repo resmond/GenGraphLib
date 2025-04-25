@@ -4,8 +4,7 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedSet
 
-from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo
-from ..bootlog.BootLogInfo import BootLogInfo
+from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo, BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class BoolIndexingTask( IndexTaskBase[bool] ):

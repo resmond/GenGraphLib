@@ -4,9 +4,8 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo, keyIndexInfo, KeyIndexState
+from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo, keyIndexInfo, KeyIndexState, BootLogInfo
 
-from ..bootlog.BootLogInfo import BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
 class StrIndexingTask( IndexTaskBase[str] ):

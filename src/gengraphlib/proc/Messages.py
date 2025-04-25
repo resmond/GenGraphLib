@@ -14,7 +14,6 @@ class MsgSourceType(IntEnum):
 class MessageBase:
 
     def __init__( self: Self, source_id: str, message: str, source_type: MsgSourceType = MsgSourceType.Task ):
-        super(MessageBase, self).__init__()
         self.msg_type: MsgType = MsgType.Status
         self.source_type: MsgSourceType = source_type
         self.source_id: str = source_id

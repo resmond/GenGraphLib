@@ -59,7 +59,6 @@ class IntKeyDef( KeyDefBase[int] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
         super(IntKeyDef, self).__init__( key, alias, KeyType.KInt, groups )
 
-
 class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
         super(BoolKeyDef, self).__init__( key, alias, KeyType.KBool, groups )
@@ -73,7 +72,6 @@ class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
 class FloatKeyDef( KeyDefBase[float] ):
     def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
         super(FloatKeyDef, self).__init__( key, alias, KeyType.KFloat, groups )
-
 
 class KeyDict( dict[str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:

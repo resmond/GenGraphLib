@@ -5,17 +5,15 @@ from typing import Self
 import multiprocessing as mp
 import asyncio as aio
 
-from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket
+from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
 
-from ..bootlog import BootLogInfo
-from ..proc.TaskLib import IndexTaskInterface
+from .CmdStdoutStream import CmdStdoutStream
 
 from .StrIndexingTask import StrIndexingTask
 from .IntIndexingTask import IntIndexingTask
 from .BoolIndexingTask import BoolIndexingTask
 from .FloatIndexingTask import FloatIndexingTask
 from .TmstIndexingTask import TmstIndexingTask
-from ..streams import CmdStdoutStream
 
 class LogIndexingProcess:
 

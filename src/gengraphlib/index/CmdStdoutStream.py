@@ -1,12 +1,13 @@
-import os
-from io import BufferedWriter
 from typing import Self
 
-from collections.abc import AsyncGenerator
-import multiprocessing as mp
+import os
 
 import asyncio as aio
 import asyncio.subprocess as asub
+import multiprocessing as mp
+
+from io import BufferedWriter
+from collections.abc import AsyncGenerator
 
 class CmdStdoutStream:
 

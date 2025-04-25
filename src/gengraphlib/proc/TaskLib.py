@@ -1,53 +1,12 @@
-from typing import Self, Protocol
-from abc import abstractmethod
-from enum import IntEnum
+from typing import Self
 import multiprocessing as mp
 
-class TaskType( IntEnum ):
-    Undefined = 0
-    Main = 1
-    StreamSource = 2
-    StreamSink = 3
-    KeyValProcessor = 4
-
-class TaskState( IntEnum ):
-    Init = 1
-    Running = 2
-    Stopped = 3
-
-class Startable(Protocol):
-    @abstractmethod
-    def id( self ) -> str: ...
-    @abstractmethod
-    def is_proc( self ) -> bool: ...
-    def start( self: Self ) -> None: ...
-    def stop( self: Self ) -> None: ...
-    @abstractmethod
-    def main_loop( self: Self, *args, **kargs ) -> None: ...
-
-class IndexTaskInterface(Startable):
-
-    def __init( self: Self ) -> None:
-        self.key: str            = ""
-        self.alias: str          = ""
-        self.index_dir: str      = ""
-        self.index_filepath: str = ""
-
-    @property
-    @abstractmethod
-    def queue( self: Self ) -> mp.Queue: ...
-
-class IndexManagerInterface(Protocol):
-
-    @staticmethod
-    def register_index( index: IndexTaskInterface ) -> None: ...
-
+from ..common import TaskType, TaskState
 
 class TaskBase:
     default_queue_size: int = 1024 * 256
 
     def __init__( self: Self, task_id: str, queue_size: int | None = None ) -> None:
-        super(TaskBase,self).__init__()
         self.task_id:    str = task_id
         self.queue_size: int = queue_size or self.default_queue_size
         self.task_state: TaskState = TaskState.Init

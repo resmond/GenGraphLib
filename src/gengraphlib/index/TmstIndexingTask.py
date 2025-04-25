@@ -13,9 +13,8 @@ from ..common import (
     KeyInfo,
     KeyIndexState,
     keyIndexInfo,
+    BootLogInfo
 )
-
-from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
 

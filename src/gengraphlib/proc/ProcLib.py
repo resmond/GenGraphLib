@@ -1,25 +1,14 @@
-from typing import Self, Protocol
-from enum import IntEnum
+from typing import Self
 from abc import ABC, abstractmethod
+
 import multiprocessing as mp
+
 from   threading import Thread
 
-from .TaskLib import TaskBase, Startable
+from ..common import Startable, ProcType, ProcState
 
-class ProcType(IntEnum):
-    Undefined = 0
-    Main = 1
-    StreamSource = 2
-    StreamSink = 3
-    KeyValProcessor = 4
+from .TaskLib import TaskBase
 
-class ProcState(IntEnum):
-    Init = 1
-    Running = 2
-    Stopped = 3
-
-class ProcRegistry(Protocol):
-    def register_proc( self, proc: Startable ) -> None: ...
 
 class ProcBase(ABC, Startable):
     default_queue_size: int = 1024 * 256
@@ -38,6 +27,7 @@ class ProcBase(ABC, Startable):
     def id( self: Self ) -> str:
         return self.proc_id
 
+    # noinspection PyMethodMayBeStatic
     def is_proc( self: Self ) -> bool:
         return True
 

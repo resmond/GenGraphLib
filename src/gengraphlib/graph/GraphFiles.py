@@ -24,7 +24,7 @@ class GraphFileBase( ABC ):
 
 class GraphFileSource( GraphFileBase ):
     def __init__( self: Self, key_graph: KeyValueSchema, _vector: KeyValVector, file_path: str ):
-        super().__init__( key_graph, _vector, file_path )
+        super(GraphFileSource, self).__init__( key_graph, _vector, file_path )
         self.input_stream : aio.StreamReader | None = None
 
     def open( self ) -> bool:

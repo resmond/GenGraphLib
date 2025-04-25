@@ -3,27 +3,23 @@ from typing import Self
 import os
 import datetime as dt
 
-from sortedcontainers import SortedDict
-
 from ..common import (
     KeyType,
     KeyValTypes,
-    LineRefList,
     KeyDefInterface,
     KeyValuesInterface
 )
 
-
 #from .. import GNodeInterface
 
-class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface ):
+class KeyValues[T: KeyValTypes]( KeyValuesInterface ):
     def __init__(self: Self, _key_def: KeyDefInterface, index_dir: str) -> None:
         super(KeyValues, self).__init__()
-        self.key_def: KeyDefInterface = _key_def
-        self.index_dir: str = index_dir
-        self.id: str = _key_def.key
-        self.keytype: KeyType
-        self.unique: bool = True
+        self.key_def:   KeyDefInterface = _key_def
+        self.id:        str             = _key_def.key
+        self.index_dir: str             = index_dir
+        self.keytype:   KeyType | None  = None
+        self.unique:    bool            = True
 
     def init_index( self ) -> bool:
         try:
@@ -35,7 +31,7 @@ class KeyValues[T: KeyValTypes]( SortedDict[T, LineRefList], KeyValuesInterface 
             return False
 
     def __repr__(self: Self) -> str:
-        return f'{{ json_key: "{self.json_key}", log_key: "{self.log_key}", unique:{self.unique} }}'
+        return f'{{ key: "{self.key}", alias: "{self.alias}", unique:{self.unique} }}'
 
 class StrKeyValueSet( KeyValues[str] ):
     def __init__( self: Self, _key_def: KeyDefInterface ) -> None:

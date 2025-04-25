@@ -5,8 +5,7 @@ import multiprocessing as mp
 from PySide6.QtWidgets import QApplication
 
 
-from gengraphlib import AppProcessBase
-
+from src.gengraphlib.AppProcessBase import AppProcessBase
 from BootLogSchema import BootLogSchema, ParseProcessInfo
 from MyMainWin import MyMainWindow
 

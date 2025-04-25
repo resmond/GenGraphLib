@@ -1,7 +1,9 @@
+from abc import abstractmethod
 from collections import namedtuple
 from typing import Self, Protocol, NamedTuple
 
 import datetime as dt
+import multiprocessing as mp
 
 from collections.abc import Iterable
 from enum import IntEnum, StrEnum
@@ -50,6 +52,56 @@ class KeyIndexState(IntEnum):
     Running       = 2
     Finished      = 3
     Error         = 4
+
+class TaskType( IntEnum ):
+    Undefined = 0
+    Main = 1
+    StreamSource = 2
+    StreamSink = 3
+    KeyValProcessor = 4
+
+class TaskState( IntEnum ):
+    Init = 1
+    Running = 2
+    Stopped = 3
+
+class Startable(Protocol):
+    @abstractmethod
+    def id( self ) -> str: ...
+    @abstractmethod
+    def is_proc( self ) -> bool: ...
+    def start( self: Self ) -> None: ...
+    def stop( self: Self ) -> None: ...
+    @abstractmethod
+    def main_loop( self: Self, *args, **kargs ) -> None: ...
+
+class IndexTaskInterface(Startable):
+
+    def __init( self: Self ) -> None:
+        self.key: str            = ""
+        self.alias: str          = ""
+        self.index_dir: str      = ""
+        self.index_filepath: str = ""
+
+    @property
+    @abstractmethod
+    def queue( self: Self ) -> mp.Queue: ...
+
+class ProcType(IntEnum):
+    Undefined = 0
+    Main = 1
+    StreamSource = 2
+    StreamSink = 3
+    KeyValProcessor = 4
+
+class ProcState(IntEnum):
+    Init = 1
+    Running = 2
+    Stopped = 3
+
+class ProcRegistry(Protocol):
+    def register_proc( self, proc: Startable ) -> None: ...
+
 
 class keyIndexInfo:
 
@@ -152,12 +204,11 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
 class KeyInfo:
 
     def __init__( self: Self, schema_id: str, key: str, alias: str, keytype: KeyType, groupids: list[str] ):
-        super().__init__()
-        self.schema_id: str = schema_id
-        self.key: str = key
-        self.alias: str = alias
-        self.keytype: KeyType = keytype
-        self.groupids: list[str] = groupids
+        self.schema_id: str       = schema_id
+        self.key:       str       = key
+        self.alias:     str       = alias
+        self.keytype:   KeyType   = keytype
+        self.groupids:  list[str] = groupids
 
     @property
     def keyinfo_id( self: Self ) -> str:
@@ -166,7 +217,27 @@ class KeyInfo:
 class KeyValSchemaInfo:
 
     def __init__( self: Self, keys: list[KeyInfo], groups: list[str], active_groups: list[str] | None = None, active_keys: list[str] | None = None ):
-        self.keys:          list[KeyInfo] = keys
-        self.groups:        list[str] = groups
+        self.keys:          list[KeyInfo]    = keys
+        self.groups:        list[str]        = groups
         self.active_groups: list[str] | None = active_groups
         self.active_keys:   list[str] | None = active_keys
+
+class BootLogInfo:
+
+    def __init__(
+            self: Self,
+            schema_bootid: str,
+            boot_index: int,
+            first_dt: dt.datetime,
+            last_dt: dt.datetime,
+            dir_name: str,
+            dir_path: str,
+            keys_path: str | None = None
+        ) -> None:
+        self.schema_bootid: str          = schema_bootid
+        self.boot_index:    int          = boot_index
+        self.first_dt:      dt.datetime  = first_dt
+        self.last_dt:       dt.datetime  = last_dt
+        self.dir_name:      str          = dir_name
+        self.dir_path:      str          = dir_path
+        self.keys_path: str | None       = keys_path

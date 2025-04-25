@@ -2,10 +2,11 @@
 
 from .common import (
       KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict, VectorValTypes
-    , KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket
-    , KeyDefInterface, KeyDefDict, LineRefList
-    , KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
+    , KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket, ProcType, ProcState
+    , TaskType, TaskState, Startable, IndexTaskInterface, ProcRegistry, KeyDefInterface
+    , KeyDefDict, LineRefList, KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
     , SerializationType, DefaultMapOfLists, KeyValuesInterface, KeyInfo, KeyValSchemaInfo
+    , BootLogInfo
 )
 
 from .regex import (
@@ -34,13 +35,8 @@ from .index import (
 )
 
 from .proc import (
-      ProcType, ProcState, ProcBase, IndexTaskInterface, IndexManagerInterface
-    , TaskType, TaskState, TaskBase, AppProcessBase, StreamSinkProc
-    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
-)
-
-from .streams import (
-    CmdStdoutStream
+      ProcBase, TaskBase, MsgType
+    , MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
 )
 
 from .textlog import (
@@ -55,15 +51,20 @@ from .codegen import (
     , ImportsInfo , ImportPattern, ClsLineInfo, ClsLinePattern
 )
 
-from .bootlog import BootLog, BootLogManager, BootLogInfo, BootLogContext
+from .bootlog import BootLog, BootLogManager, BootLogContext
 
 __all__ = [
       "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
-    , "SerializationType", "DefaultMapOfLists"
-    , "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes", "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "KeyValuePacket"
-    , "KeyDefInterface", "KeyDefDict", "LineRefList"
+    , "SerializationType", "DefaultMapOfLists", "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes"
+    , "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "TaskType", "TaskState",  "IndexTaskInterface"
+    , "Startable", "KeyValuePacket", "ProcType", "ProcState", "ProcRegistry", "KeyDefInterface", "KeyDefDict"
+    , "LineRefList", "BootLogInfo"
+
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
+
+#
+
     , "NodeDict", "IndexedNodeList", "GNodeInterface", "KeyValuesInterface"
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
@@ -77,13 +78,10 @@ __all__ = [
     , "IndexTaskBase", "LogIndexingProcess"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSinkProc"
+    , "TaskBase", "ProcBase"
+
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
-    , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
-
-
-    , "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"
