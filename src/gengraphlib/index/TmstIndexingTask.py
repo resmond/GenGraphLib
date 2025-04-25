@@ -19,6 +19,8 @@ from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
 
+
+# noinspection DuplicatedCode
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
@@ -52,10 +54,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
 
-        rec_num: int = 0
-        value: str = ""
         try:
-
             while not end_event:
                 rec_num, value = queue.get()
 
@@ -72,9 +71,9 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
                     self._app_msgqueue.put(keyindex_info)
 
         except ValueError as valexc:
-            print(f'TmstIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+            print(f'TmstIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+            print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}')
 
 

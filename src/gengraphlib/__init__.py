@@ -40,7 +40,7 @@ from .proc import (
 )
 
 from .streams import (
-    ValueMuxPumpTask, CmdStdoutStream, StreamSourceTask
+    ValueMuxPumpTask, CmdStdoutStream, IndexStreamSink
 )
 
 from .textlog import (
@@ -77,13 +77,13 @@ __all__ = [
     , "IndexTaskBase", "IndexManager"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
 
-    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "StreamSourceTask", "StreamSinkProc"
+    , "ProcType", "ProcState", "ProcBase", "AppProcessBase", "CmdStdoutStream", "IndexStreamSink", "StreamSinkProc"
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
     , "TaskType", "TaskState", "TaskBase", "IndexTaskInterface", "IndexManagerInterface"
 
 
-    , "ValueMuxPumpTask", "StreamSourceTask", "CmdStdoutStream"
+    , "ValueMuxPumpTask", "IndexStreamSink", "CmdStdoutStream"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

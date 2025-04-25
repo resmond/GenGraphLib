@@ -1,9 +1,10 @@
 import multiprocessing as mp
 import time
-from typing import Any, Self
+from typing import Self
 
 from PySide6.QtCore import QObject, Signal
 
+# noinspection DuplicatedCode
 class QtMsgQueueReader( QObject ):
     activated     = Signal(object)
     data_received = Signal(object)

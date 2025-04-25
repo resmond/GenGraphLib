@@ -17,6 +17,8 @@ from ..bootlog.BootLogInfo import BootLogInfo
 
 from .IndexTaskBase import IndexTaskBase
 
+
+# noinspection DuplicatedCode
 class FloatIndexingTask( IndexTaskBase[float] ):
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         super( FloatIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
@@ -46,8 +48,6 @@ class FloatIndexingTask( IndexTaskBase[float] ):
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
 
-        rec_num: int = 0
-        value: str = ""
         try:
             while True:
                 rec_num, value = queue.get()
@@ -64,7 +64,7 @@ class FloatIndexingTask( IndexTaskBase[float] ):
                     self._app_msgqueue.put( keyindex_info )
 
         except ValueError as valexc:
-            print(f'FloatIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+            print(f'FloatIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'FloatIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+            print(f'FloatIndexing({self.key}:{self.alias}) Exception: {exc}')

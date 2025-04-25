@@ -62,10 +62,10 @@ class BootLogManager:
 
                 for log_line in file:
                     if not first_line:
-                        boot_log_dir = BootLog( self.root_dir, log_line )
-                        self._bootlog_list.append( boot_log_dir )
-                        self._logdate_map[ boot_log_dir.first_dt ] = boot_log_dir
-                        self._bootlog_index[ boot_log_dir.boot_index ] = boot_log_dir
+                        boot_log = BootLog( self.root_dir, log_line )
+                        self._bootlog_list.append( boot_log )
+                        self._logdate_map[ boot_log.first_dt ] = boot_log
+                        self._bootlog_index[ boot_log.boot_index ] = boot_log
                     else:
                         first_line: bool = False
 

@@ -40,7 +40,6 @@ class ValueMuxPumpTask( TaskBase ):
         while True:
 
             record_packet: KeyRecordPacket = record_queue.get()
-
             if record_packet is None:
                 break
 

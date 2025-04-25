@@ -37,8 +37,6 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         self._thread.start()
 
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
-        rec_num: int = 0
-        value: str = ""
 
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
@@ -58,10 +56,10 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
                     self.send_status()
 
         except ValueError as valexc:
-            print(f'BoolIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+            print(f'BoolIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+            print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}')
 
 
 

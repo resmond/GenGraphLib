@@ -16,11 +16,12 @@ from .TmstIndexingTask import TmstIndexingTask
 
 class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
 
-    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo, mainapp_msgqueue: mp.Queue ) -> None:
+    def __init__( self: Self, keyval_schema_info: KeyValSchemaInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         super( IndexManager, self ).__init__()
 
         self.keyvalue_schema_info: KeyValSchemaInfo = keyval_schema_info
-        self.mainapp_msgqueue: mp.Queue = mainapp_msgqueue
+        self.app_msgqueue: mp.Queue = app_msgqueue
+        self.end_event: mp.Event = end_event
         self._bootlog_info: BootLogInfo | None = None
 
         self.index_queuemap: dict[str, mp.Queue] = dict[str, mp.Queue]()
@@ -40,15 +41,15 @@ class IndexManager[ T: KeyValTypes ]( IndexManagerInterface ):
             if keyinfo.alias in self.active_keys:
                 match keyinfo.keytype:
                     case KeyType.KStr:
-                        self.register_index( StrIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
+                        self.register_index( StrIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KInt:
-                        self.register_index( IntIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
+                        self.register_index( IntIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KBool:
-                        self.register_index( BoolIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
+                        self.register_index( BoolIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KFloat:
-                        self.register_index( FloatIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
+                        self.register_index( FloatIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
                     case KeyType.KTmst:
-                        self.register_index( TmstIndexingTask( keyinfo, self._bootlog_info, self.mainapp_msgqueue ) )
+                        self.register_index( TmstIndexingTask( keyinfo, self._bootlog_info, self.app_msgqueue, self.end_event ) )
 
         for index in self.index_taskmap.values():
             index.start()

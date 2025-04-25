@@ -49,10 +49,7 @@ class IntIndexingTask( IndexTaskBase[int] ):
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
 
-        rec_num: int = 0
-        value: str = ""
         try:
-
             while not end_event:
                 rec_num, value = queue.get()
 
@@ -67,8 +64,8 @@ class IntIndexingTask( IndexTaskBase[int] ):
                     self.send_status()
 
         except ValueError as valexc:
-            print(f"IntIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}")
+            print(f'IntIndexing({self.key}:{self.alias}) ValueError: {valexc}')
 
         except Exception as exc:
-            print(f"IntIndexing({self.key}:{self.alias}) Exception: {exc}   {value}")
+            print(f'IntIndexing({self.key}:{self.alias}) Exception: {exc}')
 

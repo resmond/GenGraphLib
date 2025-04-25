@@ -1,15 +1,17 @@
 from typing import Self
 
-import sys
-import signal
+# import sys
+# import signal
 import multiprocessing as mp
 import time
 
+
+# noinspection DuplicatedCode
 class QtMsgQueueReader:
-    def __init__( self: Self, app_msgqueue: mp.Queue, evt_stop: mp.Event ) -> None:
+    def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         self.manager = mp.Manager()
-        self.message_queue = self.manager.Queue()
-        self.should_stop   = self.manager.Event()
+        self.app_msgqueue: mp.Queue = app_msgqueue
+        self.end_event: mp.Event    = end_event
         self.reader_process = None
 
     def start_reader( self: Self ) -> None:
@@ -19,7 +21,7 @@ class QtMsgQueueReader:
 
         self.reader_process = mp.Process(
             target=self._reader_loop,
-            args=(self.message_queue, self.should_stop, )
+            args=(self.app_msgqueue, self.end_event,)
         )
 
         self.reader_process.daemon = True
@@ -48,12 +50,12 @@ class QtMsgQueueReader:
             print("Reader process exiting")
 
     def _process_message(self, message):
-        print(f"Processing message: {message}")
+        print(f"{self}:  Processing message: {message}")
 
     def stop(self):
         if self.reader_process and self.reader_process.is_alive():
             print("Stopping reader process...")
-            self.should_stop.set()
+            self.end_event.set()
             self.reader_process.join(timeout=2.0)
 
             # If process is still alive after timeout, terminate it
@@ -66,30 +68,20 @@ class QtMsgQueueReader:
 
 # Example usage
 def main():
+    app_msgqueue: mp.Queue = mp.Queue()
+    end_event:    mp.Event = mp.Event()
+
     # Set up signal handling
-    def signal_handler(sig, frame):
-        print("Received interrupt signal, shutting down...")
-        if reader:
-            reader.stop()
-        sys.exit(0)
+    # def signal_handler(sig, frame):
+    #     print("Received interrupt signal, shutting down...")
+    #     if reader:
+    #         reader.stop()
+    #     sys.exit(0)
+    #
+    # signal.signal(signal.SIGINT, signal_handler)
 
-    signal.signal(signal.SIGINT, signal_handler)
-
-    reader = QtMsgQueueReader()
+    reader = QtMsgQueueReader(app_msgqueue,end_event)
     reader.start_reader()
 
-    try:
-        # Example: add some messages
-        for i in range(5):
-            reader.add_message(f"Test message {i}")
-            time.sleep(1)
 
-        # Wait a bit before stopping
-        time.sleep(2)
-    finally:
-        # Ensure we clean up properly
-        reader.stop()
-
-if __name__ == "__main__":
-    main()
 

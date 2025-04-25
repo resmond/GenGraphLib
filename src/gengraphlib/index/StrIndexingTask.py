@@ -37,8 +37,6 @@ class StrIndexingTask( IndexTaskBase[str] ):
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
 
-        rec_num: int = 0
-        value: str = ""
         try:
             while not end_event:
 
@@ -56,8 +54,8 @@ class StrIndexingTask( IndexTaskBase[str] ):
                     self._app_msgqueue.put( keyindex_info )
 
         except ValueError as valexc:
-            print(f'StrIndexing({self.key}:{self.alias}) ValueError: {valexc}   {value}' )
+            print(f'StrIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}   {value}')
+            print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}')
 
