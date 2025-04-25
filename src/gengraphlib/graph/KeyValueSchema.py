@@ -21,7 +21,7 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         self._root_dir = root_dir
         self._alias_map: KeyDefDict = KeyDefDict()
         self.key_groups: KeyGroups = KeyGroups("key_groups",self)
-        self.keyval_schema_info: KeyValSchemaInfo | None = None
+        self.schema_info: KeyValSchemaInfo | None = None
         self.missing_keys: list[str] = []
         self.none_values:  list[str] = []
 
@@ -63,7 +63,7 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
                     for group_id in keydef.groupids:
                         self.add_key_to_group(group_id, key)
 
-        self.keyval_schema_info = self.get_schema_info()
+        self.schema_info = self.get_schema_info()
 
     def get_schema_info( self: Self, ) -> KeyValSchemaInfo:
         keys: list[KeyInfo] = [ key.get_keyinfo(self.id) for key in self.values() ]

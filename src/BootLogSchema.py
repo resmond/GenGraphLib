@@ -9,7 +9,6 @@ from gengraphlib import (
     KeyDict,
     KeyValueSchema,
     BootLogManager,
-    ValueMuxPumpTask,
     BootLog,
     BootLogInfo,
     IndexManager
@@ -55,11 +54,7 @@ class BootLogSchema( KeyValueSchema ):
         self.cur_bootlog:       BootLog              | None = None
         self.bootlog_info:      BootLogInfo          | None = None
 
-        #self.log_source:        StreamSourceTask     | None = None
-
         self.indexmanager_task: IndexManager         | None = None
-        self.muxpump_task:      ValueMuxPumpTask     | None = None
-        self.record_queue:      mp.Queue             | None = None
 
         self.active_keys:       set[str]             | None = None
         self.queues_byalias:    dict[str, mp.Queue ] | None = None
@@ -204,8 +199,7 @@ class BootLogSchema( KeyValueSchema ):
     def init_repository( self: Self ) -> None:
         super().init_repository()
 
-        self.indexmanager_task = IndexManager( self.keyval_schema_info, self.app_msgqueue, self.end_event )
-        self.muxpump_task      = ValueMuxPumpTask()
+        self.indexmanager_task = IndexManager( self.schema_info, self.app_msgqueue, self.end_event )
 
         if self.cur_bootindex and self.cur_groupid and self.autostart:
             self.launch_processing()
@@ -224,9 +218,7 @@ class BootLogSchema( KeyValueSchema ):
         self.bootlog_info = self.cur_bootlog.get_info()
 
         self.queues_byalias = self.indexmanager_task.start_indexes( self.bootlog_info, self.active_keys )
-        self.record_queue   = self.muxpump_task.start_muxpump( self.queues_byalias )
-
-        self.cur_bootlog.start_streaming( self.record_queue, self.active_keys, self.write_bin, self.write_log )
+        self.cur_bootlog.start_streaming( self.queues_byalias, self.end_event, self.write_bin, self.write_log )
 
 
 

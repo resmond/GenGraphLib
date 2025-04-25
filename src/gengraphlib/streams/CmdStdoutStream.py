@@ -1,3 +1,5 @@
+import os
+from io import BufferedWriter
 from typing import Self
 
 from collections.abc import AsyncGenerator
@@ -8,12 +10,14 @@ import asyncio.subprocess as asub
 
 class CmdStdoutStream:
 
-    def __init__(self: Self, cmd: str, end_event: mp.Event ):
+    def __init__(self: Self, cmd: str, end_event: mp.Event, write_bin: bool ):
         self.cmd: str = cmd
+        self.write_bin: bool = write_bin
+        self.bin_writer: BufferedWriter | None = None
         self.end_event: mp.Event = end_event
         self.tail_text: str = ""
 
-    async def line_stream( self: Self ) -> AsyncGenerator[ str, None ]:
+    async def stream_lines( self: Self, ) -> AsyncGenerator[ str, None ]:
         if self.cmd is None:
             print("CmdStdoutStream: No command")
             return
@@ -25,23 +29,32 @@ class CmdStdoutStream:
 
         print("CmdStdoutStream: stream started")
 
+        if self.write_bin:
+            self.bin_writer = open( os.path.join( self.bootlog_info.dir_path, "bootlog.bin" ), "wb" )
+
         while not self.end_event:
 
             try:
                 buffer = await exec_process.stdout.read(1024*16)
-                if not buffer  or len(buffer) == 0:
+                if self.end_event or buffer is None or len(buffer) == 0:
                     break
+                else:
+                    if self.write_bin:
+                        self.bin_writer.write(buffer)
 
-                new_text = buffer.decode(errors="replace")
-                lines: list[str] = (self.tail_text + new_text).split("\n")
-                self.tail_text = lines.pop()
+                    new_text = buffer.decode(errors="replace")
+                    lines: list[str] = (self.tail_text + new_text).split("\n")
+                    self.tail_text = lines.pop()
 
-                for line in lines:
-                    yield line
+                    for line in lines:
+                        yield line
 
             except Exception as exc:
                 print(f'CmdStdoutStream: Exception on {self.cmd}')
                 print(f'    {exc}')
+
+        if self.bin_writer is not None:
+            self.bin_writer.close()
 
         print("CmdStdoutStream: stream ended")
 

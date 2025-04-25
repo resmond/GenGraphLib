@@ -4,7 +4,7 @@ import os
 import datetime as dt
 import multiprocessing as mp
 
-from ..streams import IndexStreamSink
+from ..streams import ValueIndexMsgPump
 from .BootLogInfo import BootLogInfo
 
 class BootLog:
@@ -22,7 +22,7 @@ class BootLog:
 
         self.active_keys:          set[str] | None = None
         self.valuemux_queue:       mp.Queue | None = None
-        self.journal_streamsource: IndexStreamSink | None = None
+        self.journal_streamsource: ValueIndexMsgPump | None = None
 
     def boot_label( self: Self ) -> str:
         yymmdd: str = self.first_dt.strftime("%y-%m-%d")
@@ -54,11 +54,11 @@ class BootLog:
             keys_path=self.keys_path
         )
 
-    def start_streaming( self, valuemux_queue: mp.Queue, active_keys: set[str ], write_bin: bool = False, write_log: bool = False ):
-        self.active_keys = active_keys
-        self.valuemux_queue = valuemux_queue
-        self.journal_streamsource = IndexStreamSink( bootlog_info = self.get_info(), write_bin=write_bin, write_log = write_log )
-        self.journal_streamsource.start_stream( active_keys=self.active_keys, record_queue=self.valuemux_queue )
+    def start_streaming( self, queues_byalias: dict[str, mp.Queue ], end_event: mp.Event, write_bin: bool = False, write_log: bool = False ):
+        #self.active_keys = active_keys
+        #self.valuemux_queue = valuemux_queue
+        self.journal_streamsource = ValueIndexMsgPump( bootlog_info = self.get_info(), write_bin=write_bin, write_log = write_log )
+        self.journal_streamsource.start_stream( queues_byalias, end_event )
 
 
 

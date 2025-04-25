@@ -1,10 +1,10 @@
-from .IndexStreamSink import IndexStreamSink
+from .ValueIndexMsgPump import ValueIndexMsgPump
 from .ValueMuxPumpTask import ValueMuxPumpTask
 from .CmdStdoutStream import CmdStdoutStream
 
 __all__ = [
     "ValueMuxPumpTask"
-    , "IndexStreamSink"
+    , "ValueIndexMsgPump"
     , "CmdStdoutStream"
 ]
 
