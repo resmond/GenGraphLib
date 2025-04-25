@@ -4,14 +4,29 @@ import os
 import datetime as dt
 import multiprocessing as mp
 
-from ..streams import ValueIndexMsgPump
+from ..common import KeyValSchemaInfo
+
+from ..index.LogIndexingProcess import LogIndexingProcess
+
 from .BootLogInfo import BootLogInfo
+
 
 class BootLog:
 
-    def __init__( self: Self, root_dir: str, logrec_line: str ) -> None:
-        val_list: list[str] = logrec_line.split()
+    def __init__(
+        self: Self,
+        root_dir: str,
+        logrec_line: str,
+        schema_info: KeyValSchemaInfo,
+        app_msgqueue: mp.Queue,
+        end_event: mp.Event,
+    ) -> None:
         self.root_dir = root_dir
+        self.schema_info: KeyValSchemaInfo = schema_info
+        self.app_msgqueue: mp.Queue = app_msgqueue
+        self.end_event: mp.Event = end_event
+
+        val_list: list[str] = logrec_line.split()
         self.boot_index: int = int( val_list[0] )
         self.boot_id:    str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
@@ -20,9 +35,8 @@ class BootLog:
         self.bootlog_path:   str = os.path.join( self.root_dir, "boots", self._boot_label )
         self.keys_path:      str = os.path.join( self.root_dir, "keys" )
 
-        self.active_keys:          set[str] | None = None
-        self.valuemux_queue:       mp.Queue | None = None
-        self.journal_streamsource: ValueIndexMsgPump | None = None
+        self.indexing_process: LogIndexingProcess | None = None
+        self.active_keys:      set[str]           | None = None
 
     def boot_label( self: Self ) -> str:
         yymmdd: str = self.first_dt.strftime("%y-%m-%d")
@@ -54,11 +68,10 @@ class BootLog:
             keys_path=self.keys_path
         )
 
-    def start_streaming( self, queues_byalias: dict[str, mp.Queue ], end_event: mp.Event, write_bin: bool = False, write_log: bool = False ):
-        #self.active_keys = active_keys
-        #self.valuemux_queue = valuemux_queue
-        self.journal_streamsource = ValueIndexMsgPump( bootlog_info = self.get_info(), write_bin=write_bin, write_log = write_log )
-        self.journal_streamsource.start_stream( queues_byalias, end_event )
+    def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = False ) -> None:
+        self.indexing_process = LogIndexingProcess( self.schema_info, self.app_msgqueue, self.end_event )
+        if self.indexing_process:
+            self.indexing_process.index_bootlog( self.get_info(), active_keys, write_bin, write_log )
 
 
 

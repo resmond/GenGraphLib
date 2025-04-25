@@ -10,8 +10,7 @@ from gengraphlib import (
     KeyValueSchema,
     BootLogManager,
     BootLog,
-    BootLogInfo,
-    IndexManager
+    BootLogInfo
 )
 
 class ParseProcessInfo:
@@ -48,13 +47,11 @@ class BootLogSchema( KeyValueSchema ):
         self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
         self.end_event:    mp.Event = parse_info.end_event
 
-        self.log_manager:   BootLogManager  = BootLogManager( parse_info.log_root )
+        self.log_manager:   BootLogManager | None = None
         self._alias_map:    KeyDict         = KeyDict()
 
         self.cur_bootlog:       BootLog              | None = None
         self.bootlog_info:      BootLogInfo          | None = None
-
-        self.indexmanager_task: IndexManager         | None = None
 
         self.active_keys:       set[str]             | None = None
         self.queues_byalias:    dict[str, mp.Queue ] | None = None
@@ -199,12 +196,9 @@ class BootLogSchema( KeyValueSchema ):
     def init_repository( self: Self ) -> None:
         super().init_repository()
 
-        self.indexmanager_task = IndexManager( self.schema_info, self.app_msgqueue, self.end_event )
+        self.log_manager = BootLogManager( self.log_root, self.get_schema_info(), self.app_msgqueue, self.end_event )
 
-        if self.cur_bootindex and self.cur_groupid and self.autostart:
-            self.launch_processing()
-
-    def launch_processing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
+    def launch_indexing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
 
         if boot_index is not None:
             self.cur_bootindex = boot_index
@@ -217,8 +211,8 @@ class BootLogSchema( KeyValueSchema ):
         self.cur_bootlog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
         self.bootlog_info = self.cur_bootlog.get_info()
 
-        self.queues_byalias = self.indexmanager_task.start_indexes( self.bootlog_info, self.active_keys )
-        self.cur_bootlog.start_streaming( self.queues_byalias, self.end_event, self.write_bin, self.write_log )
+        self.cur_bootlog.launch_indexing( self.active_keys, self.write_bin, self.write_log )
+
 
 
 

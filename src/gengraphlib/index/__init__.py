@@ -1,5 +1,5 @@
 from .IndexTaskBase import IndexTaskBase
-from .IndexManager import IndexManager
+from .LogIndexingProcess import LogIndexingProcess
 from .IntIndexingTask import IntIndexingTask
 from .StrIndexingTask import StrIndexingTask
 from .TmstIndexingTask import TmstIndexingTask
@@ -8,7 +8,7 @@ from .FloatIndexingTask import FloatIndexingTask
 
 __all__ = [
     "IndexTaskBase",
-    "IndexManager",
+    "LogIndexingProcess",
     "IntIndexingTask",
     "StrIndexingTask",
     "TmstIndexingTask",
