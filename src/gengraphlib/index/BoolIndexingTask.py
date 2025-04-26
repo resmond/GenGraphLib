@@ -60,5 +60,8 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         except Exception as exc:
             print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}')
 
+    def serialize_index( self: Self ):
+        pass
+
 
 

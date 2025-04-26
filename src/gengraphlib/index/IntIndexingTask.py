@@ -68,3 +68,5 @@ class IntIndexingTask( IndexTaskBase[int] ):
         except Exception as exc:
             print(f'IntIndexing({self.key}:{self.alias}) Exception: {exc}')
 
+    def serialize_index( self: Self ):
+        pass

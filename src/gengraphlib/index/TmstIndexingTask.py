@@ -75,4 +75,5 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         except Exception as exc:
             print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-
+    def serialize_index( self: Self ):
+        pass

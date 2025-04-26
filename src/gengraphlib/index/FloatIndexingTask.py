@@ -16,7 +16,6 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
-
 # noinspection DuplicatedCode
 class FloatIndexingTask( IndexTaskBase[float] ):
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
@@ -67,3 +66,6 @@ class FloatIndexingTask( IndexTaskBase[float] ):
 
         except Exception as exc:
             print(f'FloatIndexing({self.key}:{self.alias}) Exception: {exc}')
+
+    def serialize_index( self: Self ):
+        pass

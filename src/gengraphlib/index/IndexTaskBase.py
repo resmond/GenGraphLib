@@ -60,6 +60,10 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
         pass
 
+    @abstractmethod
+    def serialize_index( self: Self ):
+        pass
+
 
 
 

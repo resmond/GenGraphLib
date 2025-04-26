@@ -33,11 +33,11 @@ class CmdStdoutStream:
         if self.write_bin:
             self.bin_writer = open( os.path.join( self.bootlog_info.dir_path, "bootlog.bin" ), "wb" )
 
-        while not self.end_event:
+        while True:
 
             try:
                 buffer = await exec_process.stdout.read(1024*16)
-                if self.end_event or buffer is None or len(buffer) == 0:
+                if not self.end_event or buffer is None or len(buffer) == 0:
                     break
                 else:
                     if self.write_bin:
