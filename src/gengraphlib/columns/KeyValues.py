@@ -3,7 +3,7 @@ from typing import Self
 import os
 import datetime as dt
 
-from ..common import (
+from src.gengraphlib.common import (
     KeyType,
     KeyValTypes,
     KeyDefInterface,
@@ -33,23 +33,5 @@ class KeyValues[T: KeyValTypes]( KeyValuesInterface ):
     def __repr__(self: Self) -> str:
         return f'{{ key: "{self.key}", alias: "{self.alias}", unique:{self.unique} }}'
 
-class StrKeyValueSet( KeyValues[str] ):
-    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
-        super(StrKeyValueSet, self).__init__( _key_def )
 
-class IntKeyValueSet( KeyValues[int ] ):
-    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
-        super(IntKeyValueSet, self).__init__( _key_def )
-
-class BoolKeyValueSet( KeyValues[bool] ):
-    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
-        super(BoolKeyValueSet, self).__init__( _key_def )
-
-class FloatKeyValueSet( KeyValues[float] ):
-    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
-        super(FloatKeyValueSet, self).__init__( _key_def )
-
-class TmstKeyValueSet( KeyValues[dt.datetime] ):
-    def __init__( self: Self, _key_def: KeyDefInterface ) -> None:
-        super(TmstKeyValueSet, self).__init__( _key_def )
 

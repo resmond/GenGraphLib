@@ -38,6 +38,7 @@ class LogIndexingProcess:
         self.active_keys: set[str] | None = None
         self.state: str = "Init"
         self.write_bin: bool = False
+        self.write_log: bool = False
         self.record_count: int = 0
 
     def index_bootlog(
@@ -51,6 +52,7 @@ class LogIndexingProcess:
         self.bootlog_info = bootlog_info
         self.active_keys = active_keys
         self.write_bin = write_bin
+        self.write_log = write_log
 
         if write_log:
             self._start_logwriter()

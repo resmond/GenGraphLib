@@ -4,7 +4,7 @@ import multiprocessing as mp
 import datetime as dt
 
 from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
-from .KeyValues import KeyValues
+from src.gengraphlib.columns.KeyValues import KeyValues
 
 #from ..proc.AppProcessBase import AppProcessBase
 

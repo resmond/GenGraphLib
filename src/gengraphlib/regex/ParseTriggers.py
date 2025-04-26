@@ -22,7 +22,7 @@ class LineParseResult:
     tag: str | None = None
     message: str | None = None
     exception: Exception | None = None
-    #values: dict
+    #columns: dict
 
 TParseTestFn = Callable[ [str, str], LineParseResult ]
 

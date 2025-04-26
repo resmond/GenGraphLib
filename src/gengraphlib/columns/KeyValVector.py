@@ -6,7 +6,7 @@ from typing import Self
 
 import pickle as pk
 
-from ..common import KeyValTypes, KeyInfo, VectorValTypes
+from src.gengraphlib.common import KeyValTypes, KeyInfo, VectorValTypes
 
 class KeyValVector:
 
@@ -39,6 +39,13 @@ class KeyValVector:
     def to_namedtuple( self: Self ) -> namedtuple:
         new_named_tuple = self.named_tuple( self.vec_values )
         return new_named_tuple
+
+    def get_delimated_header( self: Self ) -> str:
+        return ",".join(self.vec_fieldnames)
+
+    def to_delimited( self: Self ) -> str:
+        return ",".join(self.cur_vals)
+
 
 class VectorResult:
 

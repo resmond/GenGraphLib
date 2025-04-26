@@ -203,12 +203,12 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
 
 class KeyInfo:
 
-    def __init__( self: Self, schema_id: str, key: str, alias: str, keytype: KeyType, groupids: list[str] ):
+    def __init__( self: Self, schema_id: str, key: str, alias: str, keytype: KeyType, groupids: list[str] | str | None = None ):
         self.schema_id: str       = schema_id
         self.key:       str       = key
         self.alias:     str       = alias
         self.keytype:   KeyType   = keytype
-        self.groupids:  list[str] = groupids
+        self.groupids:  list[str] | str | None = groupids
 
     @property
     def keyinfo_id( self: Self ) -> str:

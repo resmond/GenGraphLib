@@ -4,6 +4,8 @@ from typing import Self
 
 from PySide6.QtCore import QObject, Signal
 
+from ..common import keyIndexInfo
+
 # noinspection DuplicatedCode
 class QtMsgQueueReader( QObject ):
     activated     = Signal(object)
@@ -38,6 +40,6 @@ class QtMsgQueueReader( QObject ):
         finally:
             print("Reader process exiting")
 
-    def _process_message(self: Self, message):
-        print(f"Processing message: {message}")
-        self.data_received.emit(message)
+    def _process_message(self: Self, index_info: keyIndexInfo):
+        print(f"Processing message: {index_info}")
+        self.data_received.emit(index_info)

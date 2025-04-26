@@ -16,12 +16,14 @@ from .regex import (
 
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
-    , GraphRecordRoot, RecordBase, KeyValues
+    , GraphRecordRoot, RecordBase
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
-    , KeyGroup, KeyGroups
-    , StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
-    , KeyValueSchema, KeyValVector, VectorResult
-    , KeySchemaVisitor
+    , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor
+)
+
+from .columns import (
+      KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
+    , KeyValVector, VectorResult
 )
 
 from .index import (
@@ -57,17 +59,13 @@ __all__ = [
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
 
-#
-
     , "NodeDict", "IndexedNodeList", "GNodeInterface", "KeyValuesInterface"
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
-    , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo"
+    , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
 
-    , "LineRefList", "KeyValues"
-    , "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
-
-    , "KeyValueSchema", "KeyValVector", "VectorResult", "KeySchemaVisitor"
+    , "LineRefList", "KeyValues", "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
+    , "KeyValVector", "VectorResult"
 
     , "IndexTaskBase", "LogIndexingProcess"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
@@ -75,7 +73,6 @@ __all__ = [
     , "TaskBase", "ProcBase"
 
     , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
-
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

@@ -10,7 +10,8 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
-from gengraphlib.qt import QtMsgQueueReader
+from gengraphlib.qt.QtMsgQueueReader import QtMsgQueueReader
+from gengraphlib.common import keyIndexInfo
 
 
 class MyMainWindow(QMainWindow):
@@ -19,8 +20,8 @@ class MyMainWindow(QMainWindow):
     MINIMUM_WIDTH = 800
     MINIMUM_HEIGHT = 600
 
-    def process_data(self: Self, data: Any) -> None:
-        print(f"[{self}] Received: ({type(data)}): {data}")
+    def process_data(self: Self, index_info: keyIndexInfo) -> None:
+        print(f"[{self}] Received: ({type(index_info)}): {index_info}")
 
     def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:
         super(MyMainWindow, self).__init__()

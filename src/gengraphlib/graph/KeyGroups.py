@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
 
-from .KeyValVector import KeyValVector
+from src.gengraphlib.columns.KeyValVector import KeyValVector
 from ..common import (
     KeyFilter,
     KeyGroupRec,

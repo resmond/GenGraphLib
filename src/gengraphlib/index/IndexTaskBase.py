@@ -4,6 +4,8 @@ from typing import Self
 import os.path
 import multiprocessing as mp
 
+from sortedcontainers import SortedDict
+
 from ..common import (
     KeyValTypes,
     KeyType,
@@ -12,12 +14,10 @@ from ..common import (
     KeyIndexState,
     KeyInfo,
     IndexTaskInterface,
-    BootLogInfo
+    BootLogInfo, LineRefList
 )
-from ..proc.TaskLib import TaskBase
-#from ..bootlog.BootLogContext import BootLogContext
 
-class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
+class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         super(IndexTaskBase,self).__init__( f"{key_info.key}-index" )
@@ -27,23 +27,29 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
         self.alias:      str     = key_info.alias
         self.key_info:   KeyInfo = key_info
         self.keytype:    KeyType = key_info.keytype
+        self._isproc:    bool    = False
 
         self._app_msgqueue:    mp.Queue       = app_msgqueue
         self._end_event:       mp.Event       = end_event
 
         self._bootlog_info:    BootLogInfo    = bootlog_info
-        #self._bootlog_context: BootLogContext = BootLogContext( bootlog_info )
 
         self._index_dir:      str = self._bootlog_info.keys_path
         self._index_filepath: str = os.path.join( self._index_dir, f"{self.key}.index" )
         self._keyindex_id:    str = f"{self._bootlog_info.schema_bootid}@{key_info.key}"
 
-        self.index_type:   KeyIndexType = KeyIndexType.Undetermined
+        self.index_type:   KeyIndexType  = KeyIndexType.Undetermined
         self._index_state: KeyIndexState = KeyIndexState.Uninitialized
 
         self._value_cnt:     int = 0
         self._instances_cnt: int = 0
         self._is_unique:     bool = True
+
+    def is_proc( self ) -> bool:
+        return self._isproc
+
+    def id( self ) -> str:
+        return f'index-{self.key}'
 
     def get_index_info( self: Self ) -> keyIndexInfo:
         return keyIndexInfo(
@@ -63,6 +69,8 @@ class IndexTaskBase[ T: KeyValTypes ]( TaskBase, IndexTaskInterface ):
     @abstractmethod
     def serialize_index( self: Self ):
         pass
+
+    #def dump_sortedstr( self: Self, strdict: SortedDict[str, LineRefList ] ):
 
 
 

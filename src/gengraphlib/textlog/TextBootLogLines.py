@@ -17,7 +17,7 @@ class TextBootLogLine( RecordBase ):
         self.module_id: str = ""
         self.message: str = ""
         print(line_str)
-        #self.values: dict[str, str] | None = None
+        #self.columns: dict[str, str] | None = None
 
     def parse_line( self: Self, event_type_id: str, field_values: dict[str, str] ) -> LineParseResult:
         self.event_type_id = event_type_id
