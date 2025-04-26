@@ -1,4 +1,4 @@
-from typing import Self, Any
+from typing import Self
 
 import multiprocessing as mp
 
@@ -10,9 +10,8 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
-from gengraphlib.qt.QtMsgQueueReader import QtMsgQueueReader
 from gengraphlib.common import keyIndexInfo
-
+from gengraphlib.qt.QtMsgQueueReader import QtMsgQueueReader
 
 class MyMainWindow(QMainWindow):
     # Class-level constants for configuration

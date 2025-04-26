@@ -5,9 +5,10 @@ import datetime as dt
 import os as os
 import multiprocessing as mp
 
+from .. import KeyValSchemaInfo
 
 from .BootLog import BootLog
-from .. import KeyValSchemaInfo
+
 
 """--------------------------------------------------------
     LogDirManagerBase __init__()

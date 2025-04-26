@@ -4,7 +4,7 @@ import multiprocessing as mp
 import datetime as dt
 
 from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
-from src.gengraphlib.columns.KeyValues import KeyValues
+from src.gengraphlib.columns.Column import Column
 
 #from ..proc.AppProcessBase import AppProcessBase
 
@@ -18,7 +18,7 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         self.key_type:       KeyType = key_type
         self.groupids:       list[str] | None = None
 
-        self.key_values: KeyValues[T] = KeyValues[T]( self, "" )
+        self.key_values: Column[T ] = Column[T ]( self, "" )
         self._queue: mp.Queue | None = None
 
         match groups:

@@ -188,7 +188,7 @@ KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
 #KeyValueEvent: type = tuple[int, int, memoryview]
 
-class KeyValuesInterface( Protocol ):
+class ColumnInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
     keytype: KeyType

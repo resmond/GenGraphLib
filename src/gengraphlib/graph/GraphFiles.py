@@ -3,7 +3,7 @@ from typing import Self, AsyncGenerator
 
 import asyncio as aio
 
-from src.gengraphlib import KeyValueSchema, KeyValues, KeyValVector
+from src.gengraphlib import KeyValueSchema, Column, KeyValVector
 
 
 class GraphFileBase( ABC ):
@@ -38,7 +38,7 @@ class GraphFileSource( GraphFileBase ):
     def close( self ) -> None:
         self.input_stream = None
 
-    async def stream_values( self ) -> AsyncGenerator[KeyValues, None ]:
+    async def stream_values( self ) -> AsyncGenerator[Column, None ]:
         pass
 #        key_values: list[KeyValues] = []
 #        async for value in key_values:
@@ -49,7 +49,7 @@ class GraphFileSink( GraphFileBase ):
     def __init__( self: Self, key_graph: KeyValueSchema, _vector: KeyValVector, file_path: str ):
         super(GraphFileSink, self).__init__( key_graph, _vector, file_path )
         self.output_stream : aio.StreamWriter | None = None
-        self.value_source: AsyncGenerator[KeyValues, None ] | None
+        self.value_source: AsyncGenerator[Column, None ] | None
 
     def open( self: Self ) -> bool:
         try:

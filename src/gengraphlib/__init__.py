@@ -1,11 +1,11 @@
 #__import__('pkg_resources').declare_namespace(__name__)
 
 from .common import (
-      KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict, VectorValTypes
+    KeyValTypes, keygroup_rec, KeyGroupRec, IValueTuple, SValueTuple, KValueDict, VectorValTypes
     , KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket, ProcType, ProcState
     , TaskType, TaskState, Startable, IndexTaskInterface, ProcRegistry, KeyDefInterface
     , KeyDefDict, LineRefList, KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
-    , SerializationType, DefaultMapOfLists, KeyValuesInterface, KeyInfo, KeyValSchemaInfo
+    , SerializationType, DefaultMapOfLists, ColumnInterface, KeyInfo, KeyValSchemaInfo
     , BootLogInfo
 )
 
@@ -22,7 +22,7 @@ from .graph import (
 )
 
 from .columns import (
-      KeyValues, StrKeyValueSet, IntKeyValueSet, BoolKeyValueSet, FloatKeyValueSet, TmstKeyValueSet
+    Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
     , KeyValVector, VectorResult
 )
 
@@ -59,12 +59,12 @@ __all__ = [
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
     , "TRX_GROUPPATTERN", "TRgxField", "RgxField", "RgxLine"
 
-    , "NodeDict", "IndexedNodeList", "GNodeInterface", "KeyValuesInterface"
+    , "NodeDict", "IndexedNodeList", "GNodeInterface", "ColumnInterface"
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
 
-    , "LineRefList", "KeyValues", "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
+    , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
     , "KeyValVector", "VectorResult"
 
     , "IndexTaskBase", "LogIndexingProcess"

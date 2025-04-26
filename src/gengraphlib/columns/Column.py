@@ -1,20 +1,19 @@
 from typing import Self
 
 import os
-import datetime as dt
 
 from src.gengraphlib.common import (
     KeyType,
     KeyValTypes,
     KeyDefInterface,
-    KeyValuesInterface
+    ColumnInterface
 )
 
 #from .. import GNodeInterface
 
-class KeyValues[T: KeyValTypes]( KeyValuesInterface ):
+class Column[ T: KeyValTypes ]( ColumnInterface ):
     def __init__(self: Self, _key_def: KeyDefInterface, index_dir: str) -> None:
-        super(KeyValues, self).__init__()
+        super( Column, self ).__init__()
         self.key_def:   KeyDefInterface = _key_def
         self.id:        str             = _key_def.key
         self.index_dir: str             = index_dir

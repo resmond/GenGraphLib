@@ -5,15 +5,15 @@ from typing import Self
 from .. import (
     KeySchemaVisitor,
     IntKeyDef,
-    IntKeyValueSet,
+    IntColumn,
     BoolKeyDef,
-    BoolKeyValueSet,
+    BoolColumn,
     FloatKeyDef,
-    FloatKeyValueSet,
+    FloatColumn,
     TmstKeyDef,
-    TmstKeyValueSet,
+    TmstColumn,
     StrKeyDef,
-    StrKeyValueSet,
+    StrColumn,
     KeyDefBase,
     KeyType
 )
@@ -42,23 +42,23 @@ class LogSchemaVisitor( KeySchemaVisitor ):
         if "evt" in keydef.groupids:
             self.info_evt_list.append(keyval_info)
 
-    def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrKeyValueSet ) -> bool:
+    def visit_str( self: Self, keydef: StrKeyDef, keyvalues: StrColumn ) -> bool:
         self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, str ) )
         return True
 
-    def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntKeyValueSet ) -> bool:
+    def visit_int( self: Self, keydef: IntKeyDef, keyvalues: IntColumn ) -> bool:
         self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, int ) )
         return True
 
-    def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolKeyValueSet ) -> bool:
+    def visit_bool( self: Self, keydef: BoolKeyDef, keyvalues: BoolColumn ) -> bool:
         self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, bool ) )
         return True
 
-    def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatKeyValueSet ) -> bool:
+    def visit_float( self: Self, keydef: FloatKeyDef, keyvalues: FloatColumn ) -> bool:
         self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, float ) )
         return True
 
-    def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstKeyValueSet) -> bool:
+    def visit_tmst( self: Self, keydef: TmstKeyDef, keyvalues: TmstColumn ) -> bool:
         self._apply( keydef, KeyValInfo( keydef.key, keydef.alias, keydef.keytype, dt.datetime ) )
         return True
 

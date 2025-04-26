@@ -29,12 +29,13 @@ class BootLog:
         self.boot_id:    str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
         self.last_dt:  dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
-        self._boot_label:    str = self.boot_label()
         self.bootlog_path:   str = os.path.join( self.root_dir, "boots", self._boot_label )
         self.keys_path:      str = os.path.join( self.root_dir, "keys" )
 
         self.indexing_process: LogIndexingProcess | None = None
         self.active_keys:      set[str]           | None = None
+
+        self._boot_label: str = self.boot_label()
 
     def boot_label( self: Self ) -> str:
         yymmdd: str = self.first_dt.strftime("%y-%m-%d")

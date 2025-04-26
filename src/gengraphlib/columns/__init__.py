@@ -1,15 +1,15 @@
-from .KeyValues import KeyValues
-from .StrColumn import StrKeyValueSet
-from .IntColumn import IntKeyValueSet
-from .BoolColumn import BoolKeyValueSet
-from .FloatColumn import FloatKeyValueSet
-from .TmstColumn import TmstKeyValueSet
+from .Column import Column
+from .StrColumn import StrColumn
+from .IntColumn import IntColumn
+from .BoolColumn import BoolColumn
+from .FloatColumn import FloatColumn
+from .TmstColumn import TmstColumn
 from .KeyValVector import KeyValVector, VectorResult
 
 
 __all__ = [
 
-      "KeyValues", "StrKeyValueSet", "IntKeyValueSet", "BoolKeyValueSet", "FloatKeyValueSet", "TmstKeyValueSet"
+    "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
     , "KeyValVector", "VectorResult"
 
 ]

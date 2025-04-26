@@ -4,8 +4,6 @@ from typing import Self
 import os.path
 import multiprocessing as mp
 
-from sortedcontainers import SortedDict
-
 from ..common import (
     KeyValTypes,
     KeyType,
@@ -14,7 +12,7 @@ from ..common import (
     KeyIndexState,
     KeyInfo,
     IndexTaskInterface,
-    BootLogInfo, LineRefList
+    BootLogInfo
 )
 
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):

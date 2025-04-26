@@ -15,6 +15,8 @@ from .BoolIndexingTask import BoolIndexingTask
 from .FloatIndexingTask import FloatIndexingTask
 from .TmstIndexingTask import TmstIndexingTask
 
+
+# noinspection PyUnresolvedReferences
 class LogIndexingProcess:
 
     def __init__(
