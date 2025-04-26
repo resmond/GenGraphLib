@@ -1,16 +1,19 @@
 from typing import Self
 from typing import Protocol
 
-from . import (
+from ..graph import (
     StrKeyDef,
-    StrKeyValueSet,
     IntKeyDef,
-    IntKeyValueSet,
     BoolKeyDef,
-    BoolKeyValueSet,
     FloatKeyDef,
+    TmstKeyDef
+)
+
+from ..columns import (
+    StrKeyValueSet,
+    IntKeyValueSet,
+    BoolKeyValueSet,
     FloatKeyValueSet,
-    TmstKeyDef,
     TmstKeyValueSet
 )
 
