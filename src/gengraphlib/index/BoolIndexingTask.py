@@ -14,15 +14,15 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
 
         self.keytype      = KeyType.KBool
         self.index_type   = KeyIndexType.BoolDualIntersect
-        self._index_state = KeyIndexState.Running
-        self._is_unique   = False
+        self.index_state  = KeyIndexState.Running
+        self.isunique     = False
 
         self._queue: mp.Queue = mp.Queue()
 
-        self._positive_intersection: SortedSet[int ] = SortedSet[int ]()
-        self._negative_intersectio:  SortedSet[int ] = SortedSet[int ]()
+        self._pos_set: SortedSet[int] = SortedSet[int]()
+        self._neg_set: SortedSet[int] = SortedSet[int]()
 
-        self._thread: th.Thread = th.Thread(
+        self.thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Bool-index",
             args = (self._queue, self._end_event, )
@@ -33,25 +33,29 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         return self._queue
 
     def start(self: Self) -> None:
-        self._thread.start()
+        self.thread.start()
 
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
 
         keyindex_info: keyIndexInfo = self.get_index_info()
         self._app_msgqueue.put(keyindex_info)
-
+        print(f'[{self.key}-index]: Started')
         try:
             while not end_event:
                 rec_num, value = queue.get()
 
+                if rec_num == -1:
+                    self.apply_tocolumn()
+                    break
+
                 bool_value: bool = bool( value )
 
                 if bool_value:
-                    self._positive_intersection.add( rec_num )
+                    self._pos_set.add( rec_num )
                 else:
-                    self._negative_intersection.add( rec_num )
+                    self._neg_set.add( rec_num )
 
-                if self._value_cnt % self.status_cnt == 0:
+                if self._keycnt % self.status_cnt == 0:
                     self.send_status()
 
         except ValueError as valexc:
@@ -60,8 +64,8 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         except Exception as exc:
             print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def serialize_index( self: Self ):
-        pass
+    def apply_tocolumn( self: Self ):
+        print(f'[{self.key}-index]: Applying Data')
 
 
 

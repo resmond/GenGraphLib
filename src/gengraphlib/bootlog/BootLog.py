@@ -20,23 +20,23 @@ class BootLog:
         end_event: mp.Event,
     ) -> None:
         self.root_dir = root_dir
+
         self.schema_info: KeyValSchemaInfo = schema_info
-        self.app_msgqueue: mp.Queue = app_msgqueue
-        self.end_event: mp.Event = end_event
+        self.app_msgqueue: mp.Queue        = app_msgqueue
+        self.end_event: mp.Event           = end_event
 
         val_list: list[str] = logrec_line.split()
         self.boot_index: int = int( val_list[0] )
         self.boot_id:    str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
         self.last_dt:  dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
-        self.bootlog_path:   str = os.path.join( self.root_dir, "boots", self._boot_label )
+        self.bootlog_path:   str = os.path.join( self.root_dir, "boots", str(self.boot_label) )
         self.keys_path:      str = os.path.join( self.root_dir, "keys" )
 
         self.indexing_process: LogIndexingProcess | None = None
         self.active_keys:      set[str]           | None = None
 
-        self._boot_label: str = self.boot_label()
-
+    @property
     def boot_label( self: Self ) -> str:
         yymmdd: str = self.first_dt.strftime("%y-%m-%d")
         hhmm:   str = self.first_dt.strftime("%H-%M")
@@ -58,7 +58,7 @@ class BootLog:
 
     def get_info( self: Self ) -> BootLogInfo:
         return BootLogInfo(
-            schema_bootid=self.boot_label(),
+            schema_bootid=str(self.boot_label),
             boot_index=self.boot_index,
             first_dt=self.first_dt,
             last_dt=self.last_dt,

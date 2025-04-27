@@ -108,60 +108,66 @@ class keyIndexInfo:
     def __init__(
             self: Self,
             keyinfo_id: str,
-            key: str,
-            alias: str,
+            key:        str,
+            alias:      str,
             index_type: KeyIndexType,
-            valuecnt: int = 0,
-            instancecnt: int = 0,
-            unique: bool = False
+            index_state: KeyIndexState,
+            hitpct:     int,
+            keycnt:     int,
+            refcnt:     int,
+            unique:     bool
         ) -> None:
         super().__init__()
 
-        self.keyinfo_id: str          = keyinfo_id
-        self.key: str                 = key
-        self.alias: str               = alias
-        self.index_type: KeyIndexType = index_type
-        self.value_cnt: int           = valuecnt
-        self.instance_cnt: int        = instancecnt
-        self.is_unique: bool          = unique
+        self.keyinfo_id:  str           = keyinfo_id
+        self.key:         str           = key
+        self.alias:       str           = alias
+        self.index_type:  KeyIndexType  = index_type
+        self.index_state: KeyIndexState = index_state
 
-#"KeyIndexPacket",
-# [ "keyinfo_id",  -  str
-#   "index_type",  -  KeyIndexType
-#   "index_state", -  KeyIndexState
-#   "value_cnt",   -  int
-#   "instance_cnt",-  int
-#   "is_unique"    -  bool
-# ]
+        self.hitpct:  int   = hitpct
+        self.keycnt:  int   = keycnt
+        self.refcnt:  int   = refcnt
+        self.unique:  bool  = unique
+
 KeyIndexPacket: type = namedtuple(
         "KeyIndexPacket",
         [
                     "keyinfo_id",
+                    "key",
+                    "alias",
                     "index_type",
                     "index_state",
-                    "value_cnt",
-                    "instance_cnt",
-                    "is_unique"
+                    "hitpct",
+                    "keycnt",
+                    "refcnt",
+                    "isunique"
                    ])
 
 keyIndexMsgTuple: type = tuple[str, KeyIndexType, KeyIndexState, int, int, bool ]
 
 class KeyIndexMsg(NamedTuple):
     keyinfo_id:    str
+    key:           str
+    alias:         str
     index_type:    KeyIndexType
     index_state:   KeyIndexState
-    value_cnt:     int
-    instance_cnt:  int
-    is_unique:     bool
+    hitpct:        int
+    keycnt:        int
+    refcnt:        int
+    isunique:      bool
 
     def to_packet( self: Self ) -> tuple:
         return ( 
             self.keyinfo_id,
+            self.key,
+            self.alias,
             self.index_type,
             self.index_state,
-            self.value_cnt,
-            self.instance_cnt,
-            self.is_unique
+            self.hitpct,
+            self.keycnt,
+            self.refcnt,
+            self.isunique
         )
 
     @classmethod
@@ -203,16 +209,23 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
 
 class KeyInfo:
 
-    def __init__( self: Self, schema_id: str, key: str, alias: str, keytype: KeyType, groupids: list[str] | str | None = None ):
-        self.schema_id: str       = schema_id
+    def __init__(
+            self: Self,
+            keytype: KeyType,
+            batch_id: str,
+            key: str,
+            alias: str,
+            groupids: list[str] | str | None = None
+        ):
+        self.keytype:   KeyType   = keytype
+        self.batch_id:  str       = batch_id
         self.key:       str       = key
         self.alias:     str       = alias
-        self.keytype:   KeyType   = keytype
         self.groupids:  list[str] | str | None = groupids
 
     @property
-    def keyinfo_id( self: Self ) -> str:
-        return f"{self.schema_id}@{self.key}"
+    def graph_id( self: Self ) -> str:
+        return f"{self.batch_id}@{self.key}"
 
 class KeyValSchemaInfo:
 

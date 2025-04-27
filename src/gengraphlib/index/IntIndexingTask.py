@@ -59,7 +59,7 @@ class IntIndexingTask( IndexTaskBase[int] ):
 
                 self._sorted_index[int_value ].append( rec_num )
 
-                if self._value_cnt % self.status_cnt == 0:
+                if self._keycnt % self.status_cnt == 0:
                     self.send_status()
 
         except ValueError as valexc:

@@ -65,7 +65,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
                 self.sorted_index[datetime_value].append(rec_num)
 
-                if self._value_cnt % self.status_cnt == 0:
+                if self._keycnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
                     self._app_msgqueue.put(keyindex_info)
 

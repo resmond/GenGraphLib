@@ -1,36 +1,48 @@
+from abc import ABC, abstractmethod
 from typing import Self
 
 import os
 
-from src.gengraphlib.common import (
-    KeyType,
+from ..common import (
     KeyValTypes,
-    KeyDefInterface,
-    ColumnInterface
+    ColumnInterface,
+    KeyInfo,
+    LineRefList,
 )
 
 #from .. import GNodeInterface
 
-class Column[ T: KeyValTypes ]( ColumnInterface ):
-    def __init__(self: Self, _key_def: KeyDefInterface, index_dir: str) -> None:
-        super( Column, self ).__init__()
-        self.key_def:   KeyDefInterface = _key_def
-        self.id:        str             = _key_def.key
-        self.index_dir: str             = index_dir
-        self.keytype:   KeyType | None  = None
-        self.unique:    bool            = True
+class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
+    def __init__(self: Self, keyinfo: KeyInfo, root_dir: str ) -> None:
+        self.keyinfo:   KeyInfo = keyinfo
+        self.root_dir:  str     = root_dir
+        self.id:        str     = self.keyinfo.key
+        self.batch_dir: str     = os.path.join(self.root_dir, self.keyinfo.batch_id, f"{self.keyinfo.key}" )
+        self.filepath:  str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id,  f"{self.keyinfo.key}-index.bin" )
 
-    def init_index( self ) -> bool:
-        try:
-            os.mkdir( self.index_dir )
-            return True
+    @abstractmethod
+    def keyvalue_from_recno( self: Self, recno: int ) -> T | None: ...
 
-        except Exception as exc:
-            print(f"KeyValues[{self.id}] root_dir: {self.index_dir} Exception: {exc}")
-            return False
+    @abstractmethod
+    def keyvalue_from_valueindex( self: Self, valueindex: int ) -> T | None: ...
 
-    def __repr__(self: Self) -> str:
-        return f'{{ key: "{self.key}", alias: "{self.alias}", unique:{self.unique} }}'
+    @abstractmethod
+    def valueindex_from_recno( self: Self, recno: int ) -> int | None: ...
+
+    @abstractmethod
+    def valueindex_from_keyvalue( self: Self, keyvalue: T ) -> int | None: ...
+
+    @abstractmethod
+    def refs_from_keyvalue( self: Self, keyvalue: T ) -> LineRefList | None: ...
+
+    @abstractmethod
+    def refs_from_valueindex( self: Self, valueindex: int ) -> LineRefList | None: ...
+
+    @abstractmethod
+    def save_data( self: Self ) -> bool: ...
+
+    @abstractmethod
+    def load_data( self: Self ) -> bool: ...
 
 
 

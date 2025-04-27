@@ -8,6 +8,8 @@ from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo, keyIndexInfo, 
 
 from .IndexTaskBase import IndexTaskBase
 
+from ..columns.StrColumn import StrColumn
+
 class StrIndexingTask( IndexTaskBase[str] ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
@@ -15,13 +17,13 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
         self.keytype      = KeyType.KStr
         self.index_type   = KeyIndexType.StrSorted
-        self._index_state = KeyIndexState.Running
+        self.index_state  = KeyIndexState.Running
 
         self._queue: mp.Queue = mp.Queue()
 
-        self._sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
+        self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
 
-        self._thread: th.Thread = th.Thread(
+        self.thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Str-index",
             args = (self._queue, self._end_event, )
@@ -32,7 +34,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
         return self._queue
 
     def start(self: Self) -> None:
-        self._thread.start()
+        self.thread.start()
 
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
         keyindex_info: keyIndexInfo = self.get_index_info()
@@ -40,19 +42,22 @@ class StrIndexingTask( IndexTaskBase[str] ):
         print(f'[{self.key}-index]: Started')
         try:
             while not end_event:
-
                 rec_num, value = queue.get()
 
                 if rec_num == -1:
-                    self.serialize()
+                    self.apply_tocolumn()
                     break
 
-                if value not in self._sorted_index:
-                    self._sorted_index[value] = LineRefList()
-                else:
-                    self._is_unique = False
+                self._refcnt += 1
+                self._maxrec = rec_num
 
-                self._sorted_index[value].append( rec_num )
+                if value not in self.sorted_index:
+                    self._keycnt += 1
+                    self.sorted_index[value] = LineRefList()
+                else:
+                    self._isunique = False
+
+                self.sorted_index[value].append( rec_num )
 
                 if self._instance_cnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
@@ -65,9 +70,10 @@ class StrIndexingTask( IndexTaskBase[str] ):
         except Exception as exc:
             print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def serialize_index( self: Self ):
-        print(f'[{self.key}-index]: Serializing')
+    def apply_tocolumn( self: Self, target_column: StrColumn ) -> bool:
+        print(f'[{self.key}-index]: Applying Data')
+        return target_column.apply_data( self.keymap, self.refcnt )
 
 
 
-        pass
+

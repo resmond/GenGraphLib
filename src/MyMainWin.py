@@ -101,4 +101,6 @@ class MyMainWindow(QMainWindow):
         self.refresh_btn.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.exit_btn.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
 
+        self.showMinimized()
+
         QMetaObject.connectSlotsByName(self)

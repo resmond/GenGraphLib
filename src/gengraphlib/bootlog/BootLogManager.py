@@ -52,9 +52,9 @@ class BootLogManager:
         _log_querylist
             fqueries fresh list of boot records from journalctl --list-boots as text file
     """
-    def _query_bootlist( self: Self ) -> bool:
+    def _query_bootlist( self: Self, delete_logs: bool ) -> bool:
         try:
-            if self.full_reparse and os.path.exists( self._bootlist_txtfilepath ):
+            if delete_logs and os.path.exists( self._bootlist_txtfilepath ):
                 os.remove( self._bootlist_txtfilepath )
                 
             process = subprocess.run(self._journal_cmd, shell=True, cwd=self._bootdir_path)
@@ -93,7 +93,7 @@ class BootLogManager:
     def get_bootlog( self: Self, boot_index: int, skip_query: bool = False ) -> BootLog | None:
 
         if not skip_query:
-            self._query_bootlist()
+            self._query_bootlist( delete_logs=False )
 
         if self._load_bootlist():
             boot_dir = self._bootlog_index[ boot_index ]

@@ -15,6 +15,8 @@ from ..common import (
     BootLogInfo
 )
 
+from ..columns.Column import Column
+
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
@@ -37,11 +39,12 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         self._keyindex_id:    str = f"{self._bootlog_info.schema_bootid}@{key_info.key}"
 
         self.index_type:   KeyIndexType  = KeyIndexType.Undetermined
-        self._index_state: KeyIndexState = KeyIndexState.Uninitialized
+        self.index_state: KeyIndexState = KeyIndexState.Uninitialized
 
-        self._value_cnt:     int = 0
-        self._instances_cnt: int = 0
-        self._is_unique:     bool = True
+        self._maxrec:   float   = 0
+        self._keycnt:   float   = 0
+        self._refcnt:   float   = 0
+        self._isunique: bool  = True
 
     def is_proc( self ) -> bool:
         return self._isproc
@@ -55,9 +58,11 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
             key=self.key,
             alias=self.alias,
             index_type=self.index_type,
-            valuecnt=self._value_cnt,
-            instancecnt=self._instances_cnt,
-            unique=self._is_unique
+            index_state=self._index_state,
+            hitpct = round( self._refcnt / self._maxrec * 100 ),
+            keycnt= int(self._keycnt),
+            refcnt= int(self._refcnt),
+            unique=self._isunique
         )
 
     @abstractmethod
@@ -65,7 +70,7 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         pass
 
     @abstractmethod
-    def serialize_index( self: Self ):
+    def apply_tocolumn( self: Self, target_column: Column[T] ) -> bool:
         pass
 
     #def dump_sortedstr( self: Self, strdict: SortedDict[str, LineRefList ] ):
