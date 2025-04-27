@@ -32,12 +32,15 @@ class BootLogSchema( KeyValueSchema ):
 
     @staticmethod
     def entrypoint( parse_info: ParseProcessInfo ) -> None:
-        GraphColumns( '/home/richard/data/jctl-logs' )
+
         bootlog_schema = BootLogSchema( parse_info )
         bootlog_schema.launch_indexing( -1, "evt" )
 
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
+
+        GraphColumns("/home/richard/data/jctl-logs")
+
         self.cnt:           int  = 0
         self.id:            str  = parse_info.id
         self.log_root:      str  = parse_info.log_root
@@ -199,9 +202,9 @@ class BootLogSchema( KeyValueSchema ):
     def init_repository( self: Self ) -> None:
         super().init_repository()
 
-        GraphColumns.inst.init_columns( self )
 
         self.log_manager = BootLogManager( self.log_root, self.get_schema_info(), self.app_msgqueue, self.end_event )
+        GraphColumns.inst.init_columns( self.get_schema_info() )
 
     def launch_indexing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
 

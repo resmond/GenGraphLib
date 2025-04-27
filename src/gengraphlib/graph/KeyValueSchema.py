@@ -67,8 +67,8 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
 
         self.schema_info = self.get_schema_info()
 
-    def get_schema_info( self: Self, ) -> KeyValSchemaInfo:
-        keys: list[KeyInfo] = [ key.get_keyinfo(self.id) for key in self.values() ]
+    def get_schema_info( self: Self ) -> KeyValSchemaInfo:
+        keys: list[KeyInfo] = [ key.get_keyinfo() for key in self.values() ]
         groupids: list[str] = [ group.id for group in self.key_groups.values() ]
         return KeyValSchemaInfo( keys, groupids )
 

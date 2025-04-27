@@ -48,7 +48,7 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         return KeyInfo(
             keytype=self.key_type,
             pytype=self.pytype,
-            batch_id=self.batch_id,
+            batch_id="",
             key=self.key,
             alias=self.alias,
             groupids=self.groupids

@@ -21,6 +21,7 @@ class GraphColumns:
 
     def init_columns( self: Self, schema_info: KeyValSchemaInfo ) -> None:
         for keyinfo in schema_info.keys:
+
             match keyinfo.keytype:
                 case KeyType.KStr:
                     self.column_map[keyinfo.key] = StrColumn( keyinfo, self.root_dir )
