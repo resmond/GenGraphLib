@@ -4,22 +4,20 @@ import multiprocessing as mp
 import datetime as dt
 
 from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
-from src.gengraphlib.columns.Column import Column
-
-#from ..proc.AppProcessBase import AppProcessBase
 
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
-    def __init__( self: Self, key: str, alias: str, key_type: KeyType, groups: list[str ] | str | None = None ) -> None:
+    def __init__( self: Self, key: str, alias: str, key_type: KeyType, groups: list[ str ] | str | None = None ) -> None:
         super(KeyDefBase, self).__init__()
         self.key:            str  = key
         self.alias:          str  = alias
+        self.key_type:       KeyType = key_type
         self.pytype:         type = type(T)
+        self.groupids:       list[str] = []
         self._skip:          bool = True
         self._event_trigger: bool = False
-        self.key_type:       KeyType = key_type
-        self.groupids:       list[str] | None = None
 
-        self.key_values: Column[T ] = Column[T ]( self, "" )
+        #self.key_values: Column[ T ] = Column[ T ]( self, "" )
+
         self._queue: mp.Queue | None = None
 
         match groups:
@@ -49,7 +47,7 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def get_keyinfo( self: Self ) -> KeyInfo:
         return KeyInfo(
             keytype=self.key_type,
-            pytype=self._pytype,
+            pytype=self.pytype,
             batch_id=self.batch_id,
             key=self.key,
             alias=self.alias,
@@ -81,6 +79,6 @@ class FloatKeyDef( KeyDefBase[float] ):
     def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
         super(FloatKeyDef, self).__init__( key, alias, KeyType.KFloat, groups )
 
-class KeyDict( dict[str, KeyDefBase ] ):
+class KeyDefDict( dict[ str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:
-        super(KeyDict, self).__init__()
+        super( KeyDefDict, self ).__init__()

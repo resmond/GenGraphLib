@@ -188,7 +188,8 @@ class KeyDefInterface( Protocol ):
     key:      str
     alias:    str
     keytype:  KeyType
-    groupids: list[str] | None
+    pytype:   type
+    groupids: list[str]
 
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
@@ -216,14 +217,14 @@ class KeyInfo:
             batch_id: str,
             key: str,
             alias: str,
-            groupids: list[str] | str | None = None
+            groupids: list[str]
         ):
         self.keytype:   KeyType   = keytype
         self.pytype:    type      = pytype
         self.batch_id:  str       = batch_id
         self.key:       str       = key
         self.alias:     str       = alias
-        self.groupids:  list[str] | str | None = groupids
+        self.groupids:  list[str] = groupids
 
     @property
     def graph_id( self: Self ) -> str:

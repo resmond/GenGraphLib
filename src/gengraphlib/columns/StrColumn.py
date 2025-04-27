@@ -19,7 +19,7 @@ class StrColumn( Column[str] ):
         self.valueindex_to_keyvalue: list[ str ] = []
         self.ref_to_valueindex:      list[ int ] = []
 
-    def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt = refcnt
@@ -38,6 +38,9 @@ class StrColumn( Column[str] ):
                 for ref in reflist:
                     self.ref_to_valueindex[ ref ] = cnt
                 cnt += 1
+
+            if not skip_write:
+                self.save_data()
 
             return True
 

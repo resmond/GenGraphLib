@@ -118,6 +118,10 @@ class LogIndexingProcess:
 
                 match line:
                     case None:
+                        for keyindex_queue in self.queues_byalias:
+                            value_packet: KeyValuePacket = (-1, str(self.record_count))
+                            keyindex_queue.put(value_packet)
+
                         return True
 
                     case str() if len(line) == 0:

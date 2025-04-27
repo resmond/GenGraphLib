@@ -17,7 +17,7 @@ from .regex import (
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase
-    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
+    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDefDict
     , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor, GraphColumns
 )
 
@@ -61,7 +61,7 @@ __all__ = [
 
     , "NodeDict", "IndexedNodeList", "GNodeInterface", "ColumnInterface"
     , "GraphRecordRoot", "RecordBase"
-    , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
+    , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDefDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
     , "GraphColumns"
 

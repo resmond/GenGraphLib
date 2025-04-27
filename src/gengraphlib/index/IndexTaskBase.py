@@ -15,8 +15,6 @@ from ..common import (
     BootLogInfo
 )
 
-from ..columns.Column import Column
-
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:

@@ -18,12 +18,15 @@ class BoolColumn( Column[bool] ):
         self.pos_set: SortedSet[ int ] = SortedSet[ int ]()
         self.neg_set: SortedSet[ int ] = SortedSet[ int ]()
 
-    def apply_data( self: Self, pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int ) -> bool:
+    def apply_data( self: Self, pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int, skip_write: bool = False ) -> bool:
         try:
 
             self.refcnt  = refcnt
             self.pos_set = pos_set
             self.neg_set = neg_set
+
+            if not skip_write:
+                self.save_data()
 
             return True
 

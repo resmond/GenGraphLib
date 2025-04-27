@@ -23,7 +23,7 @@ class TmstColumn( Column[dt.datetime ] ):
         self.valueindex_to_keyvalue: list[ dt.datetime ] = []
         self.ref_to_valueindex:      list[ int ]         = []
 
-    def apply_data( self: Self, keymap: SortedDict[dt.datetime, LineRefList], refcnt: int ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[dt.datetime, LineRefList], refcnt: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt = refcnt
@@ -44,6 +44,9 @@ class TmstColumn( Column[dt.datetime ] ):
                 for ref in reflist:
                     self.ref_to_valueindex[ ref ] = cnt
                 cnt += 1
+
+            if not skip_write:
+                self.save_data()
 
             return True
 

@@ -31,7 +31,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
         self._queue: mp.Queue = mp.Queue()
 
-        self.sorted_index: SortedDict[str, LineRefList ] = SortedDict[str, LineRefList ]()
+        self.sorted_index: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList ]()
 
         self.thread: th.Thread = th.Thread(
             target=self.main_loop,

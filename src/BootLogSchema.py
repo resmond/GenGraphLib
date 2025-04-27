@@ -2,16 +2,18 @@ from typing import Self
 import multiprocessing as mp
 
 from gengraphlib import (
+    GraphColumns,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
     TmstKeyDef,
-    KeyDict,
+    KeyDefDict,
     KeyValueSchema,
     BootLogManager,
     BootLog,
     BootLogInfo
 )
+
 
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
@@ -30,12 +32,12 @@ class BootLogSchema( KeyValueSchema ):
 
     @staticmethod
     def entrypoint( parse_info: ParseProcessInfo ) -> None:
+        GraphColumns( '/home/richard/data/jctl-logs' )
         bootlog_schema = BootLogSchema( parse_info )
         bootlog_schema.launch_indexing( -1, "evt" )
 
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
-
         self.cnt:           int  = 0
         self.id:            str  = parse_info.id
         self.log_root:      str  = parse_info.log_root
@@ -49,7 +51,7 @@ class BootLogSchema( KeyValueSchema ):
         self.end_event:    mp.Event = parse_info.end_event
 
         self.log_manager:   BootLogManager | None = None
-        self._alias_map:    KeyDict         = KeyDict()
+        self._alias_map:    KeyDefDict         = KeyDefDict()
 
         self.cur_bootlog:       BootLog              | None = None
         self.bootlog_info:      BootLogInfo          | None = None
@@ -196,6 +198,8 @@ class BootLogSchema( KeyValueSchema ):
 
     def init_repository( self: Self ) -> None:
         super().init_repository()
+
+        GraphColumns.inst.init_columns( self )
 
         self.log_manager = BootLogManager( self.log_root, self.get_schema_info(), self.app_msgqueue, self.end_event )
 
