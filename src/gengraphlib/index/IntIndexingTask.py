@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
@@ -15,6 +15,10 @@ from ..common import (
 )
 
 from .IndexTaskBase import IndexTaskBase
+
+from ..graph.GraphColumns import GraphColumns
+
+from ..columns import Column, IntColumn
 
 class IntIndexingTask( IndexTaskBase[int] ):
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
@@ -52,6 +56,10 @@ class IntIndexingTask( IndexTaskBase[int] ):
             while not end_event:
                 rec_num, value = queue.get()
 
+                if rec_num == -1:
+                    self.apply_tocolumn()
+                    break
+
                 int_value: int = int( value )
 
                 if int_value not in self._sorted_index:
@@ -68,5 +76,11 @@ class IntIndexingTask( IndexTaskBase[int] ):
         except Exception as exc:
             print(f'IntIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def serialize_index( self: Self ):
-        pass
+    def apply_tocolumn( self: Self ) -> bool:
+        print(f'[{self.key}-index]: IntColumn Applying Data')
+        column: Column[int] = GraphColumns.inst.get_column( self.key )
+        if column:
+            intcolumn: IntColumn = cast(IntColumn, column)
+            return intcolumn.apply_data( self.keymap, self.refcnt )
+        else:
+            return False

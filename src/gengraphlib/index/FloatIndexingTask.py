@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
@@ -15,6 +15,10 @@ from ..common import (
 )
 
 from .IndexTaskBase import IndexTaskBase
+
+from ..graph.GraphColumns import GraphColumns
+
+from ..columns import Column, FloatColumn
 
 # noinspection DuplicatedCode
 class FloatIndexingTask( IndexTaskBase[float] ):
@@ -50,6 +54,10 @@ class FloatIndexingTask( IndexTaskBase[float] ):
             while True:
                 rec_num, value = queue.get()
 
+                if rec_num == -1:
+                    self.apply_tocolumn()
+                    break
+
                 float_value: float = float( value )
 
                 if float_value not in self._sorted_index:
@@ -67,5 +75,11 @@ class FloatIndexingTask( IndexTaskBase[float] ):
         except Exception as exc:
             print(f'FloatIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def serialize_index( self: Self ):
-        pass
+    def apply_tocolumn( self: Self ) -> bool:
+        print(f'[{self.key}-index]: FloatColumn Applying Data')
+        column: Column[float] = GraphColumns.inst.get_column( self.key )
+        if column:
+            floatcolumn: FloatColumn = cast(FloatColumn, column)
+            return floatcolumn.apply_data( self.keymap, self.refcnt )
+        else:
+            return False

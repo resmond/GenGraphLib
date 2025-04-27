@@ -18,7 +18,7 @@ from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDict
-    , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor
+    , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor, GraphColumns
 )
 
 from .columns import (
@@ -63,6 +63,7 @@ __all__ = [
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
+    , "GraphColumns"
 
     , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
     , "KeyValVector", "VectorResult"

@@ -70,7 +70,7 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         pass
 
     @abstractmethod
-    def apply_tocolumn( self: Self, target_column: Column[T] ) -> bool:
+    def apply_tocolumn( self: Self ) -> bool:
         pass
 
     #def dump_sortedstr( self: Self, strdict: SortedDict[str, LineRefList ] ):

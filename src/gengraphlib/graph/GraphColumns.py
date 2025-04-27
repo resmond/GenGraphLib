@@ -1,6 +1,6 @@
 from typing import Self
 
-from ..common import KeyValSchemaInfo, KeyType
+from ..common import KeyValSchemaInfo, KeyType, KeyValTypes
 from ..columns import (
     Column,
     StrColumn,
@@ -9,7 +9,6 @@ from ..columns import (
     FloatColumn,
     TmstColumn
 )
-
 
 class GraphColumns:
     inst: Self
@@ -33,5 +32,13 @@ class GraphColumns:
                     self.column_map[keyinfo.key] = FloatColumn( keyinfo, self.root_dir )
                 case KeyType.KTmst:
                     self.column_map[keyinfo.key] = TmstColumn( keyinfo, self.root_dir )
+
+    def get_column[T: KeyValTypes]( self: Self, keyid: str ) -> Column[T] | None:
+        if keyid in self.column_map:
+            column: Column = self.column_map[ keyid ]
+            if column.keyinfo.pytype is type(T):
+                return column
+
+        return None
 
 

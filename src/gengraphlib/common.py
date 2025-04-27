@@ -212,12 +212,14 @@ class KeyInfo:
     def __init__(
             self: Self,
             keytype: KeyType,
+            pytype: type,
             batch_id: str,
             key: str,
             alias: str,
             groupids: list[str] | str | None = None
         ):
         self.keytype:   KeyType   = keytype
+        self.pytype:    type      = pytype
         self.batch_id:  str       = batch_id
         self.key:       str       = key
         self.alias:     str       = alias

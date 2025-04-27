@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
@@ -6,6 +6,9 @@ from sortedcontainers import SortedSet
 
 from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo, BootLogInfo
 from .IndexTaskBase import IndexTaskBase
+
+from ..graph.GraphColumns import GraphColumns
+from ..columns import Column, BoolColumn
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 
@@ -64,8 +67,14 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         except Exception as exc:
             print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def apply_tocolumn( self: Self ):
-        print(f'[{self.key}-index]: Applying Data')
-
+    # pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int
+    def apply_tocolumn( self: Self ) -> bool:
+        print(f'[{self.key}-index]: BoolColumn Applying Data')
+        column: Column[bool] = GraphColumns.inst.get_column( self.key )
+        if column:
+            boolcolumn: BoolColumn = cast(BoolColumn, column)
+            return boolcolumn.apply_data( self._pos_set, self._neg_set, self.refcnt )
+        else:
+            return False
 
 

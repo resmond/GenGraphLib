@@ -1,14 +1,24 @@
-from typing import Self
+from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
 from sortedcontainers import SortedDict
 
-from ..common import LineRefList, KeyType, KeyIndexType, KeyInfo, keyIndexInfo, KeyIndexState, BootLogInfo
+from ..common import (
+    LineRefList,
+    KeyType,
+    KeyIndexType,
+    KeyInfo,
+    keyIndexInfo,
+    KeyIndexState,
+    BootLogInfo
+)
 
 from .IndexTaskBase import IndexTaskBase
 
-from ..columns.StrColumn import StrColumn
+from ..graph.GraphColumns import GraphColumns
+
+from ..columns import Column, StrColumn
 
 class StrIndexingTask( IndexTaskBase[str] ):
 
@@ -70,9 +80,14 @@ class StrIndexingTask( IndexTaskBase[str] ):
         except Exception as exc:
             print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def apply_tocolumn( self: Self, target_column: StrColumn ) -> bool:
-        print(f'[{self.key}-index]: Applying Data')
-        return target_column.apply_data( self.keymap, self.refcnt )
+    def apply_tocolumn( self: Self ) -> bool:
+        print(f'[{self.key}-index]: StrColumn Applying Data')
+        column: Column[str] = GraphColumns.inst.get_column( self.key )
+        if column:
+            strcolumn: StrColumn = cast(StrColumn, column)
+            return strcolumn.apply_data( self.keymap, self.refcnt )
+        else:
+            return False
 
 
 

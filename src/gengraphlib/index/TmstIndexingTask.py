@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
@@ -18,6 +18,9 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
+from ..graph.GraphColumns import GraphColumns
+
+from ..columns import Column, TmstColumn
 
 # noinspection DuplicatedCode
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
@@ -57,6 +60,10 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
             while not end_event:
                 rec_num, value = queue.get()
 
+                if rec_num == -1:
+                    self.apply_tocolumn()
+                    break
+
                 int_value = int(value)
                 datetime_value: dt.datetime = very_beginning + dt.timedelta(microseconds=int_value)
 
@@ -75,5 +82,11 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         except Exception as exc:
             print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def serialize_index( self: Self ):
-        pass
+    def apply_tocolumn( self: Self ) -> bool:
+        print(f'[{self.key}-index]: TmstColumn Applying Data')
+        column: Column[dt.datetime] = GraphColumns.inst.get_column( self.key )
+        if column:
+            tmstcolumn: TmstColumn = cast(TmstColumn, column)
+            return tmstcolumn.apply_data( self.keymap, self.refcnt )
+        else:
+            return False

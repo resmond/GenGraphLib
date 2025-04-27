@@ -11,8 +11,9 @@ from src.gengraphlib.columns.Column import Column
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def __init__( self: Self, key: str, alias: str, key_type: KeyType, groups: list[str ] | str | None = None ) -> None:
         super(KeyDefBase, self).__init__()
-        self.key:            str = key
-        self.alias:          str = alias
+        self.key:            str  = key
+        self.alias:          str  = alias
+        self.pytype:         type = type(T)
         self._skip:          bool = True
         self._event_trigger: bool = False
         self.key_type:       KeyType = key_type
@@ -45,8 +46,15 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         self._queue = mp.Queue()
         return self._queue
 
-    def get_keyinfo( self: Self, schema_id: str ) -> KeyInfo:
-        return KeyInfo(f"{schema_id}@{self.key}",self.key,self.alias,self.key_type,self.groupids )
+    def get_keyinfo( self: Self ) -> KeyInfo:
+        return KeyInfo(
+            keytype=self.key_type,
+            pytype=self._pytype,
+            batch_id=self.batch_id,
+            key=self.key,
+            alias=self.alias,
+            groupids=self.groupids
+        )
 
     def visit( self: Self, visitor ) -> None:
         visitor.visit_key_def( self )
