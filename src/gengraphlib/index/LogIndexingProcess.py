@@ -141,9 +141,9 @@ class LogIndexingProcess:
                                 self.log_writer.write(
                                     f"sending to {alias}:( {self.record_count}, {value} )\n".encode()
                                 )
-                        else:
-                            if self.write_log:
-                                self.log_writer.write( f"skipping {alias}: {value}\n".encode() )
+                        # else:
+                        #     if self.write_log:
+                        #         self.log_writer.write( f"skipping {alias}: {value}\n".encode() )
 
             for alias, keyindex_queue in self.queues_byalias.items():
                 value_packet: KeyValuePacket = (-1, str(self.record_count))

@@ -20,7 +20,7 @@ class MyMainWindow(QMainWindow):
     MINIMUM_HEIGHT = 600
 
     def process_data(self: Self, index_info: keyIndexInfo) -> None:
-        print(f"[{self}] Received: ({type(index_info)}): {index_info}")
+        print(f"{self.WINDOW_TITLE}: {index_info.key} - keycnt: {index_info.keycnt}  refcnt: {index_info.refcnt}  hit%: {index_info.hitpct}")
 
     def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:
         super(MyMainWindow, self).__init__()

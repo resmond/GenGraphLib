@@ -41,5 +41,5 @@ class QtMsgQueueReader( QObject ):
             print("Reader process exiting")
 
     def _process_message(self: Self, index_info: keyIndexInfo):
-        print(f"Processing message: {index_info}")
+        #print(f"Processing message: {index_info}")
         self.data_received.emit(index_info)

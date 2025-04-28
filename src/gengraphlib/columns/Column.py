@@ -18,8 +18,8 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
         self.keyinfo:   KeyInfo = keyinfo
         self.root_dir:  str     = root_dir
         self.id:        str     = self.keyinfo.key
-        self.batch_dir: str     = os.path.join(self.root_dir, self.keyinfo.batch_id, f"{self.keyinfo.key}" )
-        self.filepath:  str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id,  f"{self.keyinfo.key}-index.bin" )
+        self.batch_dir: str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id )
+        self.filepath:  str     = os.path.join(self.batch_dir,  f"{self.keyinfo.key}-index.bin" )
 
     @abstractmethod
     def keyvalue_from_recno( self: Self, recno: int ) -> T | None: ...

@@ -66,7 +66,7 @@ class BootLog:
             keys_path=self.keys_path
         )
 
-    def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = True ) -> None:
+    def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = False ) -> None:
         self.indexing_process = LogIndexingProcess( self.schema_info, self.app_msgqueue, self.end_event )
         if self.indexing_process:
             self.indexing_process.index_bootlog( self.get_info(), active_keys, write_bin, write_log )
