@@ -2,7 +2,7 @@ from typing import Self
 import multiprocessing as mp
 
 from gengraphlib import (
-    GraphColumns,
+    ColumnsFactory,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
@@ -39,7 +39,7 @@ class BootLogSchema( KeyValueSchema ):
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
 
-        GraphColumns("/home/richard/data/jctl-logs")
+        ColumnsFactory( "/home/richard/data/jctl-logs" )
 
         self.cnt:           int  = 0
         self.id:            str  = parse_info.id
@@ -71,36 +71,36 @@ class BootLogSchema( KeyValueSchema ):
                 StrKeyDef("device", "_KERNEL_DEVICE", "evt"),
                 StrKeyDef("dev", "DEVICE", "evt"),
                 #
-                StrKeyDef("rttime", "__REALTIME_TIMESTAMP", "evt"),
-                StrKeyDef("logtime", "SYSLOG_TIMESTAMP", "evt"),
+                StrKeyDef("rt_timest", "__REALTIME_TIMESTAMP", "evt"),
+                StrKeyDef("logsys_timest", "SYSLOG_TIMESTAMP", "evt"),
                 #
                 StrKeyDef("cmdline", "_CMDLINE", "evt"),
                 StrKeyDef("command", "COMMAND", "evt"),
                 StrKeyDef("exe", "_EXE", "evt"),
                 StrKeyDef("cfgfile", "CONFIG_FILE", "evt"),
-                StrKeyDef("codefn", "CODE_FUNC", "evt"),
+                StrKeyDef("code_fn", "CODE_FUNC", "evt"),
+                StrKeyDef("code_line", "CODE_LINE", "eval"),
+                StrKeyDef("code_file", "CODE_FILE", "eval"),
                 StrKeyDef("message", "MESSAGE", "evt"),
                 #
                 StrKeyDef("pid", "_PID", "evt"),
-                StrKeyDef("logID", "SYSLOG_IDENTIFIER", "evt"),
-                StrKeyDef("logpid", "SYSLOG_PID", "evt"),
-                StrKeyDef("linuxctx", "_SELINUX_CONTEXT", "evt"),
-                StrKeyDef("cgroup", "_SYSTEMD_CGROUP", "evt"),
-                StrKeyDef("userunit", "_SYSTEMD_USER_UNIT", "evt"),
+                StrKeyDef("syslog_id", "SYSLOG_IDENTIFIER", "evt"),
+                StrKeyDef("syslog_pid", "SYSLOG_PID", "evt"),
+                StrKeyDef("linux_ctx", "_SELINUX_CONTEXT", "evt"),
+                StrKeyDef("sysd_cgroup", "_SYSTEMD_CGROUP", "evt"),
+                StrKeyDef("sysd_usrunit", "_SYSTEMD_USER_UNIT", "evt"),
                 StrKeyDef("transport", "_TRANSPORT", "evt"),
                 #
-                StrKeyDef("rtScope", "_RUNTIME_SCOPE", "eval"),
-                StrKeyDef("udSName", "_UDEV_SYSNAME", "eval"),
-                StrKeyDef("udDvNd", "_UDEV_DEVNODE", "eval"),
-                StrKeyDef("nmDev", "NM_DEVICE", "eval"),
-                StrKeyDef("msgID", "MESSAGE_ID", "eval"),
-                StrKeyDef("cdLn", "CODE_LINE", "eval"),
-                StrKeyDef("cdFl", "CODE_FILE", "eval"),
-                StrKeyDef("sysdSLc", "_SYSTEMD_SLICE", "eval"),
-                StrKeyDef("cur", "__CURSOR", "eval"),
-                StrKeyDef("cfgLine", "CONFIG_LINE", "eval"),
+                StrKeyDef("runttm_scope", "_RUNTIME_SCOPE", "eval"),
+                StrKeyDef("udev_sysname", "_UDEV_SYSNAME", "eval"),
+                StrKeyDef("udev_devnode", "_UDEV_DEVNODE", "eval"),
+                StrKeyDef("nm_device", "NM_DEVICE", "eval"),
+                StrKeyDef("msg_id", "MESSAGE_ID", "eval"),
+                StrKeyDef("sysd_slice", "_SYSTEMD_SLICE", "eval"),
+                StrKeyDef("cfg_line", "CONFIG_LINE", "eval"),
                 # ---
                 StrKeyDef("bootID", "_BOOT_ID", "noise"),
+                StrKeyDef("cursor", "__CURSOR", "noise"),
                 StrKeyDef("seqNum", "__SEQNUM", "noise"),
                 StrKeyDef("mID", "_MACHINE_ID", "noise"),
                 StrKeyDef("hstName", "_HOSTNAME", "noise"),
@@ -202,9 +202,7 @@ class BootLogSchema( KeyValueSchema ):
     def init_repository( self: Self ) -> None:
         super().init_repository()
 
-
         self.log_manager = BootLogManager( self.log_root, self.get_schema_info(), self.app_msgqueue, self.end_event )
-        GraphColumns.inst.init_columns( self.get_schema_info() )
 
     def launch_indexing( self: Self, boot_index: int | None = None, group_id: str | None = None ) -> None:
 

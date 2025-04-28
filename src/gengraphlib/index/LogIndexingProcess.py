@@ -8,6 +8,8 @@ import time
 
 from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
 
+from ..columns import GraphTable
+
 from .CmdStdoutStream import CmdStdoutStream
 
 from .StrIndexingTask import StrIndexingTask
@@ -27,35 +29,38 @@ class LogIndexingProcess:
         end_event: mp.Event
     ) -> None:
 
-        self.schema_info: KeyValSchemaInfo = schema_info
-        self.app_msgqueue: mp.Queue = app_msgqueue
-        self.end_event: mp.Event = end_event
+        self.schema_info:  KeyValSchemaInfo = schema_info
+        self.app_msgqueue: mp.Queue         = app_msgqueue
+        self.end_event:    mp.Event         = end_event
 
         self.queues_byalias: dict[str, mp.Queue ] = dict[str, mp.Queue ]()
-        self.indextask_map: dict[str, IndexTaskInterface ] = dict[str, IndexTaskInterface ]()
+        self.indextask_map:  dict[str, IndexTaskInterface ] = dict[str, IndexTaskInterface ]()
 
         self.cmd_stream: CmdStdoutStream | None = None
         self.log_writer: BufferedWriter  | None = None
 
         self.bootlog_info: BootLogInfo | None = None
-        self.active_keys: set[str] | None = None
-        self.state: str = "Init"
-        self.write_bin: bool = False
-        self.write_log: bool = False
+        self.graph_table:  GraphTable  | None = None
+        self.active_keys:  set[str] | None = None
+        self.state:        str = "Init"
+        self.write_bin:    bool = False
+        self.write_log:    bool = False
         self.record_count: int = 0
 
     def index_bootlog(
-            self: Self,
-            bootlog_info: BootLogInfo,
-            active_keys: set[str],
-            write_bin: bool = False,
-            write_log: bool = False
-        ) -> None:
+        self: Self,
+        bootlog_info: BootLogInfo,
+        graph_table: GraphTable,
+        active_keys: set[str],
+        write_bin: bool = False,
+        write_log: bool = False,
+    ) -> None:
 
         self.bootlog_info = bootlog_info
-        self.active_keys = active_keys
-        self.write_bin = write_bin
-        self.write_log = write_log
+        self.graph_table  = graph_table
+        self.active_keys  = active_keys
+        self.write_bin    = write_bin
+        self.write_log    = write_log
 
         if write_log:
             self._start_logwriter()
@@ -85,15 +90,15 @@ class LogIndexingProcess:
             if keyinfo.alias in self.active_keys:
                 match keyinfo.keytype:
                     case KeyType.KStr:
-                        self._register_indextask( StrIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( StrIndexingTask( keyinfo, self.bootlog_info, self.graph_table, self.app_msgqueue, self.end_event ) )
                     case KeyType.KInt:
-                        self._register_indextask( IntIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( IntIndexingTask( keyinfo, self.bootlog_info, self.graph_table, self.app_msgqueue, self.end_event ) )
                     case KeyType.KBool:
-                        self._register_indextask( BoolIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( BoolIndexingTask( keyinfo, self.bootlog_info, self.graph_table, self.app_msgqueue, self.end_event ) )
                     case KeyType.KFloat:
-                        self._register_indextask( FloatIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( FloatIndexingTask( keyinfo, self.bootlog_info, self.graph_table, self.app_msgqueue, self.end_event ) )
                     case KeyType.KTmst:
-                        self._register_indextask( TmstIndexingTask( keyinfo, self.bootlog_info, self.app_msgqueue, self.end_event ) )
+                        self._register_indextask( TmstIndexingTask( keyinfo, self.bootlog_info, self.graph_table, self.app_msgqueue, self.end_event ) )
 
     def stop_indexes(self: Self) -> None:
         for index in self.indextask_map.values():

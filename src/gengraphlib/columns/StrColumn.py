@@ -8,10 +8,11 @@ from sortedcontainers import SortedDict
 from ..common import KeyInfo, LineRefList
 
 from .Column import Column
+from .GraphTable import GraphTable
 
 class StrColumn( Column[str] ):
-    def __init__( self: Self, keyinfo: KeyInfo, root_dir: str ) -> None:
-        super( StrColumn, self ).__init__( keyinfo, root_dir )
+    def __init__( self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
+        super( StrColumn, self ).__init__( keyinfo, graph_table )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
@@ -95,10 +96,13 @@ class StrColumn( Column[str] ):
 
     def save_data( self: Self ) -> bool:
         try:
-            if not os.path.exists(self.batch_dir):
-                os.mkdir( self.batch_dir )
+            data_dir: str = self.graph_table.get_datadir()
+            if not os.path.exists( data_dir ):
+                os.mkdir( data_dir )
 
-            with open( self.filepath, "wb" ) as writer:
+            filepath: str = os.path.join( data_dir, f"{self.key}-index.bin")
+
+            with open( filepath, "wb" ) as writer:
                 buffer: bytes = pkl.dumps( self )
                 writer.write(buffer)
 
@@ -111,7 +115,9 @@ class StrColumn( Column[str] ):
     def load_data( self: Self ) -> bool:
 
         try:
-            with open( self.filepath, "b" ) as reader:
+            filepath: str = os.path.join( self.graph_table.get_datadir(), f"{self.key}-index.bin")
+
+            with open( filepath, "b" ) as reader:
 
                 dataobj: StrColumn = pkl.load( reader )
 

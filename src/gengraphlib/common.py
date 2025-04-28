@@ -214,14 +214,12 @@ class KeyInfo:
             self: Self,
             keytype: KeyType,
             pytype: type,
-            batch_id: str,
             key: str,
             alias: str,
             groupids: list[str]
         ):
         self.keytype:   KeyType   = keytype
         self.pytype:    type      = pytype
-        self.batch_id:  str       = batch_id
         self.key:       str       = key
         self.alias:     str       = alias
         self.groupids:  list[str] = groupids

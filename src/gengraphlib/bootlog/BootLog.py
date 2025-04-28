@@ -7,6 +7,7 @@ import multiprocessing as mp
 from ..common import KeyValSchemaInfo, BootLogInfo
 
 from ..index.LogIndexingProcess import LogIndexingProcess
+from ..columns import GraphTable
 
 
 class BootLog:
@@ -34,6 +35,7 @@ class BootLog:
         self.keys_path:      str = os.path.join( self.root_dir, "keys" )
 
         self.indexing_process: LogIndexingProcess | None = None
+        self.graph_table:      GraphTable         | None = None
         self.active_keys:      set[str]           | None = None
 
     def boot_label( self: Self ) -> str:
@@ -66,11 +68,12 @@ class BootLog:
             keys_path=self.keys_path
         )
 
-    def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = False ) -> None:
+    def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = False ) -> GraphTable:
         self.indexing_process = LogIndexingProcess( self.schema_info, self.app_msgqueue, self.end_event )
+        self.graph_table = GraphTable( "logevents", self.schema_info, self.get_info()  )
         if self.indexing_process:
-            self.indexing_process.index_bootlog( self.get_info(), active_keys, write_bin, write_log )
-
+            self.indexing_process.index_bootlog( self.get_info(), self.graph_table, active_keys, write_bin, write_log )
+        return self.graph_table
 
 
 

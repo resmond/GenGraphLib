@@ -10,12 +10,13 @@ from sortedcontainers import SortedDict
 from ..common import KeyInfo, LineRefList
 
 from .Column import Column
+from .GraphTable import GraphTable
 
 class TmstColumn( Column[dt.datetime ] ):
     zeroday: dt.datetime = dt.datetime.fromisoformat( "1970-01-01" )
 
-    def __init__( self: Self, keyinfo: KeyInfo, root_dir: str ) -> None:
-        super( TmstColumn, self ).__init__( keyinfo, root_dir )
+    def __init__( self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
+        super( TmstColumn, self ).__init__( keyinfo, graph_table )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
@@ -99,10 +100,13 @@ class TmstColumn( Column[dt.datetime ] ):
 
     def save_data( self: Self ) -> bool:
         try:
-            if not os.path.exists(self.batch_dir):
-                os.mkdir( self.batch_dir )
+            data_dir: str = self.graph_table.get_datadir()
+            if not os.path.exists( data_dir ):
+                os.mkdir( data_dir )
 
-            with open( self.filepath, "wb" ) as writer:
+            filepath: str = os.path.join( data_dir, f"{self.key}-index.bin")
+
+            with open( filepath, "wb" ) as writer:
                 buffer: bytes = pkl.dumps( self )
                 writer.write(buffer)
 
@@ -115,7 +119,9 @@ class TmstColumn( Column[dt.datetime ] ):
     def load_data( self: Self ) -> bool:
 
         try:
-            with open( self.filepath, "b" ) as reader:
+            filepath: str = os.path.join( self.graph_table.get_datadir(), f"{self.key}-index.bin")
+
+            with open( filepath, "b" ) as reader:
 
                 dataobj: TmstColumn = pkl.load( reader )
 

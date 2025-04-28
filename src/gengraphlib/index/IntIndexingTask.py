@@ -16,13 +16,12 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
-from ..graph.GraphColumns import GraphColumns
 
-from ..columns import Column, IntColumn
+from ..columns import Column, IntColumn, GraphTable
 
 class IntIndexingTask( IndexTaskBase[int] ):
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super().__init__( key_info, bootlog_info, app_msgqueue, end_event )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super().__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
 
         self.keytype: KeyType.KInt
         self.index_type: KeyIndexType = KeyIndexType.IntSorted
@@ -80,7 +79,7 @@ class IntIndexingTask( IndexTaskBase[int] ):
 
     def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: IntColumn Applying Data')
-        column: Column[int] = GraphColumns.inst.get_column( self.key )
+        column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             intcolumn: IntColumn = cast(IntColumn, column)
             return intcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )

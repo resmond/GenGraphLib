@@ -15,9 +15,11 @@ from ..common import (
     BootLogInfo
 )
 
+from ..columns import GraphTable
+
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event,  ) -> None:
         super(IndexTaskBase,self).__init__( f"{key_info.key}-index" )
 
         self.status_cnt: int     = 100
@@ -31,8 +33,9 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         self._end_event:       mp.Event       = end_event
 
         self._bootlog_info:    BootLogInfo    = bootlog_info
+        self._graph_table:     GraphTable     = graph_table
 
-        self._index_dir:      str = self._bootlog_info.keys_path
+        self._index_dir:      str = os.path.join( self._bootlog_info.keys_path, self._bootlog_info.schema_bootid )
         self._index_filepath: str = os.path.join( self._index_dir, f"{self.key}.index" )
         self._keyindex_id:    str = f"{self._bootlog_info.schema_bootid}@{key_info.key}"
 

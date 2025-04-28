@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Self
 
-import os
-
 from ..common import (
     KeyValTypes,
     ColumnInterface,
@@ -10,16 +8,20 @@ from ..common import (
     LineRefList,
 )
 
+from .GraphTable import GraphTable
+
 #from .. import GNodeInterface
 
 class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
-    def __init__(self: Self, keyinfo: KeyInfo, root_dir: str ) -> None:
+    def __init__(self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
         super().__init__()
-        self.keyinfo:   KeyInfo = keyinfo
-        self.root_dir:  str     = root_dir
-        self.id:        str     = self.keyinfo.key
-        self.batch_dir: str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id )
-        self.filepath:  str     = os.path.join(self.batch_dir,  f"{self.keyinfo.key}-index.bin" )
+        self.keyinfo:     KeyInfo    = keyinfo
+        self.graph_table: GraphTable = graph_table
+        self.id:          str        = self.keyinfo.key
+        #self.batch_dir: str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id )
+        #self.filepath:  str     = os.path.join(self.batch_dir,  f"{self.keyinfo.key}-index.bin" )
+        #print(self.filepath)
+
 
     @abstractmethod
     def keyvalue_from_recno( self: Self, recno: int ) -> T | None: ...

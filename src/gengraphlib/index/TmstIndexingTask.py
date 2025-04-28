@@ -18,15 +18,14 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
-from ..graph.GraphColumns import GraphColumns
 
-from ..columns import Column, TmstColumn
+from ..columns import Column, TmstColumn, GraphTable
 
 # noinspection DuplicatedCode
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super( TmstIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super( TmstIndexingTask, self ).__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
 
         self.keytype      = KeyType.KTmst
         self.index_type   = KeyIndexType.TmstSorted
@@ -89,7 +88,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
     def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: TmstColumn Applying Data')
-        column: Column[dt.datetime] = GraphColumns.inst.get_column( self.key )
+        column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             tmstcolumn: TmstColumn = cast(TmstColumn, column)
             return tmstcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )

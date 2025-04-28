@@ -4,12 +4,12 @@ from .IntColumn import IntColumn
 from .BoolColumn import BoolColumn
 from .FloatColumn import FloatColumn
 from .TmstColumn import TmstColumn
-from .KeyValVector import KeyValVector, VectorResult
-
+from .GraphTable import GraphTable, VectorResult
+from .ColumnsFactory import ColumnsFactory
 
 __all__ = [
 
     "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
-    , "KeyValVector", "VectorResult"
-
+    , "GraphTable", "VectorResult"
+    , "ColumnsFactory"
 ]

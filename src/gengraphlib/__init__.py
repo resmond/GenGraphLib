@@ -17,13 +17,13 @@ from .regex import (
 from .graph import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase
-    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef, KeyDefDict
-    , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor, GraphColumns
+    , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
+    , KeyGroup, KeyGroups, KeyValueSchema, KeySchemaVisitor
 )
 
 from .columns import (
     Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
-    , KeyValVector, VectorResult
+    , GraphTable, VectorResult, ColumnsFactory
 )
 
 from .index import (
@@ -32,7 +32,6 @@ from .index import (
 
 from .proc import (
       ProcBase, TaskBase
-    , MsgType, MsgSourceType, MessageBase, StatusMsg, ErrorMsg, InfoMsg, DataMsg, MsgQueueBase
 )
 
 from .textlog import (
@@ -63,17 +62,15 @@ __all__ = [
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDefDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
-    , "GraphColumns"
+    , "ColumnsFactory"
 
     , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
-    , "KeyValVector", "VectorResult"
+    , "GraphTable", "VectorResult"
 
     , "IndexTaskBase", "LogIndexingProcess"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"
 
     , "TaskBase", "ProcBase"
-
-    , "MsgType", "MsgSourceType", "MessageBase", "StatusMsg", "ErrorMsg", "InfoMsg", "DataMsg", "MsgQueueBase"
 
     , "TextBootLogLine", "TextBootLogLines"
     , "TextLogModule", "TextLogModules", "TextLogModuleType", "TextLogModuleTypes"

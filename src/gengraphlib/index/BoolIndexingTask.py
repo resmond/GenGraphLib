@@ -7,13 +7,12 @@ from sortedcontainers import SortedSet
 from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo, BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
-from ..graph.GraphColumns import GraphColumns
-from ..columns import Column, BoolColumn
+from ..columns import Column, BoolColumn, GraphTable
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 
-    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super().__init__( key_info, bootlog_info, app_msgqueue, end_event )
+    def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
+        super().__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
 
         self.keytype      = KeyType.KBool
         self.index_type   = KeyIndexType.BoolDualIntersect
@@ -72,7 +71,7 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
     # pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int
     def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: BoolColumn Applying Data')
-        column: Column[bool] = GraphColumns.inst.get_column( self.key )
+        column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             boolcolumn: BoolColumn = cast(BoolColumn, column)
             return boolcolumn.apply_data( self._pos_set, self._neg_set, int(self.refmax), maxrecnum )

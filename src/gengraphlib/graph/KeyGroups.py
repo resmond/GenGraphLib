@@ -1,9 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
 
-from src.gengraphlib.columns.KeyValVector import KeyValVector
 from ..common import (
-    KeyFilter,
     KeyGroupRec,
     KeyDefDict,
     KeyDefInterface
@@ -22,9 +20,6 @@ class KeyGroup( KeyDefDict, GNodeInterface ):
 
     def add_keydef( self: Self, key_def: KeyDefInterface ) -> None:
         self[ key_def.key ] = key_def
-
-    def create_vector( self: Self, _key_filter: KeyFilter ) -> KeyValVector:
-        return KeyValVector( self, _key_filter )
 
 class KeyGroups( dict[str, KeyGroup ], GNodeInterface ):
     def __init__( self: Self, id: str,  graph_root: GraphRecordRoot ) -> None:
