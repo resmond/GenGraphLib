@@ -105,15 +105,15 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
             #from src.gengraphlib.graph.KeyDefs import FloatKeyDef
             match key_def:
                 case StrKeyDef():
-                    visitor.visit_str( key_def, key_def.key_values )
+                    visitor.visit_str( key_def )
                 case IntKeyDef():
-                    visitor.visit_int( key_def, key_def.key_values )
+                    visitor.visit_int( key_def )
                 case FloatKeyDef():
-                    visitor.visit_float( key_def, key_def.key_values )
+                    visitor.visit_float( key_def )
                 case BoolKeyDef():
-                    visitor.visit_bool( key_def, key_def.key_values )
+                    visitor.visit_bool( key_def )
                 case TmstKeyDef():
-                    visitor.visit_tmst( key_def, key_def.key_values )
+                    visitor.visit_tmst( key_def )
                 case _:
                     pass
         return True

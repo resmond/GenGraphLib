@@ -1,27 +1,26 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Self
+
+import os
+import pickle as pkl
 
 from ..common import (
     KeyValTypes,
     ColumnInterface,
     KeyInfo,
-    LineRefList,
+    LineRefList
 )
 
-from .GraphTable import GraphTable
-
-#from .. import GNodeInterface
-
 class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
-    def __init__(self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
+    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_file: bool = False ) -> None:
         super().__init__()
-        self.keyinfo:     KeyInfo    = keyinfo
-        self.graph_table: GraphTable = graph_table
-        self.id:          str        = self.keyinfo.key
-        #self.batch_dir: str     = os.path.join(self.root_dir, "boots", self.keyinfo.batch_id )
-        #self.filepath:  str     = os.path.join(self.batch_dir,  f"{self.keyinfo.key}-index.bin" )
-        #print(self.filepath)
+        self.keyinfo:  KeyInfo = keyinfo
+        self.id:       str     = self.keyinfo.key
+        self.filepath: str     = os.path.join( datadir, f'{self.keyinfo.key}-index.obj')
 
+        if load_file:
+            self.read_file()
 
     @abstractmethod
     def keyvalue_from_recno( self: Self, recno: int ) -> T | None: ...
@@ -42,10 +41,29 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
     def refs_from_valueindex( self: Self, valueindex: int ) -> LineRefList | None: ...
 
     @abstractmethod
-    def save_data( self: Self ) -> bool: ...
+    def apply_load( self: Self, loaded: Self ) -> bool: ...
 
-    @abstractmethod
-    def load_data( self: Self ) -> bool: ...
+    def read_file( self: Self ) -> bool:
+        try:
+            with open( self.filepath, "b" ) as reader:
+                dataobj: Column = pkl.load(reader)
+                self.apply_load( dataobj )
+            return True
+        except Exception as exc:
+            print(f"Column[{self.keytype}-{self.id}].read_file( {self.filepath} ) Exception: {exc}")
+            return False
+
+    def write_file( self: Self ) -> bool:
+        try:
+            with open( self.filepath, "wb" ) as writer:
+                buffer: bytes = pkl.dumps( self )
+                writer.write(buffer)
+            return True
+        except Exception as exc:
+            f"Column[{self.keytype}-{self.id}].write_file( {self.filepath} ) Exception: {exc}"
+            return False
+
+
 
 
 

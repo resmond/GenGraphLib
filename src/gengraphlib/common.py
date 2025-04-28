@@ -78,6 +78,7 @@ class Startable(Protocol):
 class IndexTaskInterface(Startable):
 
     def __init( self: Self ) -> None:
+        super().__init__()
         self.key: str            = ""
         self.alias: str          = ""
         self.index_dir: str      = ""
@@ -218,6 +219,7 @@ class KeyInfo:
             alias: str,
             groupids: list[str]
         ):
+        super().__init__()
         self.keytype:   KeyType   = keytype
         self.pytype:    type      = pytype
         self.key:       str       = key
@@ -231,6 +233,7 @@ class KeyInfo:
 class KeyValSchemaInfo:
 
     def __init__( self: Self, keys: list[KeyInfo], groups: list[str], active_groups: list[str] | None = None, active_keys: list[str] | None = None ):
+        super().__init__()
         self.keys:          list[KeyInfo]    = keys
         self.groups:        list[str]        = groups
         self.active_groups: list[str] | None = active_groups
@@ -248,6 +251,7 @@ class BootLogInfo:
             dir_path: str,
             keys_path: str | None = None
         ) -> None:
+        super().__init__()
         self.schema_bootid: str          = schema_bootid
         self.boot_index:    int          = boot_index
         self.first_dt:      dt.datetime  = first_dt

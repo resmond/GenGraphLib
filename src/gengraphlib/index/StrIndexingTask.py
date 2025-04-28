@@ -34,7 +34,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
         self.thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Str-index",
-            args = (self._queue, self._end_event, )
+            args = (self._queue, self.end_event,)
         )
 
     @property
@@ -46,7 +46,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
         keyindex_info: keyIndexInfo = self.get_index_info()
-        self._app_msgqueue.put(keyindex_info)
+        self.app_msgqueue.put( keyindex_info )
         print(f'[{self.key}-index]: Started')
         try:
             while True:   #not end_event:
@@ -67,7 +67,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
                 if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
-                    self._app_msgqueue.put( keyindex_info )
+                    self.app_msgqueue.put( keyindex_info )
                     #print(f'StrIndexing: {keyindex_info}')
 
         except ValueError as valexc:

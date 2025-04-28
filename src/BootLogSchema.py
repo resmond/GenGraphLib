@@ -2,7 +2,6 @@ from typing import Self
 import multiprocessing as mp
 
 from gengraphlib import (
-    ColumnsFactory,
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,
@@ -17,16 +16,16 @@ from gengraphlib import (
 
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
-        self.app_msgqueue: mp.Queue = app_msgqueue
-        self.end_event: mp.Event = end_event
 
-        self.id: str         = id
-        self.log_root: str   = log_root
-        self.boot_index: int = boot_index
-        self.groupid:    str = groupid
-        self.write_bin: bool = write_bin
-        self.write_log: bool = write_log
-        self.autostart: bool = autostart
+        self.app_msgqueue: mp.Queue = app_msgqueue
+        self.end_event:    mp.Event = end_event
+        self.id:           str      = id
+        self.log_root:     str      = log_root
+        self.boot_index:   int      = boot_index
+        self.groupid:      str      = groupid
+        self.write_bin:    bool     = write_bin
+        self.write_log:    bool     = write_log
+        self.autostart:    bool     = autostart
 
 class BootLogSchema( KeyValueSchema ):
 
@@ -38,8 +37,6 @@ class BootLogSchema( KeyValueSchema ):
 
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
-
-        ColumnsFactory( "/home/richard/data/jctl-logs" )
 
         self.cnt:           int  = 0
         self.id:            str  = parse_info.id

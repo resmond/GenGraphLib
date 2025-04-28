@@ -29,14 +29,10 @@ class GraphTable:
         self.bootlog_info:  BootLogInfo       = bootlog_info
 
         self.keys:     list[ KeyInfo ]        = schema_info.keys
-        self.key_cnt:  int                    = len(self.schema_info.keys)
-        self.columns:  dict[ str, Column]     = dict[str, Column]()
+        self.key_cnt:  int                    = len(self.keys)
         self.row_vals: list[ VectorValTypes ] = []
 
-    def init_internals( self: Self ) -> None:
-        self.row_vals: list[ VectorValTypes ] = [ None ] * self.key_cnt
-
-        ColumnsFactory.inst.init_table( self )
+        self.columns = ColumnsFactory.init_columns( self.keys, self.bootlog_info.dir_path )
 
     def get_datadir( self: Self ) -> str:
         return self.bootlog_info.dir_path
@@ -97,7 +93,7 @@ class GraphTable:
 
 
 
-
+#===================================================================
 
 if __name__ == "__main__":
 

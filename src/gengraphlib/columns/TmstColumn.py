@@ -1,8 +1,5 @@
 from typing import Self
 
-import os
-import pickle as pkl
-
 import datetime as dt
 
 from sortedcontainers import SortedDict
@@ -10,18 +7,17 @@ from sortedcontainers import SortedDict
 from ..common import KeyInfo, LineRefList
 
 from .Column import Column
-from .GraphTable import GraphTable
 
 class TmstColumn( Column[dt.datetime ] ):
     zeroday: dt.datetime = dt.datetime.fromisoformat( "1970-01-01" )
 
-    def __init__( self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
-        super( TmstColumn, self ).__init__( keyinfo, graph_table )
+    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
+        super( TmstColumn, self ).__init__( keyinfo, datadir, load_data )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
         self.keyvaluecnt:    int = -1
-        self.keyvaluemap_to_refs: SortedDict[dt.datetime, LineRefList] = SortedDict[dt.datetime, LineRefList]()
+        self.keyvaluemap_to_refs: SortedDict[ dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList]()
         self.valueindex_to_keyvalue: list[ dt.datetime ] = []
         self.ref_to_valueindex:      list[ int ]         = []
 
@@ -47,7 +43,7 @@ class TmstColumn( Column[dt.datetime ] ):
                 cnt += 1
 
             if not skip_write:
-                self.save_data()
+                self.write_file()
 
             return True
 
@@ -98,43 +94,12 @@ class TmstColumn( Column[dt.datetime ] ):
         else:
             return None
 
-    def save_data( self: Self ) -> bool:
-        try:
-            data_dir: str = self.graph_table.get_datadir()
-            if not os.path.exists( data_dir ):
-                os.mkdir( data_dir )
+    def apply_load( self: Self, dataobj: Self ) -> bool:
 
-            filepath: str = os.path.join( data_dir, f"{self.key}-index.bin")
+        self.refcnt = dataobj.refcnt
+        self.keyvaluecnt = dataobj.keyvaluecnt
+        self.keyvaluemap_to_refs = dataobj.keyvaluemap_to_refs
+        self.valueindex_to_keyvalue = dataobj.valueindex_to_keyvalue
+        self.ref_to_valueindex = dataobj.ref_to_valueindex
 
-            with open( filepath, "wb" ) as writer:
-                buffer: bytes = pkl.dumps( self )
-                writer.write(buffer)
-
-            return True
-
-        except Exception as exc:
-            print(f"TmstColumn[{self.id}] root_dir: {self.index_dir} Exception: {exc}")
-            return False
-
-    def load_data( self: Self ) -> bool:
-
-        try:
-            filepath: str = os.path.join( self.graph_table.get_datadir(), f"{self.key}-index.bin")
-
-            with open( filepath, "b" ) as reader:
-
-                dataobj: TmstColumn = pkl.load( reader )
-
-                self.refcnt                  = dataobj.refcnt
-                self.keyvaluecnt             = dataobj.keyvaluecnt
-                self.keyvaluemap_to_refs     = dataobj.keyvaluemap_to_refs
-                self.valueindex_to_keyvalue  = dataobj.valueindex_to_keyvalue
-                self.ref_to_valueindex       = dataobj.ref_to_valueindex
-
-            return True
-
-        except Exception as exc:
-            print(f"TmstColumn[{self.id}].load_data() - root_dir: {self.filepath} Exception: {exc}")
-            return False
-
-
+        return True

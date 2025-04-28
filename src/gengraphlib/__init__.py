@@ -22,7 +22,7 @@ from .graph import (
 )
 
 from .columns import (
-    Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
+      Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
     , GraphTable, VectorResult, ColumnsFactory
 )
 

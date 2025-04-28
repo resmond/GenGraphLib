@@ -39,7 +39,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         self._thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Tmst-index",
-            args = (self._queue, self._end_event, )
+            args = (self._queue, self.end_event,)
         )
 
     @property
@@ -53,7 +53,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
         keyindex_info: keyIndexInfo = self.get_index_info()
-        self._app_msgqueue.put(keyindex_info)
+        self.app_msgqueue.put( keyindex_info )
 
         try:
             while True: #not end_event:
@@ -76,7 +76,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
                 if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
                     #print(f"TmstIndexing({self.key}:{self.alias}) {self.refcnt}" )
-                    self._app_msgqueue.put(keyindex_info)
+                    self.app_msgqueue.put( keyindex_info )
 
         except ValueError as valexc:
             print(f'TmstIndexing({self.key}:{self.alias}) ValueError: {valexc}' )

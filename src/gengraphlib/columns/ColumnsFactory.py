@@ -1,51 +1,35 @@
-from typing import Self
-
-from ..common import  KeyType
+from ..common import  KeyType, KeyInfo
 from ..columns import (
+    Column,
     StrColumn,
     IntColumn,
     BoolColumn,
     FloatColumn,
-    TmstColumn,
-    GraphTable
+    TmstColumn
 )
 
-
 class ColumnsFactory:
-    inst: Self
 
-    def __init__( self: Self, root_dir: str ) -> None:
-        ColumnsFactory.inst = self
+    @staticmethod
+    def column_from_keyinfo( keyinfo: KeyInfo, datadir: str ) -> Column | None:
+        match keyinfo.keytype:
+            case KeyType.KStr:
+                return StrColumn( keyinfo, datadir )
+            case KeyType.KInt:
+                return IntColumn( keyinfo, datadir )
+            case KeyType.KBool:
+                return BoolColumn( keyinfo, datadir )
+            case KeyType.KFloat:
+                return FloatColumn( keyinfo, datadir )
+            case KeyType.KTmst:
+                return TmstColumn( keyinfo, datadir )
 
-        self.root_dir: str = root_dir
+        return None
 
-    def init_table( self: Self, graph_table: GraphTable ) -> None:
-        for keyinfo in graph_table.keys:
-
-            match keyinfo.keytype:
-                case KeyType.KStr:
-                    self.column_map[keyinfo.key] = StrColumn( keyinfo, graph_table )
-                case KeyType.KInt:
-                    self.column_map[keyinfo.key] = IntColumn( keyinfo, graph_table )
-                case KeyType.KBool:
-                    self.column_map[keyinfo.key] = BoolColumn( keyinfo, graph_table )
-                case KeyType.KFloat:
-                    self.column_map[keyinfo.key] = FloatColumn( keyinfo, graph_table )
-                case KeyType.KTmst:
-                    self.column_map[keyinfo.key] = TmstColumn( keyinfo, graph_table )
-
-    # def gettyped_column[ T: KeyValTypes ]( self: Self, keyid: str ) -> Column[T ] | None:
-    #     if keyid in self.column_map:
-    #         column: Column = self.column_map[ keyid ]
-    #         if column.keyinfo.pytype is type(T):
-    #             return column
-    #
-    #     return None
-    #
-    # def get_column( self: Self, keyid: str ) -> Column | None:
-    #     if keyid in self.column_map:
-    #         return self.column_map[ keyid ]
-    #     else:
-    #         return None
-
+    @staticmethod
+    def init_columns( keyinfo_list: list[KeyInfo], datadir: str ) -> dict[str, Column]:
+        columns = dict[str,Column]()
+        for keyinfo in keyinfo_list:
+            columns[keyinfo.key] = ColumnsFactory.column_from_keyinfo( keyinfo, datadir )
+        return columns
 

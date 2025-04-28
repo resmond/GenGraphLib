@@ -27,7 +27,7 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         self.thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Bool-index",
-            args = (self._queue, self._end_event, )
+            args = (self._queue, self.end_event,)
         )
 
     @property
@@ -40,7 +40,7 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
 
         keyindex_info: keyIndexInfo = self.get_index_info()
-        self._app_msgqueue.put(keyindex_info)
+        self.app_msgqueue.put( keyindex_info )
         print(f'[{self.key}-index]: Started')
         try:
             while not end_event:

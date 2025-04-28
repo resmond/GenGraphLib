@@ -1,18 +1,14 @@
 from typing import Self, cast
 
-import os
-import pickle as pkl
-
 from sortedcontainers import SortedSet
 
 from ..common import KeyInfo, LineRefList
 
 from .Column import Column
-from .GraphTable import GraphTable
 
 class BoolColumn( Column[bool] ):
-    def __init__( self: Self, keyinfo: KeyInfo, graph_table: GraphTable ) -> None:
-        super( BoolColumn, self ).__init__( keyinfo, graph_table )
+    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
+        super( BoolColumn, self ).__init__( keyinfo, datadir, load_data )
 
         self.refcnt:      int = -1
         self.maxrecnum:   int = -1
@@ -29,7 +25,7 @@ class BoolColumn( Column[bool] ):
             self.neg_set   = neg_set
 
             if not skip_write:
-                self.save_data()
+                self.write_file()
 
             return True
 
@@ -38,7 +34,12 @@ class BoolColumn( Column[bool] ):
             return False
 
     def keyvalue_from_recno( self: Self, recno: int ) -> bool | None:
-        return recno in self.pos_set
+        if recno in self.pos_set:
+            return True
+        elif recno in self.neg_set:
+            return False
+        else:
+            return None
 
     def keyvalue_from_valueindex( self: Self, valueindex: int ) -> bool | None:
         return not valueindex == 0
@@ -63,41 +64,30 @@ class BoolColumn( Column[bool] ):
         else:
             return cast( list, self.neg_set )
 
-    def save_data( self: Self ) -> bool:
-        try:
-            data_dir: str = self.graph_table.get_datadir()
-            if not os.path.exists( data_dir ):
-                os.mkdir( data_dir )
+    def apply_load( self: Self, dataobj: Self ) -> bool:
 
-            filepath: str = os.path.join( data_dir, f"{self.key}-index.bin")
+        self.refcnt      = dataobj.refcnt
+        self.keyvaluecnt = dataobj.keyvaluecnt
+        self.pos_set     = dataobj.pos_set
+        self.neg_set     = dataobj.neg_set
 
-            with open( filepath, "wb" ) as writer:
-                buffer: bytes = pkl.dumps( self )
-                writer.write(buffer)
+        return True
 
-            return True
-
-        except Exception as exc:
-            print(f"BoolColumn[{self.id}] root_dir: {self.index_dir} Exception: {exc}")
-            return False
-
-    def load_data( self: Self ) -> bool:
-        try:
-            filepath: str = os.path.join( self.graph_table.get_datadir(), f"{self.key}-index.bin")
-
-            with open( filepath, "b" ) as reader:
-                dataobj: BoolColumn = pkl.load(reader)
-
-                self.refcnt      = dataobj.refcnt
-                self.keyvaluecnt = dataobj.keyvaluecnt
-                self.pos_set     = dataobj.pos_set
-                self.neg_set     = dataobj.neg_set
-
-            return True
-
-        except Exception as exc:
-            print(
-                f"BoolColumn[{self.id}].load_data() - root_dir: {self.filepath} Exception: {exc}"
-            )
-            return False
+    # def load_data( self: Self ) -> bool:
+    #     try:
+    #         with open( self.filepath, "b" ) as reader:
+    #             dataobj: BoolColumn = pkl.load(reader)
+    #
+    #             self.refcnt      = dataobj.refcnt
+    #             self.keyvaluecnt = dataobj.keyvaluecnt
+    #             self.pos_set     = dataobj.pos_set
+    #             self.neg_set     = dataobj.neg_set
+    #
+    #         return True
+    #
+    #     except Exception as exc:
+    #         print(
+    #             f"BoolColumn[{self.id}].load_data() - root_dir: {self.filepath} Exception: {exc}"
+    #         )
+    #         return False
 

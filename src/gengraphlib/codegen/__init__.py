@@ -1,4 +1,4 @@
-from .LogSchemaVisitor import KeyValInfo, LogSchemaVisitor
+from .LogSchemaVisitor import KeyValInfo
 from .CodePatterns import (
     CodePattern,
     InfoPattern,
@@ -10,7 +10,6 @@ from .CodePatterns import (
 from .ClassGenBase import GenCodeRenderer, ClassGenBase
 
 __all__ = [
-      "KeyValInfo", "LogSchemaVisitor"
-    , "CodePattern", "GenCodeRenderer", "InfoPattern", "ImportsInfo"
+      "KeyValInfo", "CodePattern", "GenCodeRenderer", "InfoPattern", "ImportsInfo"
     , "ImportPattern" , "ClsLineInfo", "ClsLinePattern", "ClassGenBase"
 ]
