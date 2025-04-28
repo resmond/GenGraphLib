@@ -112,17 +112,20 @@ class GraphTable:
                 self.keys = keys_obj
             return True
         except Exception as exc:
-            print(f"GraphTable[{self.table_name}].read_file( {self.filepath} ) Exception: {exc}")
+            print(f"GraphTable[{self.table_name}].read_file( {self.get_filepath()} ) Exception: {exc}")
             return False
 
     def write_file( self: Self ) -> bool:
         try:
+            if not os.path.exists( self.data_dir ):
+                os.mkdir( self.data_dir )
+
             with open( self.get_filepath(), "wb" ) as writer:
                 buffer: bytes = pkl.dumps( self.keys )
                 writer.write(buffer)
             return True
         except Exception as exc:
-            f"GraphTable[{self.table_name}].write_file( {self.filepath} ) Exception: {exc}"
+            f"GraphTable[{self.table_name}].write_file( {self.get_filepath()} ) Exception: {exc}"
             return False
 
 
