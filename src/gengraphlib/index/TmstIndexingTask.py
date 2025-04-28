@@ -76,7 +76,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
                 if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
-                    print(f"TmstIndexing({self.key}:{self.alias}) {self.refcnt}" )
+                    #print(f"TmstIndexing({self.key}:{self.alias}) {self.refcnt}" )
                     self._app_msgqueue.put(keyindex_info)
 
         except ValueError as valexc:

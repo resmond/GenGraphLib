@@ -58,8 +58,6 @@ class StrIndexingTask( IndexTaskBase[str] ):
                     self.apply_tocolumn(int(value))
                     break
 
-                self.maxrec = rec_num
-
                 if value not in self._keymap:
                     self.keycnt += 1
                     self._keymap[value ] = LineRefList()
@@ -72,7 +70,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
                 if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
                     self._app_msgqueue.put( keyindex_info )
-                    print(f'StrIndexing: {keyindex_info}')
+                    #print(f'StrIndexing: {keyindex_info}')
 
         except ValueError as valexc:
             print(f'StrIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
