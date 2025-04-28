@@ -18,25 +18,25 @@ class TmstColumn( Column[dt.datetime ] ):
         super( TmstColumn, self ).__init__( keyinfo, root_dir )
 
         self.refcnt:         int = -1
+        self.maxrecnum:      int = -1
         self.keyvaluecnt:    int = -1
         self.keyvaluemap_to_refs: SortedDict[dt.datetime, LineRefList] = SortedDict[dt.datetime, LineRefList]()
         self.valueindex_to_keyvalue: list[ dt.datetime ] = []
         self.ref_to_valueindex:      list[ int ]         = []
 
-    def apply_data( self: Self, keymap: SortedDict[dt.datetime, LineRefList], refcnt: int, skip_write: bool = False ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[dt.datetime, LineRefList], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt = refcnt
+            self.maxrecnum = maxrecnum
             self.keyvaluecnt = len( self.keyvaluemap_to_refs )
 
             if self.refcnt == 0:
                 for key, reflist in self.keyvaluemap_to_refs.items():
                     self.refcnt +=  len(reflist)
 
-
-
             self.valueindex_to_keyvalue = [ TmstColumn.zeroday ] * self.keyvaluecnt
-            self.ref_to_valueindex  = [ -1 ] * self.refcnt
+            self.ref_to_valueindex  = [ -1 ] * self.maxrecnum
 
             cnt: int = 0
             for key, reflist in self.keyvaluemap_to_refs.items():

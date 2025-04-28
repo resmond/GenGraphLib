@@ -13,7 +13,7 @@ from ..columns import Column, BoolColumn
 class BoolIndexingTask( IndexTaskBase[bool] ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super( BoolIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
+        super().__init__( key_info, bootlog_info, app_msgqueue, end_event )
 
         self.keytype      = KeyType.KBool
         self.index_type   = KeyIndexType.BoolDualIntersect
@@ -48,7 +48,7 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
                 rec_num, value = queue.get()
 
                 if rec_num == -1:
-                    self.apply_tocolumn()
+                    self.apply_tocolumn(int(value))
                     break
 
                 bool_value: bool = bool( value )
@@ -58,7 +58,9 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
                 else:
                     self._neg_set.add( rec_num )
 
-                if self._keycnt % self.status_cnt == 0:
+                self.refcnt += 1
+
+                if self.refcnt % self.status_cnt == 0:
                     self.send_status()
 
         except ValueError as valexc:
@@ -68,12 +70,12 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
             print(f'BoolIndexing({self.key}:{self.alias}) Exception: {exc}')
 
     # pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int
-    def apply_tocolumn( self: Self ) -> bool:
+    def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: BoolColumn Applying Data')
         column: Column[bool] = GraphColumns.inst.get_column( self.key )
         if column:
             boolcolumn: BoolColumn = cast(BoolColumn, column)
-            return boolcolumn.apply_data( self._pos_set, self._neg_set, self.refcnt )
+            return boolcolumn.apply_data( self._pos_set, self._neg_set, int(self.refmax), maxrecnum )
         else:
             return False
 

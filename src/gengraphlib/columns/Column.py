@@ -14,6 +14,7 @@ from ..common import (
 
 class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
     def __init__(self: Self, keyinfo: KeyInfo, root_dir: str ) -> None:
+        super().__init__()
         self.keyinfo:   KeyInfo = keyinfo
         self.root_dir:  str     = root_dir
         self.id:        str     = self.keyinfo.key

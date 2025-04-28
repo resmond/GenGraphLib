@@ -35,7 +35,7 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
         self._queue: mp.Queue = mp.Queue()
 
-        self.sorted_index: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
+        self._keymap: SortedDict[dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList ]()
 
         self._thread: th.Thread = th.Thread(
             target=self.main_loop,
@@ -57,23 +57,26 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         self._app_msgqueue.put(keyindex_info)
 
         try:
-            while not end_event:
+            while True: #not end_event:
                 rec_num, value = queue.get()
 
                 if rec_num == -1:
-                    self.apply_tocolumn()
+                    self.apply_tocolumn(int(value))
                     break
 
                 int_value = int(value)
                 datetime_value: dt.datetime = very_beginning + dt.timedelta(microseconds=int_value)
 
-                if datetime_value not in self.sorted_index:
-                    self.sorted_index[datetime_value] = LineRefList()
+                if datetime_value not in self._keymap:
+                    self.keycnt += 1
+                    self._keymap[datetime_value ] = LineRefList()
 
-                self.sorted_index[datetime_value].append(rec_num)
+                self._keymap[datetime_value ].append( rec_num )
+                self.refcnt += 1
 
-                if self._keycnt % self.status_cnt == 0:
+                if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
+                    print(f"TmstIndexing({self.key}:{self.alias}) {self.refcnt}" )
                     self._app_msgqueue.put(keyindex_info)
 
         except ValueError as valexc:
@@ -82,11 +85,13 @@ class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
         except Exception as exc:
             print(f'TmstIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def apply_tocolumn( self: Self ) -> bool:
+        print(f'TmstIndexing({self.key}:{self.alias}) Done')
+
+    def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: TmstColumn Applying Data')
         column: Column[dt.datetime] = GraphColumns.inst.get_column( self.key )
         if column:
             tmstcolumn: TmstColumn = cast(TmstColumn, column)
-            return tmstcolumn.apply_data( self.keymap, self.refcnt )
+            return tmstcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )
         else:
             return False

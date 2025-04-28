@@ -39,10 +39,10 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         self.index_type:   KeyIndexType  = KeyIndexType.Undetermined
         self.index_state: KeyIndexState = KeyIndexState.Uninitialized
 
-        self._maxrec:   float   = 0
-        self._keycnt:   float   = 0
-        self._refcnt:   float   = 0
-        self._isunique: bool  = True
+        self.refmax:   float   = 1
+        self.keycnt:   float   = 0
+        self.refcnt:   float   = 0
+        self.isunique: bool  = True
 
     def is_proc( self ) -> bool:
         return self._isproc
@@ -56,11 +56,11 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
             key=self.key,
             alias=self.alias,
             index_type=self.index_type,
-            index_state=self._index_state,
-            hitpct = round( self._refcnt / self._maxrec * 100 ),
-            keycnt= int(self._keycnt),
-            refcnt= int(self._refcnt),
-            unique=self._isunique
+            index_state=self.index_state,
+            hitpct = round( self.refcnt / self.refmax * 100 ),
+            keycnt= int( self.keycnt ),
+            refcnt= int( self.refcnt ),
+            unique=self.isunique
         )
 
     @abstractmethod
@@ -68,7 +68,7 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         pass
 
     @abstractmethod
-    def apply_tocolumn( self: Self ) -> bool:
+    def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         pass
 
     #def dump_sortedstr( self: Self, strdict: SortedDict[str, LineRefList ] ):

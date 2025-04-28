@@ -22,7 +22,7 @@ from ..columns import Column, IntColumn
 
 class IntIndexingTask( IndexTaskBase[int] ):
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super( IntIndexingTask, self ).__init__( key_info, bootlog_info, app_msgqueue, end_event )
+        super().__init__( key_info, bootlog_info, app_msgqueue, end_event )
 
         self.keytype: KeyType.KInt
         self.index_type: KeyIndexType = KeyIndexType.IntSorted
@@ -30,7 +30,7 @@ class IntIndexingTask( IndexTaskBase[int] ):
 
         self._queue: mp.Queue = mp.Queue()
 
-        self._sorted_index: SortedDict[int, LineRefList ] = SortedDict[int, LineRefList ]()
+        self._keymap: SortedDict[int, LineRefList ] = SortedDict[int, LineRefList ]()
 
         self._thread: th.Thread = th.Thread(
             target=self.main_loop,
@@ -57,17 +57,19 @@ class IntIndexingTask( IndexTaskBase[int] ):
                 rec_num, value = queue.get()
 
                 if rec_num == -1:
-                    self.apply_tocolumn()
+                    self.apply_tocolumn(int(value))
                     break
 
                 int_value: int = int( value )
 
-                if int_value not in self._sorted_index:
-                    self._sorted_index[int_value ] = LineRefList()
+                if int_value not in self._keymap:
+                    self.keycnt += 1
+                    self._keymap[int_value ] = LineRefList()
 
-                self._sorted_index[int_value ].append( rec_num )
+                self._keymap[int_value ].append( rec_num )
+                self.refcnt += 1
 
-                if self._keycnt % self.status_cnt == 0:
+                if self.refcnt % self.status_cnt == 0:
                     self.send_status()
 
         except ValueError as valexc:
@@ -76,11 +78,11 @@ class IntIndexingTask( IndexTaskBase[int] ):
         except Exception as exc:
             print(f'IntIndexing({self.key}:{self.alias}) Exception: {exc}')
 
-    def apply_tocolumn( self: Self ) -> bool:
+    def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
         print(f'[{self.key}-index]: IntColumn Applying Data')
         column: Column[int] = GraphColumns.inst.get_column( self.key )
         if column:
             intcolumn: IntColumn = cast(IntColumn, column)
-            return intcolumn.apply_data( self.keymap, self.refcnt )
+            return intcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )
         else:
             return False

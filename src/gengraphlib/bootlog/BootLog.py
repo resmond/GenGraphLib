@@ -30,13 +30,12 @@ class BootLog:
         self.boot_id:    str = val_list[1]
         self.first_dt: dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
         self.last_dt:  dt.datetime = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
-        self.bootlog_path:   str = os.path.join( self.root_dir, "boots", str(self.boot_label) )
+        self.bootlog_path:   str = os.path.join( self.root_dir, "boots", str(self.boot_label()) )
         self.keys_path:      str = os.path.join( self.root_dir, "keys" )
 
         self.indexing_process: LogIndexingProcess | None = None
         self.active_keys:      set[str]           | None = None
 
-    @property
     def boot_label( self: Self ) -> str:
         yymmdd: str = self.first_dt.strftime("%y-%m-%d")
         hhmm:   str = self.first_dt.strftime("%H-%M")
@@ -52,7 +51,7 @@ class BootLog:
             return False
 
     def __repr__( self: Self ) -> str:
-        return f'{{idx:{self.boot_index}, id:{self.boot_id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.boot_label}, dir_path:{self.bootlog_path}, keys_filepath:{self.keys_path}}}'
+        return f'{{idx:{self.boot_index}, id:{self.boot_id}, first_dt:{self.first_dt}, last_dt:{self.last_dt}, dir_name:{self.boot_label()}, dir_path:{self.bootlog_path}, keys_filepath:{self.keys_path}}}'
 
     def __str__( self: Self ) -> str: return self.__repr__()
 
@@ -62,7 +61,7 @@ class BootLog:
             boot_index=self.boot_index,
             first_dt=self.first_dt,
             last_dt=self.last_dt,
-            dir_name=self._boot_label,
+            dir_name=self.boot_label(),
             dir_path=self.bootlog_path,
             keys_path=self.keys_path
         )

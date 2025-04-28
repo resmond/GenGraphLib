@@ -4,6 +4,7 @@ from typing import Self
 
 import multiprocessing as mp
 import asyncio as aio
+import time
 
 from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
 
@@ -62,6 +63,8 @@ class LogIndexingProcess:
         self._start_indexes()
         self.state = "indexes-started"
 
+        time.sleep(3)
+        print("starting stream")
         aio.run( self._stream_exec() )
 
     def _start_logwriter( self ) -> None:
@@ -117,23 +120,13 @@ class LogIndexingProcess:
             async for line in self.cmd_stream.stream_lines():
 
                 match line:
-                    case None:
-                        for keyindex_queue in self.queues_byalias:
-                            value_packet: KeyValuePacket = (-1, str(self.record_count))
-                            keyindex_queue.put(value_packet)
-
-                        return True
-
                     case str() if len(line) == 0:
                         self.record_count += 1
 
                         if self.write_log:
-                            self.log_writer.write(f'next record: [{self.record_count}]  ---------------------------'.encode())
+                            self.log_writer.write(f'next record: [{self.record_count}]  ---------------------------\n'.encode())
 
                     case _:
-
-                        if len(line) < 3:
-                            print()
 
                         split: int = line.find("=")
                         alias: str = line[:split]
@@ -146,11 +139,15 @@ class LogIndexingProcess:
 
                             if self.write_log:
                                 self.log_writer.write(
-                                    f"sending to {alias}:( {self.record_count}, {value} )".encode()
+                                    f"sending to {alias}:( {self.record_count}, {value} )\n".encode()
                                 )
                         else:
                             if self.write_log:
-                                self.log_writer.write( f"skipping {alias}: {value}".encode() )
+                                self.log_writer.write( f"skipping {alias}: {value}\n".encode() )
+
+            for alias, keyindex_queue in self.queues_byalias.items():
+                value_packet: KeyValuePacket = (-1, str(self.record_count))
+                keyindex_queue.put(value_packet)
 
             return True
 

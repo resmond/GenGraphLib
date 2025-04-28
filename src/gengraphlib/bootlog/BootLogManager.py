@@ -47,6 +47,9 @@ class BootLogManager:
         self._logdate_map: dict[dt.datetime, BootLog] = {}
         self._bootlog_index: dict[int, BootLog] = {}
         self._journal_cmd = f"/bin/journalctl --list-boots > {self._bootlist_txtfilepath}"
+        self._bootlist_loaded: bool = False
+        self._query_bootlist(delete_logs=False)
+        self._load_bootlist()
 
     """
         _log_querylist
@@ -83,6 +86,7 @@ class BootLogManager:
                         first_line: bool = False
 
             self._bootlog_list.reverse()
+            self._bootlist_loaded = True
             return True
 
         except Exception as exc:
@@ -90,17 +94,16 @@ class BootLogManager:
 
         return False
 
+    # noinspection PyUnusedLocal
     def get_bootlog( self: Self, boot_index: int, skip_query: bool = False ) -> BootLog | None:
 
-        if not skip_query:
-            self._query_bootlist( delete_logs=False )
+        # if not skip_query and not self._bootlist_loaded:
+        #     self._query_bootlist( delete_logs=False )
+        #     self._load_bootlist()
 
-        if self._load_bootlist():
-            boot_dir = self._bootlog_index[ boot_index ]
-            boot_dir.make_dir()
-            return boot_dir
-        else:
-            return None
+        boot_dir = self._bootlog_index[ boot_index ]
+        boot_dir.make_dir()
+        return boot_dir
 
 
 

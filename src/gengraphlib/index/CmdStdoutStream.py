@@ -33,6 +33,7 @@ class CmdStdoutStream:
         if self.write_bin:
             self.bin_writer = open( os.path.join( self.bootlog_info.dir_path, "bootlog.bin" ), "wb" )
 
+        line_cnt: int = 0
         while True:
 
             try:
@@ -48,6 +49,8 @@ class CmdStdoutStream:
                     self.tail_text = lines.pop()
 
                     for line in lines:
+                        #print(f'[{line_cnt}] {line}')
+                        line_cnt += 1
                         yield line
 
             except Exception as exc:

@@ -14,15 +14,17 @@ class StrColumn( Column[str] ):
         super( StrColumn, self ).__init__( keyinfo, root_dir )
 
         self.refcnt:         int = -1
+        self.maxrecnum:      int = -1
         self.keyvaluecnt:    int = -1
         self.keyvaluemap_to_refs: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList ]()
         self.valueindex_to_keyvalue: list[ str ] = []
         self.ref_to_valueindex:      list[ int ] = []
 
-    def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int, skip_write: bool = False ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt = refcnt
+            self.maxrecnum = maxrecnum
             self.keyvaluecnt = len( self.keyvaluemap_to_refs )
 
             if self.refcnt == 0:
@@ -30,14 +32,14 @@ class StrColumn( Column[str] ):
                     self.refcnt +=  len(reflist)
 
             self.valueindex_to_keyvalue = [ "" ] * self.keyvaluecnt
-            self.ref_to_valueindex  = [ -1 ] * self.refcnt
+            self.ref_to_valueindex  = [ -1 ] * self.maxrecnum
 
-            cnt: int = 0
+            valueindex: int = 0
             for key, reflist in self.keyvaluemap_to_refs.items():
-                self.valueindex_to_keyvalue[ cnt ] = key
+                self.valueindex_to_keyvalue[ valueindex ] = key
                 for ref in reflist:
-                    self.ref_to_valueindex[ ref ] = cnt
-                cnt += 1
+                    self.ref_to_valueindex[ ref ] = valueindex
+                valueindex += 1
 
             if not skip_write:
                 self.save_data()
