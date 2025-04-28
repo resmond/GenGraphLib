@@ -1,6 +1,5 @@
 from enum import IntEnum
 from typing import Self, NamedTuple
-from collections import namedtuple
 from dataclasses import dataclass
 
 import sys
@@ -94,14 +93,15 @@ if __name__ == '__main__':
     msg_key_slot = KeydefData( "msg", "MESSAGE", CType.CStr )
     msg_key_slot.show()
 
-    msg_key_tuple = KeydefTuple( "msg", "MESSAGE", 0  )
+
+    #msg_key_tuple = KeydefTuple( "msg", "MESSAGE", 0  )
     #msg_key_tuple.show()
 
-    print(msg_key_tuple.json_key)
-    print(msg_key_tuple)
-    msg_key_tuple.json_key = "foo"
-    print(msg_key_tuple)
-    print("")
+    # print(msg_key_tuple.json_key)
+    # print(msg_key_tuple)
+    # msg_key_tuple.json_key = "foo"
+    # print(msg_key_tuple)
+    # print("")
 
     keydefs_tup_native = (
         Keydef("msg", "MESSAGE", CType.CStr),
@@ -136,8 +136,6 @@ if __name__ == '__main__':
     print(f'keydefs_tup_reinit: {sys.getsizeof( keydefs_tup_reinit )}' )
 
 
-
-
     kdefs_tup_buffer = pk.dumps( keydefs_tup_native )
     keydefs_tup_map_buffer = pk.dumps( keydefs_tup_map )
     keydefs_tup_reinit_buffer = pk.dumps(keydefs_tup_reinit)
@@ -148,4 +146,6 @@ if __name__ == '__main__':
     print(f'keydefs_tup_reinit sizeof: {sys.getsizeof( keydefs_tup_reinit_buffer )}' )
     print(f'keydefs_tup_reinit_map sizeof: {sys.getsizeof( keydefs_tup_reinit_map_buffer )}' )
     
+
+
 

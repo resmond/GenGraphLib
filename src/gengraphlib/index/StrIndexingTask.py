@@ -29,12 +29,12 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
         self._queue: mp.Queue = mp.Queue()
 
-        self._keymap: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList ]()
+        self.keymap: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList ]()
 
         self.thread: th.Thread = th.Thread(
             target=self.main_loop,
             name=f"{self.key}-Str-index",
-            args = (self._queue, self.end_event,)
+            args = (self.queue, self.end_event,)
         )
 
     @property
@@ -56,13 +56,13 @@ class StrIndexingTask( IndexTaskBase[str] ):
                     self.apply_tocolumn(int(value))
                     break
 
-                if value not in self._keymap:
+                if value not in self.keymap:
                     self.keycnt += 1
-                    self._keymap[value ] = LineRefList()
+                    self.keymap[value ] = LineRefList()
                 else:
                     self.isunique = False
 
-                self._keymap[value ].append( rec_num )
+                self.keymap[value ].append( rec_num )
                 self.refcnt += 1
 
                 if self.refcnt % self.status_cnt == 0:
@@ -83,7 +83,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
         column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             strcolumn: StrColumn = cast(StrColumn, column)
-            return strcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )
+            return strcolumn.apply_data( self.keymap, int( self.refcnt ), maxrecnum )
         else:
             return False
 

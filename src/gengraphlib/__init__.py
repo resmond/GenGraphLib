@@ -22,8 +22,7 @@ from .graph import (
 )
 
 from .columns import (
-      Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
-    , GraphTable, VectorResult, ColumnsFactory
+      Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn, GraphTable
 )
 
 from .index import (
@@ -62,10 +61,8 @@ __all__ = [
     , "GraphRecordRoot", "RecordBase"
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDefDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
-    , "ColumnsFactory"
 
-    , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"
-    , "GraphTable", "VectorResult"
+    , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn", "GraphTable"
 
     , "IndexTaskBase", "LogIndexingProcess"
     , "StrIndexingTask", "IntIndexingTask", "TmstIndexingTask", "BoolIndexingTask", "FloatIndexingTask"

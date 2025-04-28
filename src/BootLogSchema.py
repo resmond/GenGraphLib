@@ -35,10 +35,15 @@ class BootLogSchema( KeyValueSchema ):
         bootlog_schema = BootLogSchema( parse_info )
         bootlog_schema.launch_indexing( -1, "evt" )
 
-    def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
+    def __init__( self: Self, parse_info: ParseProcessInfo | None = None ) -> None:
         super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
 
+        self._alias_map: KeyDefDict = KeyDefDict()
         self.cnt:           int  = 0
+
+        parse_info: ParseProcessInfo | None = parse_info
+
+
         self.id:            str  = parse_info.id
         self.log_root:      str  = parse_info.log_root
         self.cur_bootindex: int  = parse_info.boot_index
@@ -46,18 +51,15 @@ class BootLogSchema( KeyValueSchema ):
         self.autostart:     bool = parse_info.autostart
         self.write_bin:     bool = parse_info.write_bin
         self.write_log:     bool = parse_info.write_log
-
         self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
         self.end_event:    mp.Event = parse_info.end_event
 
-        self.log_manager:   BootLogManager | None = None
-        self._alias_map:    KeyDefDict         = KeyDefDict()
+        self.log_manager:    BootLogManager | None = None
+        self.cur_bootlog:    BootLog              | None = None
+        self.bootlog_info:   BootLogInfo          | None = None
 
-        self.cur_bootlog:       BootLog              | None = None
-        self.bootlog_info:      BootLogInfo          | None = None
-
-        self.active_keys:       set[str]             | None = None
-        self.queues_byalias:    dict[str, mp.Queue ] | None = None
+        self.active_keys:    set[str]             | None = None
+        self.queues_byalias: dict[str, mp.Queue ] | None = None
 
         self.add_keydefs(
             [

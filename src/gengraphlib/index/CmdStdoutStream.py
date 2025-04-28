@@ -18,7 +18,7 @@ class CmdStdoutStream:
         self.end_event: mp.Event = end_event
         self.tail_text: str = ""
 
-    async def stream_lines( self: Self, ) -> AsyncGenerator[ str, None ]:
+    async def stream_lines( self: Self ) -> AsyncGenerator[ str, None ]:
         if self.cmd is None:
             print("CmdStdoutStream: No command")
             return
