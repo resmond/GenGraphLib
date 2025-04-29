@@ -9,7 +9,7 @@ from .common import (
     , BootLogInfo
 )
 
-from .regex import (
+from hold.regex import (
       ResultState, TriggerType, LineParseResult, TParseTestFn, MatchTrigger, ParseTriggers    # ParseTriggers.py
     , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                          # RgxField
 )
@@ -33,7 +33,7 @@ from .proc import (
       ProcBase, TaskBase
 )
 
-from .textlog import (
+from hold.textlog import (
       TextBootLogLine, TextBootLogLines                                        # TextBootLogLines.py
     , TextLogModule, TextLogModules, TextLogModuleType, TextLogModuleTypes     # TextLogModules.py
     , TextLogParseContext, TextLogGraph                                        # TextLogGraph

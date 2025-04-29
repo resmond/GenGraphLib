@@ -5,13 +5,16 @@ from PySide6.QtWidgets import (
     QMenuBar, QPushButton, QSizePolicy,
     QSpacerItem, QStatusBar, QTreeView, QWidget)
 
+
+
+
 # noinspection PyAttributeOutsideInit
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, main_win: QMainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(2276, 1270)
-        self.centralwidget = QWidget(MainWindow)
+        if not main_win.objectName():
+            main_win.setObjectName(u"MainWindow")
+        main_win.resize(2276, 1270)
+        self.centralwidget = QWidget(main_win)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
@@ -59,25 +62,26 @@ class Ui_MainWindow(QMainWindow):
 
         self.horizontalLayout_2.addWidget(self.exit_btn)
 
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
+        main_win.setCentralWidget(self.centralwidget)
+        self.menubar = QMenuBar(main_win)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 2276, 29))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
+        main_win.setMenuBar(self.menubar)
+        self.statusbar = QStatusBar(main_win)
         self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        main_win.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(main_win)
 
-        QMetaObject.connectSlotsByName(MainWindow)
+        QMetaObject.connectSlotsByName(main_win)
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.start_btn.setText(QCoreApplication.translate("MainWindow", u"Start Parse", None))
-        self.pause_btn.setText(QCoreApplication.translate("MainWindow", u"Pause", None))
-        self.refresh_btn.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
-        self.exit_btn.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
-    # retranslateUi
+        MainWindow.setWindowTitle( QCoreApplication.translate("MainWindow", "MainWindow", None))
+        self.start_btn.setText(QCoreApplication.translate("MainWindow", "Start Parse", None))
+        self.pause_btn.setText(QCoreApplication.translate("MainWindow", "Pause", None))
+        self.refresh_btn.setText(QCoreApplication.translate("MainWindow", "Refresh", None))
+        self.exit_btn.setText(QCoreApplication.translate("MainWindow", "Exit", None))
 
+
+# retranslateUi

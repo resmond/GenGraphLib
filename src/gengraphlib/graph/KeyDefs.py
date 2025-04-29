@@ -1,17 +1,19 @@
 from typing import Self
 import multiprocessing as mp
-
 import datetime as dt
+
+import pyarrow as par
 
 from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
 
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
-    def __init__( self: Self, key: str, alias: str, key_type: KeyType, groups: list[ str ] | str | None = None ) -> None:
+    def __init__( self: Self, key: str, alias: str, keytype: KeyType, partype: par.DataType, groups: list[ str ] | str | None = None ) -> None:
         super(KeyDefBase, self).__init__()
         self.key:            str  = key
         self.alias:          str  = alias
-        self.key_type:       KeyType = key_type
+        self.keytype:       KeyType = keytype
         self.pytype:         type = type(T)
+        self.partype: par.DataType = partype
         self.groupids:       list[str] = []
         self._skip:          bool = True
         self._event_trigger: bool = False
@@ -46,8 +48,9 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
 
     def get_keyinfo( self: Self ) -> KeyInfo:
         return KeyInfo(
-            keytype=self.key_type,
+            keytype=self.keytype,
             pytype=self.pytype,
+            partype=self.partype,
             key=self.key,
             alias=self.alias,
             groupids=self.groupids
@@ -58,25 +61,25 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
 
 class StrKeyDef( KeyDefBase[str] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(StrKeyDef, self).__init__( key, alias, KeyType.KStr, groups )
+        super(StrKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KStr, partype=par.utf8(), groups=groups )
 
 class IntKeyDef( KeyDefBase[int] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(IntKeyDef, self).__init__( key, alias, KeyType.KInt, groups )
+        super(IntKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KInt, partype=par.int64(), groups=groups )
 
 class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(BoolKeyDef, self).__init__( key, alias, KeyType.KBool, groups )
+        super(BoolKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KBool, partype=par.uint8(), groups=groups )
 
 class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")
 
     def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(TmstKeyDef, self).__init__( key, alias, KeyType.KTmst, groups )
+        super(TmstKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KTmst, partype=par.date32(), groups=groups )
 
 class FloatKeyDef( KeyDefBase[float] ):
     def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(FloatKeyDef, self).__init__( key, alias, KeyType.KFloat, groups )
+        super(FloatKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KFloat, partype=par.int64(), groups=groups )
 
 class KeyDefDict( dict[ str, KeyDefBase ] ):
     def __init__( self: Self ) -> None:

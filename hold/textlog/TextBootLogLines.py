@@ -1,6 +1,6 @@
 from typing import Self, Any
 
-from .. import GNodeInterface, RecordBase, LineParseResult, ResultState, RgxLine, GraphRecordRoot
+from src.gengraphlib import GNodeInterface, RecordBase, LineParseResult, ResultState, RgxLine, GraphRecordRoot
 
 
 class TextBootLogLine( RecordBase ):

@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from collections import namedtuple
 from typing import Self, Protocol, NamedTuple
+import pyarrow
 
 import datetime as dt
 import multiprocessing as mp
@@ -28,7 +29,7 @@ KeyRecordPacket: type = tuple[int, KeyRecordList ]
 KeyValuePacket: type = tuple[int, str]
 
 class KeyType( IntEnum ):
-    KStr    = 1
+    KStr    = 1        #utf8
     KInt    = 2
     KBool   = 3
     KFloat  = 4
@@ -108,15 +109,15 @@ class keyIndexInfo:
 
     def __init__(
             self: Self,
-            keyinfo_id: str,
-            key:        str,
-            alias:      str,
-            index_type: KeyIndexType,
+            keyinfo_id:  str,
+            key:         str,
+            alias:       str,
+            index_type:  KeyIndexType,
             index_state: KeyIndexState,
-            hitpct:     int,
-            keycnt:     int,
-            refcnt:     int,
-            unique:     bool
+            hitpct:      int,
+            keycnt:      int,
+            refcnt:      int,
+            unique:      bool
         ) -> None:
         super().__init__()
 
@@ -177,19 +178,18 @@ class KeyIndexMsg(NamedTuple):
         return message
 
 class SerializationType( IntEnum ):
-    CSV             = 1
-    JArray          = 2
-    JObject         = 3
-    Pickle          = 4
-    Jline           = 5
-    EqualKeyValLine = 6
-    ColonKeyValLine = 7
+    Pickle          = 1
+    Parquet         = 2
+    EqualKeyValLine = 3
+    ColonKeyValLine = 4
+    CSV             = 5
 
 class KeyDefInterface( Protocol ):
     key:      str
     alias:    str
     keytype:  KeyType
     pytype:   type
+    partype:  pyarrow.DataType
     groupids: list[str]
 
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
@@ -200,6 +200,7 @@ class ColumnInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
     keytype: KeyType
+    partype:  pyarrow.DataType
     index_dir: str
 
 class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
@@ -209,19 +210,24 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
             self[key] = list[T]()
         self[key].append( value )
 
+
+
 class KeyInfo:
 
     def __init__(
             self: Self,
-            keytype: KeyType,
-            pytype: type,
-            key: str,
-            alias: str,
+            keytype:  KeyType,
+            pytype:   type,
+            partype:  pyarrow.DataType,
+            key:      str,
+            alias:    str,
             groupids: list[str]
         ):
         super().__init__()
-        self.keytype:   KeyType   = keytype
-        self.pytype:    type      = pytype
+        self.keytype:   KeyType          = keytype
+        self.pytype:    type             = pytype
+        self.partype:   pyarrow.DataType = partype
+
         self.key:       str       = key
         self.alias:     str       = alias
         self.groupids:  list[str] = groupids

@@ -17,6 +17,9 @@ class StrColumn( Column[str] ):
         self.valueindex_to_keyvalue: list[ str ] = []
         self.ref_to_valueindex:      list[ int ] = []
 
+        if load_data:
+            self.read_file()
+
     def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap

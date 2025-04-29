@@ -36,6 +36,8 @@ dependencies = [
     "sortedcontainers-stubs",
     "Pyside6",
     "slint",
+    "polars[all]>=1.28.1",
+    "pyarrow"
 ]
 
 [build-system]

@@ -105,7 +105,6 @@ class BootLogSchema( KeyValueSchema ):
                 StrKeyDef("hstName", "_HOSTNAME", "noise"),
                 StrKeyDef("mTime", "__MONOTONIC_TIMESTAMP", "noise"),
                 StrKeyDef("snID", "__SEQNUM_ID", "noise"),
-                StrKeyDef("rtTime", "__REALTIME_TIMESTAMP", "noise"),
                 StrKeyDef("usrUnit", "UNIT", "noise"),
                 IntKeyDef("tID", "TID", "noise"),
                 TmstKeyDef("srTime", "_SOURCE_REALTIME_TIMESTAMP", "noise"),

@@ -2,7 +2,7 @@ import json
 
 from typing import Self, TextIO
 
-from .. import RgxLine, TRgxField, ParseTriggers, LineParseResult
+from src.gengraphlib import RgxLine, TRgxField, ParseTriggers, LineParseResult
 from .TextBootLogLines import TextBootLogLine, TextBootLogLines
 from .TextLogModules import TextLogModuleTypes
 

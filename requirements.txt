@@ -10,5 +10,7 @@ numba
 sortedcontainers
 sortedcontainers-stubs
 progress
+polars
+pyarrow
 pyside6
 slint

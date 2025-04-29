@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 # import sys
 # from PySide6 import QtWidgets as qtw
-# from gengraphlib.qt.MainWin import MyMainWindow
+# from gengraphlib.qtui.MainWin import MyMainWindow
 # if __name__ == "__main__":
 #     mainapp = qtw.QApplication()
 #     mainwin = MyMainWindow()

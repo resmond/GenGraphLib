@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QApplication
 
 from gengraphlib.AppProcessBase import AppProcessBase
 from BootLogSchema import BootLogSchema, ParseProcessInfo
-from MyMainWin import MyMainWindow
+from src.qt.MyMainWin import MyMainWindow
 
 class MainApp( AppProcessBase ):
     def __init__(self: Self):

@@ -4,7 +4,7 @@ from typing import Self
 
 from PySide6.QtCore import QObject, Signal
 
-from ..common import keyIndexInfo
+from src.gengraphlib.common import keyIndexInfo
 
 # noinspection DuplicatedCode
 class QtMsgQueueReader( QObject ):

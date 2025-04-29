@@ -17,7 +17,7 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
         super().__init__()
         self.keyinfo:  KeyInfo = keyinfo
         self.id:       str     = self.keyinfo.key
-        self.filepath: str     = os.path.join( datadir, f'{self.keyinfo.key}-index.obj')
+        self.filepath: str     = os.path.join( datadir, f'{self.keyinfo.key}.column')
 
         if load_file:
             self.read_file()
@@ -45,10 +45,13 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
 
     def read_file( self: Self ) -> bool:
         try:
-            with open( self.filepath, "b" ) as reader:
-                dataobj: Column = pkl.load(reader)
-                self.apply_load( dataobj )
-            return True
+            if os.path.exists(self.filepath):
+                with open( file=self.filepath, mode="rb" ) as reader:
+                    dataobj: Column = pkl.load(reader)
+                    self.apply_load( dataobj )
+                return True
+            else:
+                return False
         except Exception as exc:
             print(f"Column[{self.keytype}-{self.id}].read_file( {self.filepath} ) Exception: {exc}")
             return False
