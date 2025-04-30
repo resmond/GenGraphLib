@@ -22,9 +22,9 @@ from src.gengraphlib.columns import (
     TmstColumn
 )
 
-from ..arrow.ParqueutFileIo import write_parquet, read_parquet
+from src.gengraphlib.arrow.ParqueutFileIo import write_parquet, read_parquet
 
-GraphRow: type = dict[str, VectorValTypes]
+ValuesDict: type = dict[str, VectorValTypes ]
 
 class GraphTable:
 
@@ -79,27 +79,21 @@ class GraphTable:
     def get_fieldnames( self: Self ) -> list[str]:
         return [ info.key for info in self.keys ]
 
-    def get_delimated_header( self: Self ) -> str:
-        return ",".join(self.vec_fieldnames)
-
-    def to_delimited( self: Self ) -> str:
-        return ",".join( self.row_vals )
-
-    def row_todict( self: Self, rowindex: int, nulls: bool ) -> GraphRow:
-        row_dict = GraphRow()
+    def row_todict( self: Self, rowindex: int, nulls: bool ) -> ValuesDict:
+        row_dict = ValuesDict()
         for key, key_column in self.columns.items():
             value: VectorValTypes = key_column.keyvalue_from_recno( rowindex )
             if value or nulls:
                 row_dict[ key ] = value
         return row_dict
 
-    async def get_rows( self: Self, start: int = 0, end: int = 0 ) -> AsyncGenerator[ GraphRow, None ]:
+    async def get_rows( self: Self, start: int = 0, end: int = 0 ) -> AsyncGenerator[ ValuesDict, None ]:
         if end == 0:
             end = self.maxrefcnt
 
         rowindex: int = start
         while rowindex <= end:
-            row: GraphRow = self.row_todict(rowindex, True)
+            row: ValuesDict = self.row_todict( rowindex, True )
             yield row
             rowindex += 1
 
@@ -147,7 +141,7 @@ class GraphTable:
     def load_info( self: Self ) -> bool:
         try:
             filepath = self.get_infofilepath()
-            sys.path.append(r"/home/richard/proj/GenGraphLib/src")
+            sys.path.append( r"/src" )
             if os.path.exists(filepath):
                 with open( file=filepath, mode="rb" ) as file:
                     keys_obj = pkl.load(file)
@@ -175,5 +169,5 @@ class GraphTable:
 
 
 if __name__ == "__main__":
-    graph_table = GraphTable( "logevents", "/home/richard/data/jctl-logs/boots/25-04-27:06-44/", load_columns=True )
+    graph_table = GraphTable( "logevents", "/boots/25-04-27:06-44/", load_columns=True )
     graph_table.get_datatable()

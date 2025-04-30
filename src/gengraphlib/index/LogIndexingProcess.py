@@ -8,7 +8,7 @@ import time
 
 from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
 
-from ..columns import GraphTable
+from ..graphs import GraphTable
 
 from .CmdStdoutStream import CmdStdoutStream
 

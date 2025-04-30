@@ -17,7 +17,8 @@ from ..common import (
 from .IndexTaskBase import IndexTaskBase
 
 
-from ..columns import Column, IntColumn, GraphTable
+from ..columns import Column, IntColumn
+from ..graphs import GraphTable
 
 class IntIndexingTask( IndexTaskBase[int] ):
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:

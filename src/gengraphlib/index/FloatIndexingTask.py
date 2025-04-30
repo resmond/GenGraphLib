@@ -16,7 +16,9 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
-from ..columns import Column, FloatColumn, GraphTable
+from ..columns import Column, FloatColumn
+from ..graphs import GraphTable
+
 
 # noinspection DuplicatedCode
 class FloatIndexingTask( IndexTaskBase[float] ):

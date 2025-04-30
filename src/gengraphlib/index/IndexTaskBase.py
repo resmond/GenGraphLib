@@ -14,7 +14,7 @@ from ..common import (
     BootLogInfo
 )
 
-from ..columns import GraphTable
+from ..graphs import GraphTable
 
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 
@@ -29,7 +29,7 @@ class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
         self.app_msgqueue: mp.Queue     = app_msgqueue
         self.end_event:    mp.Event     = end_event
 
-        self.boot_id:    str = self.bootlog_info.schema_bootid
+        self.boot_id:    str = self.bootlog_info.boot_id
         self.keyinfo_id: str = f"{self.boot_id}@{key_info.key}"
 
         self.key:        str     = key_info.key

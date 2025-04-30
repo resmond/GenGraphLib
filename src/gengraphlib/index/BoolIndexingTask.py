@@ -7,7 +7,8 @@ from sortedcontainers import SortedSet
 from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo, BootLogInfo
 from .IndexTaskBase import IndexTaskBase
 
-from ..columns import Column, BoolColumn, GraphTable
+from ..columns import Column, BoolColumn
+from ..graphs import GraphTable
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 

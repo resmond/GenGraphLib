@@ -16,7 +16,9 @@ from ..common import (
 
 from .IndexTaskBase import IndexTaskBase
 
-from ..columns import Column, StrColumn, GraphTable
+from ..columns import Column, StrColumn
+from ..graphs import GraphTable
+
 
 class StrIndexingTask( IndexTaskBase[str] ):
 
@@ -62,7 +64,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
                 else:
                     self.isunique = False
 
-                self.keymap[value ].append( rec_num )
+                self.keymap[value].append( rec_num )
                 self.refcnt += 1
 
                 if self.refcnt % self.status_cnt == 0:

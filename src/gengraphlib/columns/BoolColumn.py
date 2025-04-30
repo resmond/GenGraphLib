@@ -18,23 +18,6 @@ class BoolColumn( Column[bool] ):
         self.pos_set: SortedSet[ int ] = SortedSet[ int ]()
         self.neg_set: SortedSet[ int ] = SortedSet[ int ]()
 
-    def apply_data( self: Self, pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
-        try:
-
-            self.refcnt    = refcnt
-            self.maxrecnum = maxrecnum
-            self.pos_set   = pos_set
-            self.neg_set   = neg_set
-
-            if not skip_write:
-                self.write_file()
-
-            return True
-
-        except Exception as exc:
-            print(f"BoolColumn[{self.id}].apply_data() - Exception: {exc}")
-            return False
-
     def keyvalue_from_recno( self: Self, recno: int ) -> bool | None:
         if recno in self.pos_set:
             return True
@@ -63,6 +46,23 @@ class BoolColumn( Column[bool] ):
             return cast( list, self.pos_set )
         else:
             return cast( list, self.neg_set )
+
+    def apply_data( self: Self, pos_set: SortedSet[ int ], neg_set: SortedSet[ int ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
+        try:
+
+            self.refcnt    = refcnt
+            self.maxrecnum = maxrecnum
+            self.pos_set   = pos_set
+            self.neg_set   = neg_set
+
+            if not skip_write:
+                self.write_file()
+
+            return True
+
+        except Exception as exc:
+            print(f"BoolColumn[{self.id}].apply_data() - Exception: {exc}")
+            return False
 
     def apply_objdata( self: Self, objdata: Self ) -> bool:
 

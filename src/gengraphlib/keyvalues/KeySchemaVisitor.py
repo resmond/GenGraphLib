@@ -1,7 +1,7 @@
 from typing import Self
 from typing import Protocol
 
-from ..graph import (
+from ..keyvalues import (
     StrKeyDef,
     IntKeyDef,
     BoolKeyDef,

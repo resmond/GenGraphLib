@@ -19,7 +19,9 @@ from ..common import (
 from .IndexTaskBase import IndexTaskBase
 
 
-from ..columns import Column, TmstColumn, GraphTable
+from ..columns import Column, TmstColumn
+from ..graphs import GraphTable
+
 
 # noinspection DuplicatedCode
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):

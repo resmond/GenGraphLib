@@ -99,10 +99,10 @@ class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
         except Exception as exc:
             print(f'KeySchemaBase.dump_key_groups: Exception: {exc}')
 
-    #from src.gengraphlib.graph.KeyValVisitorBase import KeyValueVisitorBase
+    #from src.gengraphlib.keyvalues.KeyValVisitorBase import KeyValueVisitorBase
     def visit_schema[ T: KeySchemaVisitor ]( self: Self, visitor: T ) -> bool:
         for key, key_def in self.items():
-            #from src.gengraphlib.graph.KeyDefs import FloatKeyDef
+            #from src.gengraphlib.keyvalues.KeyDefs import FloatKeyDef
             match key_def:
                 case StrKeyDef():
                     visitor.visit_str( key_def )

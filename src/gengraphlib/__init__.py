@@ -14,7 +14,7 @@ from hold.regex import (
     , TRX_GROUPPATTERN, TRgxField, RgxField, RgxLine                                          # RgxField
 )
 
-from .graph import (
+from .keyvalues import (
     NodeDict, IndexedNodeList, GNodeInterface
     , GraphRecordRoot, RecordBase
     , KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
@@ -22,7 +22,11 @@ from .graph import (
 )
 
 from .columns import (
-      Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn, GraphTable
+      Column, StrColumn, IntColumn, BoolColumn, FloatColumn, TmstColumn
+)
+
+from .graphs import (
+    GraphTable
 )
 
 from .index import (

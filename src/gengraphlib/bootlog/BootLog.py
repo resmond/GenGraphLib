@@ -7,7 +7,7 @@ import multiprocessing as mp
 from ..common import KeyValSchemaInfo, BootLogInfo
 
 from ..index.LogIndexingProcess import LogIndexingProcess
-from ..columns import GraphTable
+from ..graphs import GraphTable
 
 
 class BootLog:
@@ -59,7 +59,7 @@ class BootLog:
 
     def get_info( self: Self ) -> BootLogInfo:
         return BootLogInfo(
-            schema_bootid=str(self.boot_label),
+            boot_id =str( self.boot_label ),
             boot_index=self.boot_index,
             first_dt=self.first_dt,
             last_dt=self.last_dt,

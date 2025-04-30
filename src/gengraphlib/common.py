@@ -249,7 +249,7 @@ class BootLogInfo:
 
     def __init__(
             self: Self,
-            schema_bootid: str,
+            boot_id: str,
             boot_index: int,
             first_dt: dt.datetime,
             last_dt: dt.datetime,
@@ -258,7 +258,7 @@ class BootLogInfo:
             keys_path: str | None = None
         ) -> None:
         super().__init__()
-        self.schema_bootid: str          = schema_bootid
+        self.boot_id: str                = boot_id
         self.boot_index:    int          = boot_index
         self.first_dt:      dt.datetime  = first_dt
         self.last_dt:       dt.datetime  = last_dt

@@ -10,34 +10,33 @@ from ..common import BootLogInfo
 
 class BootLogContext:
     def __init__(self: Self, boot_log_info: BootLogInfo) -> None:
-        self.boot_log_info: BootLogInfo = boot_log_info
-        self._schema_bootid: str = boot_log_info.schema_bootid
-        self._boot_dir: str = boot_log_info.dir_path
-        self._keys_filepath: str = boot_log_info.keys_path
+        super().__init__()
+        self._info: BootLogInfo = boot_log_info
+        self.boot_id: str = self._info.boot_id
 
     @property
     def boot_dir(self: Self) -> str:
-        return self._boot_dir
+        return self._info.dir_path
 
     @property
     def keys_filepath(self: Self) -> str:
-        return self._keys_filepath
+        return self._info.keys_path
 
     @property
     def boot_index(self: Self) -> int:
-        return self._boot_index
+        return self._info.boot_index
 
     @property
     def schema_bootid( self: Self ) -> str:
-        return self._schema_bootid
+        return self.boot_id
 
     @property
     def first_dt(self: Self) -> dt.datetime:
-        return self.boot_log_info.first_dt
+        return self._info.first_dt
 
     @property
     def last_dt(self: Self) -> dt.datetime:
-        return self.boot_log_info.last_dt
+        return self._info.last_dt
 
     def create_writable_file(self: Self, file_name: str, binary: bool = False ) -> BufferedWriter | TextIOWrapper | None:
         try:
