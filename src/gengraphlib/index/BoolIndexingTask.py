@@ -74,7 +74,7 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             boolcolumn: BoolColumn = cast(BoolColumn, column)
-            return boolcolumn.apply_data( self._pos_set, self._neg_set, int(self.refmax), maxrecnum )
+            return boolcolumn.apply_data( self._pos_set, self._neg_set, int( self.refmax ), maxrecnum )
         else:
             return False
 

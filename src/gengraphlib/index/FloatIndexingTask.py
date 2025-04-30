@@ -80,6 +80,6 @@ class FloatIndexingTask( IndexTaskBase[float] ):
         column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             floatcolumn: FloatColumn = cast(FloatColumn, column)
-            return floatcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )
+            return floatcolumn.apply_data( self._keymap, int( self.refcnt ), maxrecnum )
         else:
             return False

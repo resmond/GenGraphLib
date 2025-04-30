@@ -1,5 +1,7 @@
 from typing import Self, cast
 
+import pyarrow as par
+
 from sortedcontainers import SortedSet
 
 from ..common import KeyInfo, LineRefList
@@ -56,38 +58,35 @@ class BoolColumn( Column[bool] ):
         else:
             return cast( list, self.neg_set )
 
-
-
     def refs_from_valueindex( self: Self, valueindex: int ) -> LineRefList | None:
         if valueindex == 0:
             return cast( list, self.pos_set )
         else:
             return cast( list, self.neg_set )
 
-    def apply_load( self: Self, dataobj: Self ) -> bool:
+    def apply_objdata( self: Self, objdata: Self ) -> bool:
 
-        self.refcnt      = dataobj.refcnt
-        self.keyvaluecnt = dataobj.keyvaluecnt
-        self.pos_set     = dataobj.pos_set
-        self.neg_set     = dataobj.neg_set
+        self.refcnt      = objdata.refcnt
+        self.keyvaluecnt = objdata.keyvaluecnt
+        self.pos_set     = objdata.pos_set
+        self.neg_set     = objdata.neg_set
 
         return True
 
-    # def load_data( self: Self ) -> bool:
-    #     try:
-    #         with open( self.filepath, "b" ) as reader:
-    #             dataobj: BoolColumn = pkl.load(reader)
-    #
-    #             self.refcnt      = dataobj.refcnt
-    #             self.keyvaluecnt = dataobj.keyvaluecnt
-    #             self.pos_set     = dataobj.pos_set
-    #             self.neg_set     = dataobj.neg_set
-    #
-    #         return True
-    #
-    #     except Exception as exc:
-    #         print(
-    #             f"BoolColumn[{self.id}].load_data() - root_dir: {self.filepath} Exception: {exc}"
-    #         )
-    #         return False
+    def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ bool | None ], bool ]:
+        neg_high: int = self.neg_set.index(len(self.neg_set)-1)
+        pos_high: int = self.pos_set.index(len(self.pos_set)-1)
+        maxref: int = max(neg_high, pos_high)
+        col_array = list[ bool | None ]()
+
+        for row in range(0, maxref):
+            value: bool | None = None
+            if row in self.pos_set:
+                value = True
+            elif row in self.neg_set:
+                value = False
+            col_array.append( value )
+
+        return par.bool_(), col_array, False
+
 

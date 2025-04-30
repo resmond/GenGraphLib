@@ -47,13 +47,14 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         return self._queue
 
     def get_keyinfo( self: Self ) -> KeyInfo:
+
         return KeyInfo(
-            keytype=self.keytype,
-            pytype=self.pytype,
-            partype=self.partype,
-            key=self.key,
-            alias=self.alias,
-            groupids=self.groupids
+            keytype  = self.keytype,
+            pytype   = self.pytype,
+            partype  = self.partype,
+            key      = self.key,
+            alias    = self.alias,
+            groupids = self.groupids
         )
 
     def visit( self: Self, visitor ) -> None:
@@ -69,7 +70,7 @@ class IntKeyDef( KeyDefBase[int] ):
 
 class BoolKeyDef( KeyDefBase[bool] ):
     def __init__( self: Self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
-        super(BoolKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KBool, partype=par.uint8(), groups=groups )
+        super(BoolKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KBool, partype=par.bool_(), groups=groups )
 
 class TmstKeyDef( KeyDefBase[ dt.datetime ] ):
     very_beginning = dt.datetime.fromisoformat("1970-01-01")

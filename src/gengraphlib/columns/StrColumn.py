@@ -1,5 +1,7 @@
 from typing import Self
 
+import pyarrow as par
+
 from sortedcontainers import SortedDict
 
 from ..common import KeyInfo, LineRefList
@@ -10,17 +12,20 @@ class StrColumn( Column[str] ):
     def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
         super( StrColumn, self ).__init__( keyinfo, datadir, load_data )
 
-        self.refcnt:         int = -1
-        self.maxrecnum:      int = -1
-        self.keyvaluecnt:    int = -1
+        self.refcnt:         int  = -1
+        self.maxrecnum:      int  = -1
+        self.keyvaluecnt:    int  = -1
+        self.use_dict:       bool = False
+
         self.keyvaluemap_to_refs: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList ]()
         self.valueindex_to_keyvalue: list[ str ] = []
         self.ref_to_valueindex:      list[ int ] = []
 
+
         if load_data:
             self.read_file()
 
-    def apply_data( self: Self, keymap: SortedDict[str, LineRefList], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[str, LineRefList ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt = refcnt
@@ -40,6 +45,10 @@ class StrColumn( Column[str] ):
                 for ref in reflist:
                     self.ref_to_valueindex[ ref ] = valueindex
                 valueindex += 1
+
+            comp_ratio = float(len(self.ref_to_valueindex)) / float(len(self.valueindex_to_keyvalue))
+
+            self.use_dict = comp_ratio > 2.5
 
             if not skip_write:
                 self.write_file()
@@ -93,12 +102,30 @@ class StrColumn( Column[str] ):
         else:
             return None
 
-    def apply_load( self: Self, dataobj: Self ) -> bool:
+    def apply_objdata( self: Self, objdata: Self ) -> bool:
 
-        self.refcnt                 = dataobj.refcnt
-        self.keyvaluecnt            = dataobj.keyvaluecnt
-        self.keyvaluemap_to_refs    = dataobj.keyvaluemap_to_refs
-        self.valueindex_to_keyvalue = dataobj.valueindex_to_keyvalue
-        self.ref_to_valueindex      = dataobj.ref_to_valueindex
+        self.refcnt                 = objdata.refcnt
+        self.keyvaluecnt            = objdata.keyvaluecnt
+        self.keyvaluemap_to_refs    = objdata.keyvaluemap_to_refs
+        self.valueindex_to_keyvalue = objdata.valueindex_to_keyvalue
+        self.ref_to_valueindex      = objdata.ref_to_valueindex
 
         return True
+
+    def get_arrowfield( self: Self ) -> tuple[str, par.DataType]:
+        return self.key, par.utf8()
+
+    def get_arrowdata( self: Self ) -> tuple[par.DataType,list[str], bool ]:
+
+        col_array = list[str]()
+        for row in self.ref_to_valueindex:
+            col_array.append( self.valueindex_to_keyvalue[ row ] )
+
+        par_datatype: par.DataType = par.utf8()
+        if self.use_dict:
+            if self.ref_to_valueindex[len(self.ref_to_valueindex)-1] > 31 * 1024:
+                par_datatype = par.dictionary(par.int32(), par.utf8())
+            else:
+                par_datatype = par.dictionary(par.int16(), par.utf8())
+
+        return par_datatype, col_array, self.use_dict

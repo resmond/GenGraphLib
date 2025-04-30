@@ -4,6 +4,7 @@ from typing import Self
 
 import os
 import pickle as pkl
+import pyarrow as par
 
 from ..common import (
     KeyValTypes,
@@ -41,14 +42,20 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
     def refs_from_valueindex( self: Self, valueindex: int ) -> LineRefList | None: ...
 
     @abstractmethod
-    def apply_load( self: Self, loaded: Self ) -> bool: ...
+    def apply_objdata( self: Self, objdata: Self ) -> bool: ...
+
+    def get_arrowfield( self: Self ) -> tuple[str, par.DataType]:
+        return self.key, self.partype
+
+    @abstractmethod
+    def get_arrowdata( self: Self ) -> tuple[ list[ T | None ], bool ]: ...
 
     def read_file( self: Self ) -> bool:
         try:
             if os.path.exists(self.filepath):
                 with open( file=self.filepath, mode="rb" ) as reader:
                     dataobj: Column = pkl.load(reader)
-                    self.apply_load( dataobj )
+                    self.apply_objdata( dataobj )
                 return True
             else:
                 return False

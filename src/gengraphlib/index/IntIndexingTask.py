@@ -82,6 +82,6 @@ class IntIndexingTask( IndexTaskBase[int] ):
         column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
             intcolumn: IntColumn = cast(IntColumn, column)
-            return intcolumn.apply_data( self._keymap, int(self.refcnt), maxrecnum )
+            return intcolumn.apply_data( self._keymap, int( self.refcnt ), maxrecnum )
         else:
             return False

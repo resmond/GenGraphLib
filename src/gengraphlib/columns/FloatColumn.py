@@ -17,7 +17,7 @@ class FloatColumn( Column[float ] ):
         self.valueindex_to_keyvalue: list[ float ] = []
         self.ref_to_valueindex:      list[ int ] = []
 
-    def apply_data( self: Self, keymap: SortedDict[float, LineRefList], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[float, LineRefList ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
             self.refcnt    = refcnt
@@ -90,14 +90,22 @@ class FloatColumn( Column[float ] ):
         else:
             return None
 
-    def apply_load( self: Self, dataobj: Self ) -> bool:
+    def apply_objdata( self: Self, objdata: Self ) -> bool:
 
-        self.refcnt                 = dataobj.refcnt
-        self.keyvaluecnt            = dataobj.keyvaluecnt
-        self.keyvaluemap_to_refs    = dataobj.keyvaluemap_to_refs
-        self.valueindex_to_keyvalue = dataobj.valueindex_to_keyvalue
-        self.ref_to_valueindex      = dataobj.ref_to_valueindex
+        self.refcnt                 = objdata.refcnt
+        self.keyvaluecnt            = objdata.keyvaluecnt
+        self.keyvaluemap_to_refs    = objdata.keyvaluemap_to_refs
+        self.valueindex_to_keyvalue = objdata.valueindex_to_keyvalue
+        self.ref_to_valueindex      = objdata.ref_to_valueindex
 
         return True
+
+    def get_arrowdata( self: Self ) -> tuple[list[float ], bool ]:
+        col_array = list[float]()
+        for row in self.ref_to_valueindex:
+            col_array.append( self.valueindex_to_keyvalue[ row ] )
+        return col_array, False
+
+
 
 
