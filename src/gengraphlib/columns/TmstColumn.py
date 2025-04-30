@@ -2,6 +2,8 @@ from typing import Self
 
 import datetime as dt
 
+import pyarrow as par
+
 from sortedcontainers import SortedDict
 
 from ..common import KeyInfo, LineRefList
@@ -104,8 +106,15 @@ class TmstColumn( Column[dt.datetime ] ):
 
         return True
 
-    def get_arrowdata( self: Self ) -> tuple[list[dt.datetime ], bool ]:
-        col_array = list[dt.datetime]()
-        for row in self.ref_to_valueindex:
-            col_array.append( self.valueindex_to_keyvalue[ row ] )
-        return col_array, False
+    def get_arrowdata( self: Self ) -> tuple[ par.DataType, list[dt.datetime|None], bool ] | None:
+        max_valueindex = len(self.valueindex_to_keyvalue)
+        if max_valueindex > 0:
+            col_array = list[dt.datetime|None]()
+            for valueindex in self.ref_to_valueindex:
+                if valueindex < max_valueindex:
+                    col_array.append( self.valueindex_to_keyvalue[valueindex] )
+                else:
+                    col_array.append( None )
+            return par.date32(), col_array, False
+        else:
+            return None

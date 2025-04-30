@@ -1,5 +1,7 @@
 from typing import Self
 
+import pyarrow as par
+
 from sortedcontainers import SortedDict
 
 from ..common import LineRefList, KeyInfo
@@ -100,12 +102,20 @@ class IntColumn( Column[int] ):
 
         return True
 
-    def get_arrowdata( self: Self ) -> tuple[list[int ], bool ]:
+    def get_arrowdata( self: Self ) -> tuple[ par.DataType, list[int|None ], bool ] | None:
 
-        col_array = list[int]()
-        for row in self.ref_to_valueindex:
-            col_array.append( self.valueindex_to_keyvalue[ row ] )
-        return col_array, False
+        max_valueindex = len(self.valueindex_to_keyvalue)
+        if max_valueindex > 0:
+            col_array = list[int|None]()
+            for valueindex in self.ref_to_valueindex:
+                if valueindex < max_valueindex:
+                    col_array.append( self.valueindex_to_keyvalue[valueindex] )
+                else:
+                    col_array.append( None )
+
+            return par.int64(), col_array, False
+        else:
+            return None
 
 
 

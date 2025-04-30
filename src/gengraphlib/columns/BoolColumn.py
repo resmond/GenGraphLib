@@ -29,8 +29,6 @@ class BoolColumn( Column[bool] ):
             if not skip_write:
                 self.write_file()
 
-            self.wr
-
             return True
 
         except Exception as exc:
@@ -75,20 +73,23 @@ class BoolColumn( Column[bool] ):
 
         return True
 
-    def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ bool | None ], bool ]:
-        neg_high: int = self.neg_set.index(len(self.neg_set)-1)
-        pos_high: int = self.pos_set.index(len(self.pos_set)-1)
-        maxref: int = max(neg_high, pos_high)
-        col_array = list[ bool | None ]()
+    def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ bool | None ], bool ] | None:
+        if len(self.neg_set) > 0 and len(self.pos_set) > 0:
+            neg_high: int = self.neg_set.index(len(self.neg_set)-1)
+            pos_high: int = self.pos_set.index(len(self.pos_set)-1)
+            maxref: int = max(neg_high, pos_high)
+            col_array = list[ bool | None ]()
 
-        for row in range(0, maxref):
-            value: bool | None = None
-            if row in self.pos_set:
-                value = True
-            elif row in self.neg_set:
-                value = False
-            col_array.append( value )
+            for row in range(0, maxref):
+                value: bool | None = None
+                if row in self.pos_set:
+                    value = True
+                elif row in self.neg_set:
+                    value = False
+                col_array.append( value )
 
-        return par.bool_(), col_array, False
+            return par.bool_(), col_array, False
+        else:
+            return None
 
 

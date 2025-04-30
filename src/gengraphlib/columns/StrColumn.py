@@ -116,17 +116,24 @@ class StrColumn( Column[str] ):
     def get_arrowfield( self: Self ) -> tuple[str, par.DataType]:
         return self.key, par.utf8()
 
-    def get_arrowdata( self: Self ) -> tuple[par.DataType,list[str], bool ]:
+    def get_arrowdata( self: Self ) -> tuple[par.DataType,list[str|None], bool ] | None:
 
-        col_array = list[str]()
-        for row in self.ref_to_valueindex:
-            col_array.append( self.valueindex_to_keyvalue[ row ] )
+        max_valueindex = len(self.valueindex_to_keyvalue)
+        if max_valueindex > 0:
+            col_array = list[ str|None ]()
+            for valueindex in self.ref_to_valueindex:
+                if valueindex < max_valueindex:
+                    col_array.append( self.valueindex_to_keyvalue[valueindex] )
+                else:
+                    col_array.append( None )
 
-        par_datatype: par.DataType = par.utf8()
-        if self.use_dict:
-            if self.ref_to_valueindex[len(self.ref_to_valueindex)-1] > 31 * 1024:
-                par_datatype = par.dictionary(par.int32(), par.utf8())
-            else:
-                par_datatype = par.dictionary(par.int16(), par.utf8())
+            par_datatype: par.DataType = par.utf8()
+            if self.use_dict:
+                if self.ref_to_valueindex[len(self.ref_to_valueindex)-1] > 31 * 1024:
+                    par_datatype = par.dictionary(par.int32(), par.utf8())
+                else:
+                    par_datatype = par.dictionary(par.int16(), par.utf8())
 
-        return par_datatype, col_array, self.use_dict
+            return par_datatype, col_array, self.use_dict
+        else:
+            return None

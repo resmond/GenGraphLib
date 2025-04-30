@@ -1,5 +1,7 @@
 from typing import Self
 
+import pyarrow as par
+
 from sortedcontainers import SortedDict
 
 from ..common import KeyInfo, LineRefList
@@ -39,7 +41,7 @@ class FloatColumn( Column[float ] ):
                 cnt += 1
 
             if not skip_write:
-                self.save()
+                self.write_file()
 
             return True
 
@@ -100,11 +102,19 @@ class FloatColumn( Column[float ] ):
 
         return True
 
-    def get_arrowdata( self: Self ) -> tuple[list[float ], bool ]:
-        col_array = list[float]()
-        for row in self.ref_to_valueindex:
-            col_array.append( self.valueindex_to_keyvalue[ row ] )
-        return col_array, False
+    def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ float | None ], bool ] | None:
+        max_valueindex = len(self.valueindex_to_keyvalue)
+
+        if max_valueindex > 0:
+            col_array = list[float|None]()
+            for valueindex in self.ref_to_valueindex:
+                if valueindex < max_valueindex:
+                    col_array.append( self.valueindex_to_keyvalue[valueindex] )
+                else:
+                    col_array.append( None )
+            return par.float64(), col_array, False
+        else:
+            return None
 
 
 

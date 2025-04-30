@@ -48,7 +48,7 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
         return self.key, self.partype
 
     @abstractmethod
-    def get_arrowdata( self: Self ) -> tuple[ list[ T | None ], bool ]: ...
+    def get_arrowdata( self: Self ) -> tuple[ par.DataType, list[ T | None ], bool ] | None: ...
 
     def read_file( self: Self ) -> bool:
         try:

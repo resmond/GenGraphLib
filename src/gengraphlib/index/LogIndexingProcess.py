@@ -68,7 +68,7 @@ class LogIndexingProcess:
         self._start_indexes()
         self.state = "indexes-started"
 
-        time.sleep(3)
+        time.sleep(.1)
         print("starting stream")
         aio.run( self._stream_exec() )
 

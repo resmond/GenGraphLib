@@ -16,10 +16,12 @@ def write_parquet( columns: dict[ str, Column ], filepath: str ) -> bool:
     try:
         dataarrays_map = dict[str, list[Any]]()
         fieldtypes = list[ tuple[str, par.DataType] ]()
-        for key, column in columns:
-            datatype, dataarray, use_dict = column.get_arrowdata()
-            fieldtypes.append( ( key, datatype ) )
-            dataarrays_map[key] = dataarray
+        for key, column in columns.items():
+            arrowdata = column.get_arrowdata()
+            if arrowdata:
+                datatype, dataarray, use_dict = arrowdata
+                fieldtypes.append( ( key, datatype ) )
+                dataarrays_map[key] = dataarray
 
         arrow_schema = par.schema( fields=fieldtypes )
 
