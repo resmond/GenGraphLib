@@ -56,12 +56,6 @@ def read_parquet( columns: dict[ str, Column ], filepath: str ) -> par.Table | N
         print(f'read_parqueut( {filepath} ): IOError: {exc}' )
         return None
 
-        
-
-
-
-
-
 
 
 #dfpq=pol.scan_parquet( 'somefile.parquet' )

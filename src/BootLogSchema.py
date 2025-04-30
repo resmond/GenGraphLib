@@ -10,9 +10,9 @@ from gengraphlib import (
     KeyValueSchema,
     BootLogManager,
     BootLog,
-    BootLogInfo
+    BootLogInfo,
+    GraphTable
 )
-
 
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
@@ -54,9 +54,10 @@ class BootLogSchema( KeyValueSchema ):
         self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
         self.end_event:    mp.Event = parse_info.end_event
 
-        self.log_manager:    BootLogManager | None = None
+        self.log_manager:    BootLogManager       | None = None
         self.cur_bootlog:    BootLog              | None = None
         self.bootlog_info:   BootLogInfo          | None = None
+        self.graph_table:    GraphTable           | None = None
 
         self.active_keys:    set[str]             | None = None
         self.queues_byalias: dict[str, mp.Queue ] | None = None
@@ -215,7 +216,8 @@ class BootLogSchema( KeyValueSchema ):
         self.cur_bootlog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
         self.bootlog_info = self.cur_bootlog.get_info()
 
-        self.cur_bootlog.launch_indexing( self.active_keys, self.write_bin, self.write_log )
+        self.graph_table = self.cur_bootlog.launch_indexing( self.active_keys, self.write_bin, self.write_log )
+        self.graph_table.save_table()
 
 
 

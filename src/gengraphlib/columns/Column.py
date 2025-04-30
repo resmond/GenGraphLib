@@ -68,6 +68,8 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
             with open( self.filepath, "wb" ) as writer:
                 buffer: bytes = pkl.dumps( self )
                 writer.write(buffer)
+
+
             return True
         except Exception as exc:
             f"Column[{self.keytype}-{self.id}].write_file( {self.filepath} ) Exception: {exc}"

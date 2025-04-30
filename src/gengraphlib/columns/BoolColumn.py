@@ -29,6 +29,8 @@ class BoolColumn( Column[bool] ):
             if not skip_write:
                 self.write_file()
 
+            self.wr
+
             return True
 
         except Exception as exc:

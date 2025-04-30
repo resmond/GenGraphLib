@@ -71,6 +71,11 @@ class GraphTable:
                 case KeyType.KTmst:
                     self.columns[keyinfo.key] = TmstColumn(keyinfo, self.data_dir, load_columns)
 
+    def get_datatable( self: Self ) -> par.Table:
+        if self.datatable is None:
+            self.datatable = read_parquet( self.columns, self.get_filepath() )
+        return self.datatable
+
     def get_fieldnames( self: Self ) -> list[str]:
         return [ info.key for info in self.keys ]
 
@@ -134,6 +139,11 @@ class GraphTable:
     def save_table(self: Self) -> bool:
         return write_parquet( self.columns, self.get_tablefilepath() )
 
+    def read_table( self: Self ) -> bool:
+
+        self.datatable = read_parquet( self.columns, self.get_tablefilepath() )
+        return self.datatable is not None
+
     def load_info( self: Self ) -> bool:
         try:
             filepath = self.get_infofilepath()
@@ -166,3 +176,4 @@ class GraphTable:
 
 if __name__ == "__main__":
     graph_table = GraphTable( "logevents", "/home/richard/data/jctl-logs/boots/25-04-27:06-44/", load_columns=True )
+    graph_table.get_datatable()

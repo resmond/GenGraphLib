@@ -6,6 +6,7 @@ from sortedcontainers import SortedDict
 
 from ..common import KeyInfo, LineRefList
 
+
 from . import Column
 
 class StrColumn( Column[str] ):
