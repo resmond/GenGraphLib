@@ -9,8 +9,8 @@ from ..common import KeyInfo, LineRefList
 from .Column import Column
 
 class BoolColumn( Column[bool] ):
-    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
-        super( BoolColumn, self ).__init__( keyinfo, datadir, load_data )
+    def __init__( self: Self, keyinfo: KeyInfo, indexdir: str, load_data: bool = False ) -> None:
+        super().__init__( keyinfo, par.bool_(), indexdir, load_data )
 
         self.refcnt:      int = -1
         self.maxrecnum:   int = -1
@@ -56,7 +56,7 @@ class BoolColumn( Column[bool] ):
             self.neg_set   = neg_set
 
             if not skip_write:
-                self.write_file()
+                self.write_tofile()
 
             return True
 
@@ -65,31 +65,32 @@ class BoolColumn( Column[bool] ):
             return False
 
     def apply_objdata( self: Self, objdata: Self ) -> bool:
-
         self.refcnt      = objdata.refcnt
         self.keyvaluecnt = objdata.keyvaluecnt
         self.pos_set     = objdata.pos_set
         self.neg_set     = objdata.neg_set
-
         return True
 
     def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ bool | None ], bool ] | None:
-        if len(self.neg_set) > 0 and len(self.pos_set) > 0:
-            neg_high: int = self.neg_set.index(len(self.neg_set)-1)
-            pos_high: int = self.pos_set.index(len(self.pos_set)-1)
-            maxref: int = max(neg_high, pos_high)
+        if len(self.neg_set) > 0 or len(self.pos_set) > 0:
             col_array = list[ bool | None ]()
-
-            for row in range(0, maxref):
+            for row in range(0, self.maxrecnum):
                 value: bool | None = None
                 if row in self.pos_set:
                     value = True
                 elif row in self.neg_set:
                     value = False
                 col_array.append( value )
-
             return par.bool_(), col_array, False
         else:
             return None
 
+    def get_pararray( self: Self ) -> par.Array | None:
+        boolarray: list[bool|None] = [None] * self.maxrecnum
+        for recnum in range(0,self.maxrecnum-1):
+            if recnum in self.pre_set:
+                boolarray[ recnum ] = True
+            elif recnum in self.neg_set:
+                boolarray[ recnum ] = False
+        return par.array(boolarray, par.bool_())
 

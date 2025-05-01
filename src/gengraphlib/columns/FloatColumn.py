@@ -9,8 +9,8 @@ from ..common import KeyInfo, LineRefList
 from .Column import Column
 
 class FloatColumn( Column[float ] ):
-    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
-        super( FloatColumn, self ).__init__( keyinfo, datadir, load_data )
+    def __init__( self: Self, keyinfo: KeyInfo, indexdir: str, load_data: bool = False ) -> None:
+        super().__init__( keyinfo, par.float64(), indexdir, load_data )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
@@ -27,21 +27,21 @@ class FloatColumn( Column[float ] ):
             self.keyvaluecnt = len( self.keyvaluemap_to_refs )
 
             if self.refcnt == 0:
-                for key, reflist in self.keyvaluemap_to_refs.items():
+                for keyvalue, reflist in self.keyvaluemap_to_refs.items():
                     self.refcnt +=  len(reflist)
 
             self.valueindex_to_keyvalue = [ -0.1 ] * self.keyvaluecnt
             self.ref_to_valueindex      = [  -1  ] * self.maxrecnum
 
             cnt: int = 0
-            for key, reflist in self.keyvaluemap_to_refs.items():
-                self.valueindex_to_keyvalue[ cnt ] = key
+            for keyvalue, reflist in self.keyvaluemap_to_refs.items():
+                self.valueindex_to_keyvalue[ cnt ] = keyvalue
                 for ref in reflist:
                     self.ref_to_valueindex[ ref ] = cnt
                 cnt += 1
 
             if not skip_write:
-                self.write_file()
+                self.write_tofile()
 
             return True
 
@@ -93,13 +93,11 @@ class FloatColumn( Column[float ] ):
             return None
 
     def apply_objdata( self: Self, objdata: Self ) -> bool:
-
         self.refcnt                 = objdata.refcnt
         self.keyvaluecnt            = objdata.keyvaluecnt
         self.keyvaluemap_to_refs    = objdata.keyvaluemap_to_refs
         self.valueindex_to_keyvalue = objdata.valueindex_to_keyvalue
         self.ref_to_valueindex      = objdata.ref_to_valueindex
-
         return True
 
     def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ float | None ], bool ] | None:
@@ -116,6 +114,12 @@ class FloatColumn( Column[float ] ):
         else:
             return None
 
-
-
-
+    def get_pararray( self: Self ) -> par.Array | None:
+        key_index: list[ float | None ] = []
+        for valueindex in self.ref_to_valueindex:
+            if valueindex is not None:
+                keyvalue = self.valueindex_to_keyvalue[valueindex]
+                key_index.append( keyvalue )
+            else:
+                key_index.append( None )
+        return par.array(key_index, type=par.float64())

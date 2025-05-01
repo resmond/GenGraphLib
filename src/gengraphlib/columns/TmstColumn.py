@@ -13,8 +13,8 @@ from .Column import Column
 class TmstColumn( Column[dt.datetime ] ):
     zeroday: dt.datetime = dt.datetime.fromisoformat( "1970-01-01" )
 
-    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
-        super( TmstColumn, self ).__init__( keyinfo, datadir, load_data )
+    def __init__( self: Self, keyinfo: KeyInfo, indexdir: str, load_data: bool = False ) -> None:
+        super().__init__( keyinfo, par.date64(),indexdir, load_data )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
@@ -45,7 +45,7 @@ class TmstColumn( Column[dt.datetime ] ):
                 cnt += 1
 
             if not skip_write:
-                self.write_file()
+                self.write_tofile()
 
             return True
 
@@ -118,3 +118,13 @@ class TmstColumn( Column[dt.datetime ] ):
             return par.date32(), col_array, False
         else:
             return None
+
+    def get_pararray( self: Self ) -> par.Array | None:
+        key_index: list[ dt.datetime | None ] = []
+        for valueindex in self.ref_to_valueindex:
+            if valueindex is not None:
+                keyvalue = self.valueindex_to_keyvalue[valueindex]
+                key_index.append( keyvalue )
+            else:
+                key_index.append( None )
+        return par.array(key_index, type=par.date64())

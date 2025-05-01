@@ -2,9 +2,17 @@ from typing import Self, cast
 import threading as th
 import multiprocessing as mp
 
-from sortedcontainers import SortedSet
+from sortedcontainers import SortedSet, SortedDict
 
-from ..common import KeyType, KeyInfo, KeyIndexType, KeyIndexState, keyIndexInfo, BootLogInfo
+from ..common import (
+    KeyType,
+    KeyInfo,
+    KeyIndexType,
+    KeyIndexState,
+    keyIndexInfo,
+    BootLogInfo,
+    LineRefList,
+)
 from .IndexTaskBase import IndexTaskBase
 
 from ..columns import Column, BoolColumn
@@ -21,6 +29,8 @@ class BoolIndexingTask( IndexTaskBase[bool] ):
         self.isunique     = False
 
         self._queue: mp.Queue = mp.Queue()
+
+        self.keymap: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList]()
 
         self._pos_set: SortedSet[int] = SortedSet[int]()
         self._neg_set: SortedSet[int] = SortedSet[int]()

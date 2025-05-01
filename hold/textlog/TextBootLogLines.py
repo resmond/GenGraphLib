@@ -1,13 +1,13 @@
 from typing import Self, Any
 
-from src.gengraphlib import GNodeInterface, RecordBase, LineParseResult, ResultState, RgxLine, GraphRecordRoot
+from src.gengraphlib import GNodeInterface, RecordBase, LineParseResult, ResultState, RgxLine, KeyDefRoot
 
 
 class TextBootLogLine( RecordBase ):
 
-    def __init__( self: Self, _graph_root: GraphRecordRoot, line_str: str, rec_index: int ) -> None:
+    def __init__( self: Self, _graph_root: KeyDefRoot, line_str: str, rec_index: int ) -> None:
         super().__init__(rec_index = rec_index )
-        self.graph_root: GraphRecordRoot = _graph_root
+        self.graph_root: KeyDefRoot = _graph_root
         self.rgx_line: RgxLine = RgxLine()
         self.event_type_id: str = ""
         self.date_seg: str = ""
@@ -42,10 +42,10 @@ class TextBootLogLine( RecordBase ):
 class TextBootLogLines( GNodeInterface, list[TextBootLogLine ] ):
 
     def __init__( self: Self, _graph_root: Any ) -> None:
+        super().__init__()
         #self.log_file_graph: LogFileGraph
         self.cnt: int = 0
         self._graph_root: Any = _graph_root
-        super().__init__( id= "lineNodeIndex" )
 
     def new_line( self: Self, line_str: str, line_num: int ) -> TextBootLogLine:
         new_line: TextBootLogLine =  TextBootLogLine( self._graph_root, line_str=line_str, rec_index =line_num )

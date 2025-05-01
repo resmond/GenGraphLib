@@ -4,12 +4,12 @@ from typing import Self
 from ..common import (
     KeyGroupRec,
     KeyDefDict,
-    KeyDefInterface
+    KeyDefInterface,
+    KeyDefRoot
 )
 
-from .GraphLib import (
+from src.gengraphlib.graphs.GraphLib import (
     GNodeInterface,
-    GraphRecordRoot
 )
 
 class KeyGroup( KeyDefDict, GNodeInterface ):
@@ -22,10 +22,10 @@ class KeyGroup( KeyDefDict, GNodeInterface ):
         self[ key_def.key ] = key_def
 
 class KeyGroups( dict[str, KeyGroup ], GNodeInterface ):
-    def __init__( self: Self, id: str,  graph_root: GraphRecordRoot ) -> None:
+    def __init__( self: Self, id: str, graph_root: KeyDefRoot ) -> None:
         super(KeyGroups, self).__init__()
         self.id: str = id
-        self.graph_root: GraphRecordRoot = graph_root
+        self.graph_root: KeyDefRoot = graph_root
 
     def add_keygroup( self: Self, group_id: str, group_desc: str = "", keys: Iterable[str] | None = None ) -> None:
         self[group_id] = KeyGroup( group_id, group_desc )

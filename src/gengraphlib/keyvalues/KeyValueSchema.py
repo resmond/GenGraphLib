@@ -4,14 +4,12 @@ from collections.abc import Iterable
 import json
 import os
 
-from ..common import KeyValTypes, keygroup_rec, KeyDefDict, KeyInfo, KeyValSchemaInfo
-
-from .GraphLib import GraphRecordRoot
+from ..common import KeyValTypes, keygroup_rec, KeyDefDict, KeyInfo, KeyValSchemaInfo, KeyDefRoot
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from .KeyGroups import KeyGroups
 from .KeySchemaVisitor import KeySchemaVisitor
 
-class KeyValueSchema( dict[str, KeyDefBase ], GraphRecordRoot ):
+class KeyValueSchema( dict[str, KeyDefBase ], KeyDefRoot ):
 
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
         super( KeyValueSchema, self ).__init__()

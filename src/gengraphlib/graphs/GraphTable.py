@@ -5,6 +5,7 @@ from typing import Self
 import os
 import pickle as pkl
 import pyarrow as par
+import polars as pol
 
 from src.gengraphlib.common import (
     KeyValTypes,
@@ -22,7 +23,7 @@ from src.gengraphlib.columns import (
     TmstColumn
 )
 
-from src.gengraphlib.arrow.ParqueutFileIo import write_parquet, read_parquet
+from src.gengraphlib.arrow.ParquetFileIo import write_parquet, read_parquet
 
 ValuesDict: type = dict[str, VectorValTypes ]
 
@@ -33,20 +34,25 @@ class GraphTable:
             table_name: str,
             data_dir: str | None = None,
             keys: list[KeyInfo] | None = None ,
+            active_keys: set[str] | None = None,
             load_columns: bool = False,
             load_table: bool = False
         ) -> None:
 
         super().__init__()
         self.table_name: str = table_name
-        self.columns:    dict[ str, Column ] = dict[ str, Column ]()
+        self.columns:    dict[ str, Column ] = dict[ str, Column]()
 
         self.data_dir:   str             | None = data_dir
-        self.keys:       list[ KeyInfo ] | None = keys
+        self.keys:       list[ KeyInfo ]  = list[ KeyInfo ]()
 
         self.datatable: par.Table | None = None
 
         self.maxrefcnt = 1000
+
+        for keyinfo in keys:
+            if keyinfo.key in active_keys:
+                self.keys.append(keyinfo)
 
         if not self.keys and self.data_dir:
             self.load_info()
@@ -131,17 +137,19 @@ class GraphTable:
         return [col.get_arrowfield() for key, col in self.columns ]
 
     def save_table(self: Self) -> bool:
+
         return write_parquet( self.columns, self.get_tablefilepath() )
 
-    def read_table( self: Self ) -> bool:
-
-        self.datatable = read_parquet( self.columns, self.get_tablefilepath() )
-        return self.datatable is not None
+    def read_table( self: Self ) -> par.Table:
+        table_path: str = self.get_tablefilepath()
+        print(f'GraphTable.read_table( {table_path} )')
+        self.datatable = read_parquet( self.columns, table_path  )
+        return self.datatable
 
     def load_info( self: Self ) -> bool:
         try:
             filepath = self.get_infofilepath()
-            sys.path.append( r"/src" )
+            sys.path.append( "/home/richard/proj/GenGraphLib/src" )
             if os.path.exists(filepath):
                 with open( file=filepath, mode="rb" ) as file:
                     keys_obj = pkl.load(file)
@@ -169,5 +177,7 @@ class GraphTable:
 
 
 if __name__ == "__main__":
-    graph_table = GraphTable( "logevents", "/boots/25-04-27:06-44/", load_columns=True )
-    graph_table.get_datatable()
+    graph_table = GraphTable("logevents","/home/richard/data/jctl-logs/boots/25-04-27:22-28/" )
+    table: par.Table = graph_table.read_table()
+    df: pol.DataFrame = pol.DataFrame(data=table)
+

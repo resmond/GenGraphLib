@@ -9,8 +9,8 @@ from ..common import LineRefList, KeyInfo
 from .Column import Column
 
 class IntColumn( Column[int] ):
-    def __init__( self: Self, keyinfo: KeyInfo, datadir: str, load_data: bool = False ) -> None:
-        super( IntColumn, self ).__init__( keyinfo, datadir, load_data )
+    def __init__( self: Self, keyinfo: KeyInfo, indexdir: str, load_data: bool = False ) -> None:
+        super().__init__( keyinfo, par.int64(), indexdir, load_data )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
@@ -41,7 +41,7 @@ class IntColumn( Column[int] ):
                 cnt += 1
 
             if not skip_write:
-                self.write_file()
+                self.write_tofile()
 
             return True
 
@@ -116,6 +116,17 @@ class IntColumn( Column[int] ):
             return par.int64(), col_array, False
         else:
             return None
+
+    def get_pararray( self: Self ) -> par.Array | None:
+        key_index: list[ int | None ] = []
+        for valueindex in self.ref_to_valueindex:
+            if valueindex is not None:
+                keyvalue = self.valueindex_to_keyvalue[valueindex]
+                key_index.append( keyvalue )
+            else:
+                key_index.append( None )
+        return par.array(key_index, type=par.int64())
+
 
 
 

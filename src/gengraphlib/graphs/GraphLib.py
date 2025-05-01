@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import Self, Protocol
 from sortedcontainers import SortedList
 
-from .. import KValueDict, KeyDefInterface
+from src.gengraphlib import KValueDict
 
 class GNodeInterface( Protocol ):
     id: str
@@ -37,13 +37,6 @@ class RecordBase:
         self.rec_index: int = rec_index
         self.values: KValueDict | None = None
 
-class GraphRecordRoot( Protocol ):
-
-    def graph_id(self: Self) -> str:
-        pass
-
-    def __getitem__(self, key: str) -> KeyDefInterface:
-        pass
 
 
 

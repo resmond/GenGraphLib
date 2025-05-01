@@ -70,7 +70,7 @@ class BootLog:
 
     def launch_indexing( self: Self, active_keys: set[str], write_bin: bool = False, write_log: bool = False ) -> GraphTable:
         self.indexing_process = LogIndexingProcess( self.schema_info, self.app_msgqueue, self.end_event )
-        self.graph_table = GraphTable( "logevents", self.bootlog_path, self.schema_info.keys )
+        self.graph_table = GraphTable( "logevents", self.bootlog_path, self.schema_info.keys, active_keys, )
         self.graph_table.save_info()
         if self.indexing_process:
             self.indexing_process.index_bootlog( self.get_info(), self.graph_table, active_keys, write_bin, write_log )

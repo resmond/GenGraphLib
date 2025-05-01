@@ -194,7 +194,13 @@ class KeyDefInterface( Protocol ):
 
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
 
-#KeyValueEvent: type = tuple[int, int, memoryview]
+class KeyDefRoot( Protocol ):
+
+    def graph_id(self: Self) -> str:
+        pass
+
+    def __getitem__(self, key: str) -> KeyDefInterface:
+        pass
 
 class ColumnInterface( Protocol ):
     id: str
@@ -209,8 +215,6 @@ class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
         if key not in self:
             self[key] = list[T]()
         self[key].append( value )
-
-
 
 class KeyInfo:
 
