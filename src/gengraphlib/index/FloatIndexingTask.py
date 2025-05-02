@@ -14,7 +14,7 @@ from ..common import (
     BootLogInfo
 )
 
-from .IndexTaskBase import IndexTaskBase
+from .ImportTask import IndexTaskBase
 
 from ..columns import Column, FloatColumn
 from ..graphs import GraphTable

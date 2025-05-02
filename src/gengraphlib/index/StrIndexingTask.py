@@ -14,7 +14,7 @@ from ..common import (
     BootLogInfo
 )
 
-from .IndexTaskBase import IndexTaskBase
+from .ImportTask import IndexTaskBase
 
 from ..columns import Column, StrColumn
 from ..graphs import GraphTable
@@ -60,7 +60,7 @@ class StrIndexingTask( IndexTaskBase[str] ):
 
                 if value not in self.keymap:
                     self.keycnt += 1
-                    self.keymap[value ] = LineRefList()
+                    self.keymap[ value ] = LineRefList()
                 else:
                     self.isunique = False
 

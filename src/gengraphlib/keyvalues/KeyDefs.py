@@ -11,8 +11,8 @@ class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
         super(KeyDefBase, self).__init__()
         self.key:            str  = key
         self.alias:          str  = alias
-        self.keytype:       KeyType = keytype
         self.pytype:         type = type(T)
+        self.keytype:       KeyType = keytype
         self.partype: par.DataType = partype
         self.groupids:       list[str] = []
         self._skip:          bool = True
@@ -82,6 +82,3 @@ class FloatKeyDef( KeyDefBase[float] ):
     def __init__( self, key: str, alias: str, groups: list[str ] | str | None = None ) -> None:
         super(FloatKeyDef, self).__init__( key=key, alias=alias, keytype=KeyType.KFloat, partype=par.int64(), groups=groups )
 
-class KeyDefDict( dict[ str, KeyDefBase ] ):
-    def __init__( self: Self ) -> None:
-        super( KeyDefDict, self ).__init__()

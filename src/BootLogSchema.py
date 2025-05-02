@@ -36,7 +36,7 @@ class BootLogSchema( KeyValueSchema ):
         bootlog_schema.launch_indexing( -1, "evt" )
 
     def __init__( self: Self, parse_info: ParseProcessInfo | None = None ) -> None:
-        super( BootLogSchema, self ).__init__( id=parse_info.id, root_dir = parse_info.log_root )
+        super().__init__( id=parse_info.id, root_dir = parse_info.log_root )
 
         self._alias_map: KeyDefDict = KeyDefDict()
         self.cnt:           int  = 0

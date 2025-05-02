@@ -1,4 +1,4 @@
-from .IndexTaskBase import IndexTaskBase
+from .ImportTask import IndexTaskBase
 from .LogIndexingProcess import LogIndexingProcess
 from .IntIndexingTask import IntIndexingTask
 from .StrIndexingTask import StrIndexingTask

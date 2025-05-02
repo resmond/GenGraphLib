@@ -12,7 +12,7 @@ from .KeySchemaVisitor import KeySchemaVisitor
 class KeyValueSchema( dict[str, KeyDefBase ], KeyDefRoot ):
 
     def __init__( self: Self, id: str,  root_dir: str ) -> None:
-        super( KeyValueSchema, self ).__init__()
+        super().__init__()
         self.id = id
         self._root_dir = root_dir
         self._alias_map: KeyDefDict = KeyDefDict()

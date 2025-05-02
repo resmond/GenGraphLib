@@ -13,7 +13,7 @@ from ..common import (
     BootLogInfo,
     LineRefList,
 )
-from .IndexTaskBase import IndexTaskBase
+from .ImportTask import IndexTaskBase
 
 from ..columns import Column, BoolColumn
 from ..graphs import GraphTable
