@@ -1,11 +1,9 @@
 from typing import Self
 
-import pyarrow as par
-
 from enum import IntEnum
 import datetime as dt
 
-from src.gengraphlib.model.ModelPropertyBase import (
+from . import (
     StrModProp,
     IntEnumModProp,
     BranchModProp,
@@ -25,15 +23,6 @@ class PriorityEnum(IntEnum):
 class PriorityModProp[PriorityEnum](IntEnumModProp):
     def __init__( self: Self, *args, **kwargs ) -> None:
         super().__init__(*args, **kwargs)
-        self.counts: dict[str,int] = {}
-
-    def recv_import( self: Self, row_num: int, import_value: PriorityEnum ) -> int | None:
-        self.counts[import_value.name ] += 1
-        return import_value.value
-
-    def build_array( self: Self ) -> par.Array:
-        pass
-
 
 @graphmodel
 class LogEventModel:
@@ -43,6 +32,8 @@ class LogEventModel:
     subsystem  = BranchModProp(alias="_KERNEL_SUBSYSTEM")
     timestamp  = TmstModProp(alias="__REALTIME_TIMESTAMP")
     message    = StrModProp(alias="MESSAGE")
+
+
 
 
 if __name__ == "__main__":

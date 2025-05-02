@@ -6,7 +6,7 @@ from .common import (
     , TaskType, TaskState, Startable, IndexTaskInterface, ProcRegistry, KeyDefInterface, KeyDefRoot
     , KeyDefDict, LineRefList, KeyFilter, KeyType, KeyIndexType, KeyIndexState, keyIndexInfo
     , SerializationType, DefaultMapOfLists, ColumnInterface, KeyInfo, KeyValSchemaInfo
-    , BootLogInfo
+    , BootLogInfo, ImportValueInterface
 )
 
 from hold.regex import (
@@ -22,7 +22,7 @@ from .keyvalues import (
 from .model import (
     ModelInfo,
     ModelRegistry,
-    ModelPropertyBase,
+    ModelProperty,
     StrModProp,
     BranchModProp,
     IntModProp,
@@ -66,15 +66,12 @@ from .codegen import (
 
 from .bootlog import BootLog, BootLogManager, BootLogContext
 
-
-
-
 __all__ = [
       "KeyValTypes", "keygroup_rec", "KeyFilter", "KeyType", "KeyIndexType", "KeyIndexState", "keyIndexInfo"
     , "SerializationType", "DefaultMapOfLists", "IValueTuple", "SValueTuple", "KValueDict", "VectorValTypes"
     , "KeyValueTuple", "KeyRecordList", "KeyRecordPacket", "TaskType", "TaskState",  "IndexTaskInterface"
     , "Startable", "KeyValuePacket", "ProcType", "ProcState", "ProcRegistry", "KeyDefInterface", "KeyDefDict"
-    , "LineRefList", "BootLogInfo", "KeyDefRoot", "ColumnInterface", "ModelPropTypes"
+    , "LineRefList", "BootLogInfo", "KeyDefRoot", "ColumnInterface", "ModelPropTypes", "ImportValueInterface"
 
 
     , "ResultState", "TriggerType", "LineParseResult", "TParseTestFn", "MatchTrigger", "ParseTriggers"
@@ -83,7 +80,7 @@ __all__ = [
     , "KeyDefBase", "KeyDefDict", "StrKeyDef", "IntKeyDef", "BoolKeyDef", "FloatKeyDef", "TmstKeyDef", "KeyDefDict"
     , "KeyGroupRec", "KeyGroup", "KeyGroups", "KeyInfo", "KeyValSchemaInfo", "KeyValueSchema", "KeySchemaVisitor"
 
-    , "ModelInfo", "ModelPropertyBase", "ModelRegistry"
+    , "ModelInfo", "ModelProperty", "ModelRegistry"
     , "StrModProp", "BranchModProp", "IntModProp", "TmstModProp", "StrEnumModProp", "IntEnumModProp", "BoolModProp"
 
 

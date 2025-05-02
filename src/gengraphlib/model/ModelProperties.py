@@ -6,9 +6,9 @@ import datetime as dt
 
 from pyarrow import utf8, int64, date32, DataType, uint8, bool_
 
-from .ModelPropertyBase import ModelPropertyBase
+from .ModelProperty import ModelProperty
 
-class StrModProp( ModelPropertyBase[str] ):
+class StrModProp( ModelProperty[str ] ):
     def __init__(
         self: Self,
         mod_id: str | None = None,
@@ -21,7 +21,7 @@ class StrModProp( ModelPropertyBase[str] ):
 
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=use_dict )
 
-class BranchModProp( ModelPropertyBase[str] ):
+class BranchModProp( ModelProperty[str ] ):
     def __init__(
         self: Self,
         mod_id: str | None = None,
@@ -33,7 +33,7 @@ class BranchModProp( ModelPropertyBase[str] ):
 
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=True )
 
-class IntModProp( ModelPropertyBase[int]):
+class IntModProp( ModelProperty[int ] ):
     def __init__(
         self: Self,
         mod_id: str | None = None,
@@ -47,7 +47,7 @@ class IntModProp( ModelPropertyBase[int]):
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=use_dict )
 
 
-class TmstModProp(ModelPropertyBase[dt.datetime]):
+class TmstModProp( ModelProperty[dt.datetime ] ):
     def __init__( self: Self,
                   mod_id: str | None = None,
                   *,
@@ -59,7 +59,7 @@ class TmstModProp(ModelPropertyBase[dt.datetime]):
 
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=use_dict )
 
-class StrEnumModProp[T: StrEnum]( ModelPropertyBase[T] ):
+class StrEnumModProp[T: StrEnum]( ModelProperty[T ] ):
     def __init__(
             self: Self,
             mod_id: str | None = None,
@@ -70,7 +70,7 @@ class StrEnumModProp[T: StrEnum]( ModelPropertyBase[T] ):
 
         super().__init__( mod_id=mod_id, import_type=utf8(), store_type=store_type, alias=alias, use_dict=True )
 
-class IntEnumModProp[T: IntEnum]( ModelPropertyBase[T] ):
+class IntEnumModProp[T: IntEnum]( ModelProperty[T ] ):
     def __init__(
             self: Self,
             mod_id: str | None = None,
@@ -81,7 +81,7 @@ class IntEnumModProp[T: IntEnum]( ModelPropertyBase[T] ):
 
         super().__init__( mod_id=mod_id, import_type=int64(), store_type=store_type, alias=alias, use_dict=True )
 
-class BoolModProp( ModelPropertyBase[bool] ):
+class BoolModProp( ModelProperty[bool ] ):
     def __init__(
             self: Self,
             mod_id: str | None = None,

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from collections import namedtuple
 from typing import Self, Protocol, NamedTuple
-import pyarrow
+import pyarrow as par
 
 import datetime as dt
 import multiprocessing as mp
@@ -29,6 +29,11 @@ KeyRecordPacket: type = tuple[int, KeyRecordList ]
 KeyValuePacket: type = tuple[int, str]
 ModelPropTypes: type = type[ str, int, float, dt.datetime, StrEnum, IntEnum, bool]
 
+class ImportValueInterface[ T: ModelPropTypes ]( Protocol ):
+
+    def recv_import( self: Self, row_num: int, import_value: T ) -> None: ...
+    def finalize( self: Self ) -> None: ...
+    def get_pararray( self: Self ) -> par.Array | None:  ...
 
 class KeyType( IntEnum ):
     KStr    = 1        #utf8
@@ -191,7 +196,7 @@ class KeyDefInterface( Protocol ):
     alias:    str
     keytype:  KeyType
     pytype:   type
-    partype:  pyarrow.DataType
+    partype:  par.DataType
     groupids: list[str]
 
 KeyDefDict:  type = dict[ str, KeyDefInterface ]
@@ -208,7 +213,7 @@ class ColumnInterface( Protocol ):
     id: str
     key_def: KeyDefInterface
     keytype: KeyType
-    partype:  pyarrow.DataType
+    partype:  par.DataType
     index_dir: str
 
 class DefaultMapOfLists[ T ]( dict[ str, list[T] ] ):
@@ -224,7 +229,7 @@ class KeyInfo:
             self: Self,
             keytype:  KeyType,
             pytype:   type,
-            partype:  pyarrow.DataType,
+            partype:  par.DataType,
             key:      str,
             alias:    str,
             groupids: list[str]
@@ -232,7 +237,7 @@ class KeyInfo:
         super().__init__()
         self.keytype:   KeyType          = keytype
         self.pytype:    type             = pytype
-        self.partype:   pyarrow.DataType = partype
+        self.partype:   par.DataType = partype
 
         self.key:       str       = key
         self.alias:     str       = alias

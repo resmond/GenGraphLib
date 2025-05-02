@@ -1,6 +1,6 @@
 from .ModelInfo import ModelInfo
-from .ModelPropertyBase import ModelPropertyBase
-from .ModelRegistry import ModelRegistry
+from .ModelProperty import ModelProperty
+from .ModelRegistry import ModelRegistry, graphmodel
 from .ModelProperties import (
     StrModProp,
     BranchModProp,
@@ -12,19 +12,7 @@ from .ModelProperties import (
 )
 
 __all__ = [
-    "ModelInfo", "ModelPropertyBase", "ModelRegistry"
+      "ModelInfo", "ModelProperty", "ModelRegistry", "graphmodel"
     , "StrModProp", "BranchModProp", "IntModProp", "TmstModProp", "StrEnumModProp", "IntEnumModProp", "BoolModProp"
 ]
 
-from .ModelProperties import (
-    ModelInfo,
-    ModelRegistry,
-    ModelPropertyBase,
-    StrModProp,
-    BranchModProp,
-    IntModProp,
-    TmstModProp,
-    StrEnumModProp,
-    IntEnumModProp,
-    BoolModProp
-)
