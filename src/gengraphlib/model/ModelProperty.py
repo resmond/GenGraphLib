@@ -1,13 +1,14 @@
-from __future__ import annotations
-from typing import Self, Protocol
+from typing import Self
 
 import pyarrow as par
+
 from sortedcontainers import SortedDict
 
-from ..common import ModelPropTypes, LineRefList
+from ..common import ModelPropTypes, LineRefList, ImportValueInterface
+
 from .ModelInfo import ModelInfo
 
-class ModelProperty[ T: ModelPropTypes, ImportValueInterface ]:
+class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
 
     def __init__(
             self: Self,
@@ -95,5 +96,6 @@ class ModelProperty[ T: ModelPropTypes, ImportValueInterface ]:
                 key_index.append(keyvalue)
             else:
                 key_index.append(None)
+
         return par.array(key_index, type=par.utf8())
 

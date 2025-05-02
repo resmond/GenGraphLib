@@ -8,7 +8,7 @@ from pyarrow import utf8, int64, date32, DataType, uint8, bool_
 
 from .ModelProperty import ModelProperty
 
-class StrModProp( ModelProperty[str ] ):
+class StrModProp( ModelProperty[str] ):
     def __init__(
         self: Self,
         mod_id: str | None = None,
@@ -20,18 +20,6 @@ class StrModProp( ModelProperty[str ] ):
     ) -> None:
 
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=use_dict )
-
-class BranchModProp( ModelProperty[str ] ):
-    def __init__(
-        self: Self,
-        mod_id: str | None = None,
-        *,
-        import_type: DataType = utf8(),
-        store_type: DataType = uint8(),
-        alias: str | None = None
-    ) -> None:
-
-        super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=True )
 
 class IntModProp( ModelProperty[int ] ):
     def __init__(
@@ -45,7 +33,6 @@ class IntModProp( ModelProperty[int ] ):
     ) -> None:
 
         super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=use_dict )
-
 
 class TmstModProp( ModelProperty[dt.datetime ] ):
     def __init__( self: Self,
@@ -70,7 +57,7 @@ class StrEnumModProp[T: StrEnum]( ModelProperty[T ] ):
 
         super().__init__( mod_id=mod_id, import_type=utf8(), store_type=store_type, alias=alias, use_dict=True )
 
-class IntEnumModProp[T: IntEnum]( ModelProperty[T ] ):
+class IntEnumModProp[T: IntEnum]( ModelProperty[T] ):
     def __init__(
             self: Self,
             mod_id: str | None = None,
@@ -81,7 +68,7 @@ class IntEnumModProp[T: IntEnum]( ModelProperty[T ] ):
 
         super().__init__( mod_id=mod_id, import_type=int64(), store_type=store_type, alias=alias, use_dict=True )
 
-class BoolModProp( ModelProperty[bool ] ):
+class BoolModProp( ModelProperty[bool] ):
     def __init__(
             self: Self,
             mod_id: str | None = None,
@@ -90,3 +77,16 @@ class BoolModProp( ModelProperty[bool ] ):
         ) -> None:
 
         super().__init__( mod_id =mod_id, import_type=int64(), store_type=bool_(), alias=alias )
+
+class BranchModProp( ModelProperty[str] ):
+    def __init__(
+        self: Self,
+        mod_id: str | None = None,
+        *,
+        import_type: DataType = utf8(),
+        store_type: DataType = uint8(),
+        alias: str | None = None
+    ) -> None:
+
+        super().__init__( mod_id=mod_id, import_type=import_type, store_type=store_type, alias=alias, use_dict=True )
+

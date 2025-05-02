@@ -66,7 +66,6 @@ class ModelImporter:
                     self.apply_tocolumn(int(value))
                     break
 
-
                 if rec_num % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
                     self.app_msgqueue.put( keyindex_info )
