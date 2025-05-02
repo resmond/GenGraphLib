@@ -27,6 +27,8 @@ KeyValueTuple: type = tuple[str, str]
 KeyRecordList: type = list[KeyValueTuple]
 KeyRecordPacket: type = tuple[int, KeyRecordList ]
 KeyValuePacket: type = tuple[int, str]
+ModelPropTypes: type = type[ str, int, float, dt.datetime, StrEnum, IntEnum, bool]
+
 
 class KeyType( IntEnum ):
     KStr    = 1        #utf8

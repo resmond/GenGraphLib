@@ -12,8 +12,8 @@ from src.gengraphlib.model.ModelPropertyBase import (
     TmstModProp,
     ModelRegistry,
     ModelInfo,
+    graphmodel,
 )
-
 
 class PriorityEnum(IntEnum):
     Info       =    3
@@ -35,6 +35,7 @@ class PriorityModProp[PriorityEnum](IntEnumModProp):
         pass
 
 
+@graphmodel
 class LogEventModel:
     model_info = ModelInfo("logevent")
 
