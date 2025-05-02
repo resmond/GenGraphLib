@@ -11,7 +11,7 @@ class GNodeInterface( Protocol ):
 class NodeDict[ TNode: GNodeInterface ]( GNodeInterface, dict[ str, GNodeInterface ] ):
 
     def __init__(self: Self, id: str) -> None:
-        super(NodeDict, self).__init__()
+        super().__init__()
         self.id = id
 
     def add( self: Self, item: TNode ) -> None:
@@ -28,7 +28,7 @@ class NodeDict[ TNode: GNodeInterface ]( GNodeInterface, dict[ str, GNodeInterfa
 
 class IndexedNodeList[ TNode: GNodeInterface ]( GNodeInterface, SortedList[ GNodeInterface ] ):
     def __init__( self: Self, id: str ) -> None:
-        super(IndexedNodeList, self).__init__()
+        super().__init__()
         self.id = id
 
 class RecordBase:

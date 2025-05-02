@@ -35,7 +35,7 @@ class PriorityModProp[PriorityEnum](IntEnumModProp):
         pass
 
 
-class LogEventModel():
+class LogEventModel:
     model_info = ModelInfo("logevent")
 
     priority   = PriorityModProp( alias="PRIORITY")

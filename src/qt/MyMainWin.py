@@ -23,7 +23,7 @@ class MyMainWindow(QMainWindow):
         print(f"{self.WINDOW_TITLE}: {index_info.key} - keycnt: {index_info.keycnt}  refcnt: {index_info.refcnt}  hit%: {index_info.hitpct}")
 
     def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:
-        super(MyMainWindow, self).__init__()
+        super().__init__()
 
         self.msg_queue: mp.Queue = msg_queue
         self.end_event: mp.Event = end_event

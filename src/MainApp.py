@@ -11,7 +11,7 @@ from src.qt.MyMainWin import MyMainWindow
 
 class MainApp( AppProcessBase ):
     def __init__(self: Self):
-        super( MainApp, self ).__init__( "app-main" )
+        super().__init__( "app-main" )
         self.parse_info: ParseProcessInfo | None = None
         self.parse_process: mp.Process | None = None
         self.qt_app: QApplication = QApplication()

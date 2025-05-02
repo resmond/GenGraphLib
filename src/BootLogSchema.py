@@ -16,6 +16,7 @@ from gengraphlib import (
 
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int, groupid: str, autostart: bool = False,  write_bin: bool = False, write_log: bool = False ) -> None:
+        super().__init__()
 
         self.app_msgqueue: mp.Queue = app_msgqueue
         self.end_event:    mp.Event = end_event

@@ -13,6 +13,8 @@ from . import (
 
 class GenCodeRenderer:
     def __init__(self: Self, filepath: str ):
+        super().__init__()
+
         self.filepath: str = filepath
         self.output_file: TextIOWrapper | None = None
 
@@ -36,6 +38,8 @@ class GenCodeRenderer:
 
 class ClassGenBase:
     def __init__( self: Self, clsname: str, filepath: str, info_list: list[KeyValInfo ] ):
+        super().__init__()
+
         self.filepath: str = filepath
         self.clsname: str = clsname
         self.info_list: list[KeyValInfo] = info_list

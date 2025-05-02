@@ -11,7 +11,7 @@ class AppProcessBase( ProcRegistry ):
     instance: Self | None = None
 
     def __init__(self: Self, app_id: str) -> None:
-        super( AppProcessBase, self ).__init__()
+        super().__init__()
         AppProcessBase.instance = self
 
         self.app_id: str = app_id

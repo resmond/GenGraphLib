@@ -28,6 +28,7 @@ class LogIndexingProcess:
         app_msgqueue: mp.Queue,
         end_event: mp.Event
     ) -> None:
+        super().__init__()
 
         self.schema_info:  KeyValSchemaInfo = schema_info
         self.app_msgqueue: mp.Queue         = app_msgqueue

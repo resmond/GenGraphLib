@@ -33,6 +33,8 @@ class ModelRegistry:
 class ModelInfo:
 
     def __init__( self: Self, mod_id: str ) -> None:
+        super().__init__()
+
         self.properties: dict[ str, ModelPropertyBase ] = dict[str, ModelPropertyBase]()
         self.mod_id: str = mod_id
         self.mod_cls: object = self.__class__

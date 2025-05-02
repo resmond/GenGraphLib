@@ -14,7 +14,7 @@ from src.gengraphlib.graphs.GraphLib import (
 
 class KeyGroup( KeyDefDict, GNodeInterface ):
     def __init__( self: Self, id: str, group_desc: str = "" ) -> None:
-        super(KeyGroup, self).__init__()
+        super().__init__()
         self.id: str = id
         self.group_desc: str = group_desc
 
@@ -23,7 +23,7 @@ class KeyGroup( KeyDefDict, GNodeInterface ):
 
 class KeyGroups( dict[str, KeyGroup ], GNodeInterface ):
     def __init__( self: Self, id: str, graph_root: KeyDefRoot ) -> None:
-        super(KeyGroups, self).__init__()
+        super().__init__()
         self.id: str = id
         self.graph_root: KeyDefRoot = graph_root
 

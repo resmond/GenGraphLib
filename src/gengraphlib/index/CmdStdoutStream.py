@@ -12,6 +12,8 @@ from collections.abc import AsyncGenerator
 class CmdStdoutStream:
 
     def __init__(self: Self, cmd: str, end_event: mp.Event, write_bin: bool ):
+        super().__init__()
+
         self.cmd: str = cmd
         self.write_bin: bool = write_bin
         self.bin_writer: BufferedWriter | None = None

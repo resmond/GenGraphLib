@@ -27,7 +27,7 @@ from ..graphs import GraphTable
 class TmstIndexingTask( IndexTaskBase[dt.datetime] ):
 
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
-        super( TmstIndexingTask, self ).__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
+        super().__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
 
         self.keytype      = KeyType.KTmst
         self.index_type   = KeyIndexType.TmstSorted

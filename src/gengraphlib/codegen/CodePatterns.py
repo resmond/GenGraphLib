@@ -5,6 +5,8 @@ from . import KeyValInfo
 
 class CodePattern[ T ]:
     def __init__( self: Self, _info: T, pattern: str, isline: bool = True  ):
+        super().__init__()
+
         self.info: T = _info
         self.pattern: str = pattern
         self.isline: bool = isline
@@ -18,7 +20,7 @@ class CodePattern[ T ]:
 
 class InfoPattern( CodePattern[KeyValInfo ] ):
     def __init__( self: Self, _info: KeyValInfo, pattern: str ):
-        super(InfoPattern, self ).__init__( _info, pattern )
+        super().__init__( _info, pattern )
 
 @dataclass
 class ImportsInfo:
