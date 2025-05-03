@@ -11,7 +11,6 @@ from gengraphlib import KeyValuePacket
 
 from .LogEventModel import LogEventModel
 
-
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, end_event: mp.Event, id: str, log_root: str, boot_index: int ) -> None:
         super().__init__()
@@ -33,7 +32,6 @@ class LogParseProcess:
     def __init__( self: Self, parse_info: ParseProcessInfo | None = None ) -> None:
         super().__init__()
 
-        #self._alias_map: KeyDefDict = KeyDefDict()
         self.cnt:           int  = 0
 
         parse_info: ParseProcessInfo | None = parse_info
@@ -41,13 +39,15 @@ class LogParseProcess:
         self.app_msgqueue: mp.Queue = parse_info.app_msgqueue
         self.end_event:    mp.Event = parse_info.end_event
 
-        self.queues_byalias: dict[str, mp.Queue ] | None = None
 
         self.cmd: str = f"/bin/journalctl -b {self.bootlog_info.boot_index} -o export"
-        self.table_model: LogEventModel  = LogEventModel()
+        self.cmd_stream:  CmdStdoutStream = CmdStdoutStream( self.cmd )
+
+
+        self.table_model: LogEventModel   = LogEventModel()
         self.log_manager: BootLogManager  = BootLogManager( self.log_root )
         self.cur_bootlog: BootLog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
-        self.cmd_stream: CmdStdoutStream = CmdStdoutStream(self.cmd)
+        self.queues_byalias: dict[str, mp.Queue ] | None = None
 
 
     def launch_indexing( self: Self ) -> None:

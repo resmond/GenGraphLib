@@ -7,7 +7,7 @@ import sys
 import pickle as pkl
 import pyarrow as par
 
-from ..common import (
+from src.gengraphlib.common import (
     KeyValTypes,
     ColumnInterface,
     KeyInfo,
@@ -21,7 +21,8 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
         self.partype:   par.DataType = partype
         self.id:        str          = self.keyinfo.key
         self.index_dir: str          = indexdir
-        self.filepath:  str = os.path.join( indexdir, f'{self.keyinfo.key}.column' )
+        self.load_file: bool = load_file
+        self.filepath:  str  = os.path.join( indexdir, f'{self.keyinfo.key}.column' )
 
         # if load_file:
         #     self.load_fromfile()
@@ -59,7 +60,7 @@ class Column[ T: KeyValTypes ]( ColumnInterface, ABC ):
     def load_fromfile( self: Self ) -> bool:
         try:
             if os.path.exists(self.filepath):
-                sys.path.append("/home/richard/proj/GenGraphLib/src")
+                sys.path.append( "/src" )
                 with open( file=self.filepath, mode="rb" ) as reader:
                     dataobj: Column = pkl.load(reader)
                     self.apply_objdata( dataobj )

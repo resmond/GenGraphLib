@@ -4,7 +4,7 @@ from collections.abc import Iterable
 import json
 import os
 
-from ..common import KeyValTypes, keygroup_rec, KeyDefDict, KeyInfo, KeyValSchemaInfo, KeyDefRoot
+from src.gengraphlib.common import KeyValTypes, keygroup_rec, KeyDefDict, KeyInfo, KeyValSchemaInfo, KeyDefRoot
 from .KeyDefs import KeyDefBase, StrKeyDef, IntKeyDef, BoolKeyDef, FloatKeyDef, TmstKeyDef
 from .KeyGroups import KeyGroups
 from .KeySchemaVisitor import KeySchemaVisitor

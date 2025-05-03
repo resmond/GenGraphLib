@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from .. import (
+from src.gengraphlib import (
     KeySchemaVisitor,
     IntKeyDef,
     BoolKeyDef,

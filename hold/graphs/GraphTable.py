@@ -14,7 +14,7 @@ from src.gengraphlib.common import (
     KeyType,
 )
 
-from src.gengraphlib.columns import (
+from hold.columns import (
     Column,
     StrColumn,
     IntColumn,
@@ -23,7 +23,7 @@ from src.gengraphlib.columns import (
     TmstColumn
 )
 
-from ..arrow.ParquetFileIo import write_parquet, read_parquet
+from src.gengraphlib.arrow.ParquetFileIo import write_parquet, read_parquet
 
 ValuesDict: type = dict[str, VectorValTypes ]
 
@@ -149,7 +149,7 @@ class GraphTable:
     def load_info( self: Self ) -> bool:
         try:
             filepath = self.get_infofilepath()
-            sys.path.append( "/home/richard/proj/GenGraphLib/src" )
+            sys.path.append( "/src" )
             if os.path.exists(filepath):
                 with open( file=filepath, mode="rb" ) as file:
                     keys_obj = pkl.load(file)
@@ -177,7 +177,7 @@ class GraphTable:
 
 
 if __name__ == "__main__":
-    graph_table = GraphTable("logevents","/home/richard/data/jctl-logs/boots/25-04-27:22-28/" )
+    graph_table = GraphTable("logevents", "/boots/25-04-27:22-28/" )
     table: par.Table = graph_table.read_table()
     df: pol.DataFrame = pol.DataFrame(data=table)
 

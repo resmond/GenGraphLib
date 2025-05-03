@@ -5,7 +5,7 @@ import multiprocessing as mp
 
 from   threading import Thread
 
-from ..common import Startable, ProcType, ProcState
+from src.gengraphlib.common import Startable, ProcType, ProcState
 
 from .TaskLib import TaskBase
 

@@ -4,7 +4,7 @@ import pyarrow as par
 
 from sortedcontainers import SortedDict
 
-from ..common import KeyInfo, LineRefList
+from src.gengraphlib.common import KeyInfo, LineRefList
 
 from . import Column
 

@@ -1,7 +1,7 @@
 from typing import Self
 import multiprocessing as mp
 
-from ..common import TaskType, TaskState
+from src.gengraphlib.common import TaskType, TaskState
 
 class TaskBase:
     default_queue_size: int = 1024 * 256

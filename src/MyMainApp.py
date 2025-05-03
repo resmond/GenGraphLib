@@ -4,12 +4,12 @@ import multiprocessing as mp
 
 from PySide6.QtWidgets import QApplication
 
+from .qt import AppBase
 
-from gengraphlib.AppProcessBase import AppProcessBase
+from MyMainWindow import MyMainWindow
 from LogParseProcess import LogParseProcess, ParseProcessInfo
-from src.qt.MyMainWin import MyMainWindow
 
-class MainApp( AppProcessBase ):
+class MyMainApp( AppBase ):
     def __init__(self: Self):
         super().__init__( "app-main" )
         self.parse_info: ParseProcessInfo | None = None
@@ -18,9 +18,6 @@ class MainApp( AppProcessBase ):
         self.main_window: MyMainWindow = MyMainWindow( self.mainapp_msgqueue(), self.end_event() )
         self.main_window.setWindowTitle( "Boot Log Parser" )
         self.init_internals()
-
-    def init_internals( self: Self ) -> None:
-        super().init_internals()
 
     def start(self: Self) -> bool:
 

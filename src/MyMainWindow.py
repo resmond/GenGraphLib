@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
-from ..gengraphlib.common import keyIndexInfo
+from src.gengraphlib.common import keyIndexInfo
 from src.qt import QtMsgQueueReader
 
 class MyMainWindow(QMainWindow):

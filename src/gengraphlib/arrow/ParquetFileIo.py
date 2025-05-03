@@ -1,19 +1,13 @@
-from typing import Any
-
-import sys
-import os
 import pyarrow.parquet as parquet
 import pyarrow as par
 
-from ..columns import Column
+# def build_arrowschema( columns: dict[ str, Column ] ) -> par.schema:
+#     fieldtypes = list[tuple[str, par.DataType]]()
+#     for key, column in columns.items():
+#         fieldtypes.append(column.get_arrowfield())
+#     return par.schema(fields=fieldtypes)
 
-def build_arrowschema( columns: dict[ str, Column ] ) -> par.schema:
-    fieldtypes = list[tuple[str, par.DataType]]()
-    for key, column in columns.items():
-        fieldtypes.append(column.get_arrowfield())
-    return par.schema(fields=fieldtypes)
-
-def write_parquet( columns: dict[ str, Column ], filepath: str, print_info: bool = False ) -> bool:
+def write_parquet( par_arrays: dict[ str, par.Array ], filepath: str ) -> bool:
 
     try:
         return True
@@ -26,14 +20,12 @@ def write_parquet( columns: dict[ str, Column ], filepath: str, print_info: bool
         print(f'write_parquet( {filepath} ): IOError: {exc}' )
         return False
 
-def read_parquet( columns: dict[ str, Column ], filepath: str ) -> par.Table | None:
+def read_parquet( filepath: str ) -> par.Table | None:
     try:
         #schema: par.Schema = build_arrowschema( columns )
 
-        table: par.Table | None = None
-
         #reader =  parquet.ParquetReader( where=filepath, schema=schema )
-        table = parquet.read_table(filepath)
+        table: par.Table = parquet.read_table(filepath)
 
         return table
 

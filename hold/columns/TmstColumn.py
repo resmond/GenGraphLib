@@ -1,41 +1,45 @@
 from typing import Self
 
+import datetime as dt
+
 import pyarrow as par
 
 from sortedcontainers import SortedDict
 
-from ..common import KeyInfo, LineRefList
+from src.gengraphlib.common import KeyInfo, LineRefList
 
 from .Column import Column
 
-class FloatColumn( Column[float ] ):
+class TmstColumn( Column[dt.datetime ] ):
+    zeroday: dt.datetime = dt.datetime.fromisoformat( "1970-01-01" )
+
     def __init__( self: Self, keyinfo: KeyInfo, indexdir: str, load_data: bool = False ) -> None:
-        super().__init__( keyinfo, par.float64(), indexdir, load_data )
+        super().__init__( keyinfo, par.date64(),indexdir, load_data )
 
         self.refcnt:         int = -1
         self.maxrecnum:      int = -1
         self.keyvaluecnt:    int = -1
-        self.keyvaluemap_to_refs: SortedDict[float, LineRefList] = SortedDict[float, LineRefList]()
-        self.valueindex_to_keyvalue: list[ float ] = []
-        self.ref_to_valueindex:      list[ int ] = []
+        self.keyvaluemap_to_refs: SortedDict[ dt.datetime, LineRefList ] = SortedDict[dt.datetime, LineRefList]()
+        self.valueindex_to_keyvalue: list[ dt.datetime ] = []
+        self.ref_to_valueindex:      list[ int ]         = []
 
-    def apply_data( self: Self, keymap: SortedDict[float, LineRefList ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
+    def apply_data( self: Self, keymap: SortedDict[dt.datetime, LineRefList ], refcnt: int, maxrecnum: int, skip_write: bool = False ) -> bool:
         try:
             self.keyvaluemap_to_refs = keymap
-            self.refcnt    = refcnt
+            self.refcnt = refcnt
             self.maxrecnum = maxrecnum
             self.keyvaluecnt = len( self.keyvaluemap_to_refs )
 
             if self.refcnt == 0:
-                for keyvalue, reflist in self.keyvaluemap_to_refs.items():
+                for key, reflist in self.keyvaluemap_to_refs.items():
                     self.refcnt +=  len(reflist)
 
-            self.valueindex_to_keyvalue = [ -0.1 ] * self.keyvaluecnt
-            self.ref_to_valueindex      = [  -1  ] * self.maxrecnum
+            self.valueindex_to_keyvalue = [ TmstColumn.zeroday ] * self.keyvaluecnt
+            self.ref_to_valueindex  = [ -1 ] * self.maxrecnum
 
             cnt: int = 0
-            for keyvalue, reflist in self.keyvaluemap_to_refs.items():
-                self.valueindex_to_keyvalue[ cnt ] = keyvalue
+            for key, reflist in self.keyvaluemap_to_refs.items():
+                self.valueindex_to_keyvalue[ cnt ] = key
                 for ref in reflist:
                     self.ref_to_valueindex[ ref ] = cnt
                 cnt += 1
@@ -46,32 +50,32 @@ class FloatColumn( Column[float ] ):
             return True
 
         except Exception as exc:
-            print(f"FloatColumn[{self.id}].apply_data() - Exception: {exc}")
+            print(f"StrColumn[{self.id}].apply_data() - Exception: {exc}")
             return False
 
-    def keyvalue_from_recno( self: Self, recno: int ) -> float | None:
-        if recno <= self.refcnt:
-            valueindex: int  = self.ref_to_valueindex[ recno ]
-            keyvalue: float = self.valueindex_to_keyvalue[ valueindex ]
-            return keyvalue
+    def keyvalue_from_recno( self: Self, recno: int ) -> dt.datetime | None:
+        if recno < self.refcnt:
+            valueindex:   int  = self.ref_to_valueindex[ recno ]
+            rec_keyvalue: dt.datetime = self.valueindex_to_keyvalue[ valueindex ]
+            return rec_keyvalue
         else:
             return None
 
-    def keyvalue_from_valueindex( self: Self, valueindex: int ) -> float | None:
-        if valueindex < len( self.valueindex_to_keyvalue ):
-            keyvalue: float = self.valueindex_to_keyvalue[ valueindex ]
+    def keyvalue_from_valueindex( self: Self, valueindex: int ) -> dt.datetime | None:
+        if valueindex < len(self.valueindex_to_keyvalue):
+            keyvalue: dt.datetime = self.valueindex_to_keyvalue[ valueindex ]
             return keyvalue
         else:
             return None
 
     def valueindex_from_recno( self: Self, recno: int ) -> int | None:
-        if recno <= self.refcnt:
+        if recno < self.refcnt:
             valindex: int  = self.ref_to_valueindex[ recno ]
             return valindex
         else:
             return None
 
-    def valueindex_from_keyvalue( self: Self, keyvalue: float ) -> int | None:
+    def valueindex_from_keyvalue( self: Self, keyvalue: dt.datetime ) -> int | None:
         if keyvalue in self.keyvaluemap_to_refs:
             ref_list: LineRefList = self.keyvaluemap_to_refs[ keyvalue ]
             first_rec: int = ref_list[0]
@@ -79,47 +83,48 @@ class FloatColumn( Column[float ] ):
         else:
             return None
 
-    def refs_from_keyvalue( self: Self, keyvalue: float ) -> LineRefList | None:
+    def refs_from_keyvalue( self: Self, keyvalue: dt.datetime ) -> LineRefList | None:
         if keyvalue in self.keyvaluemap_to_refs:
             return self.keyvaluemap_to_refs[ keyvalue ]
         else:
             return None
 
     def refs_from_valueindex( self: Self, valueindex: int ) -> LineRefList | None:
-        if valueindex < len( self.valueindex_to_keyvalue ):
-            keyvalue: float = self.valueindex_to_keyvalue[ valueindex ]
+        if valueindex < len(self.valueindex_to_keyvalue):
+            keyvalue: dt.datetime = self.valueindex_to_keyvalue[ valueindex ]
             return self.keyvaluemap_to_refs[ keyvalue ]
         else:
             return None
 
     def apply_objdata( self: Self, objdata: Self ) -> bool:
+
         self.refcnt                 = objdata.refcnt
         self.keyvaluecnt            = objdata.keyvaluecnt
         self.keyvaluemap_to_refs    = objdata.keyvaluemap_to_refs
         self.valueindex_to_keyvalue = objdata.valueindex_to_keyvalue
         self.ref_to_valueindex      = objdata.ref_to_valueindex
+
         return True
 
-    def get_arrowdata( self: Self ) -> tuple[par.DataType, list[ float | None ], bool ] | None:
+    def get_arrowdata( self: Self ) -> tuple[ par.DataType, list[dt.datetime|None], bool ] | None:
         max_valueindex = len(self.valueindex_to_keyvalue)
-
         if max_valueindex > 0:
-            col_array = list[float|None]()
+            col_array = list[dt.datetime|None]()
             for valueindex in self.ref_to_valueindex:
                 if valueindex < max_valueindex:
                     col_array.append( self.valueindex_to_keyvalue[valueindex] )
                 else:
                     col_array.append( None )
-            return par.float64(), col_array, False
+            return par.date32(), col_array, False
         else:
             return None
 
     def get_pararray( self: Self ) -> par.Array | None:
-        key_index: list[ float | None ] = []
+        key_index: list[ dt.datetime | None ] = []
         for valueindex in self.ref_to_valueindex:
             if valueindex is not None:
                 keyvalue = self.valueindex_to_keyvalue[valueindex]
                 key_index.append( keyvalue )
             else:
                 key_index.append( None )
-        return par.array(key_index, type=par.float64())
+        return par.array(key_index, type=par.date64())

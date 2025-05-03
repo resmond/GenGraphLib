@@ -1,8 +1,8 @@
-from MainApp import MainApp
+from MyMainApp import MyMainApp
 
 if __name__ == "__main__":
     print("starting MainAppProc")
-    app = MainApp()
+    app = MyMainApp()
     app.start()
 
 

@@ -5,14 +5,14 @@ from typing import Self
 import multiprocessing as mp
 import concurrent.futures as cf
 
-from .common import Startable, ProcRegistry
+from src.gengraphlib.common import Startable, ProcRegistry
 
-class AppProcessBase( ProcRegistry ):
+class AppBase( ProcRegistry ):
     instance: Self | None = None
 
     def __init__(self: Self, app_id: str) -> None:
         super().__init__()
-        AppProcessBase.instance = self
+        AppBase.instance = self
 
         self.app_id: str = app_id
         self._startables: dict[str,Startable ] = {}
@@ -21,9 +21,6 @@ class AppProcessBase( ProcRegistry ):
         self._app_msgqueue = self._sync_manager.Queue()
         self._end_event: mp.Event = self._sync_manager.Event()
         self._threadpool_ex: cf.ThreadPoolExecutor | None = cf.ThreadPoolExecutor( max_workers=4 )
-
-    def init_internals( self: Self ) -> None:
-        pass
 
     def mainapp_msgqueue( self: Self ) -> mp.Queue:
         return self._app_msgqueue

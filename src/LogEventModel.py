@@ -1,7 +1,6 @@
 from typing import Self
 
 from enum import IntEnum
-import datetime as dt
 
 from gengraphlib.model import (
     StrModProp,
@@ -20,7 +19,7 @@ class PriorityEnum(IntEnum):
     Fatal      =    6
     Harmfull   =    7
 
-class PriorityModProp[PriorityEnum](IntEnumModProp):
+class PriorityModProp( IntEnumModProp[ PriorityEnum ] ):
     def __init__( self: Self, *args, **kwargs ) -> None:
         super().__init__(*args, **kwargs)
 
@@ -37,8 +36,8 @@ class LogEventModel(DataTableModel):
     subsystem    = BranchModProp(alias="_KERNEL_SUBSYSTEM")
     kerneldevice = BranchModProp(alias="_KERNEL_DEVICE")
     device       = BranchModProp(alias="DEVICE")
-    cfgfile      = BranchModProp(alias="CONFIG_FILE")
 
+    cfgfile      = BranchModProp(alias="CONFIG_FILE")
     cmdline      = StrModProp(alias="_CMDLINE")
     command      = StrModProp(alias="COMMAND")
     exe          = StrModProp(alias="_EXE")
@@ -50,24 +49,9 @@ class LogEventModel(DataTableModel):
         super().__init__("logevent")
 
 
-
-    def launch_indexing( self: Self ) -> None:
-        if self.indexing_process:
-            self.indexing_process.index_bootlog( self.get_info(), self.graph_table, active_keys, write_bin, write_log )
-        return self.graph_table
-
-
 if __name__ == "__main__":
 
-    logevent_model = LogEventModel()
-
-    logevent_model.priority = PriorityEnum.Warning
-    subsystem = "device"
-    timestamp = dt.date(2025, 5, 1)
-    message   = "Trump is really making shit go bad"
-
     ModelRegistry.init_models()
-
     ModelRegistry.dump_models()
 
 

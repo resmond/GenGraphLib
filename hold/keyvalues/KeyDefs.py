@@ -4,7 +4,7 @@ import datetime as dt
 
 import pyarrow as par
 
-from ..common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
+from src.gengraphlib.common import KeyType, KeyValTypes, KeyDefInterface, KeyInfo
 
 class KeyDefBase[T: KeyValTypes ]( KeyDefInterface ):
     def __init__( self: Self, key: str, alias: str, keytype: KeyType, partype: par.DataType, groups: list[ str ] | str | None = None ) -> None:

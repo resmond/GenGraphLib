@@ -13,17 +13,12 @@ class ModelImportFilter[ T: ModelPropTypes ]:
         super().__init__()
 
         self.prop:  ModelProperty = prop
-
         self._queue: mp.Queue = mp.Queue()
 
         self.app_msgqueue: mp.Queue | None = None
         self.thread:      th.Thread | None = None
 
         self.status_triggercnt: int     = 5000
-
-    @property
-    def queue( self: Self ) -> mp.Queue:
-        return self._queue
 
     def start(self: Self, app_msgqueue: mp.Queue ) -> mp.Queue:
         self.app_msgqueue = app_msgqueue
@@ -33,7 +28,6 @@ class ModelImportFilter[ T: ModelPropTypes ]:
             args = (self._queue,)
         )
         self.thread.start()
-
         return self._queue
 
     def main_loop( self: Self, queue: mp.Queue ) -> None:

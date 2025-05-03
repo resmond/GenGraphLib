@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
 
-from ..common import (
+from src.gengraphlib.common import (
     KeyGroupRec,
     KeyDefDict,
     KeyDefInterface,

@@ -4,7 +4,7 @@ import os
 import sys
 
 from src.gengraphlib.common import KeyInfo, KeyType
-from src.gengraphlib.columns.StrColumn import StrColumn
+from hold.columns.StrColumn import StrColumn
 
 def arrow_test() -> None:
 
