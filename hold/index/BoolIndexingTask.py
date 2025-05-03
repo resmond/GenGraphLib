@@ -4,7 +4,7 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedSet, SortedDict
 
-from ..common import (
+from src.gengraphlib.common import (
     KeyType,
     KeyInfo,
     KeyIndexType,
@@ -15,8 +15,8 @@ from ..common import (
 )
 from .ImportTask import IndexTaskBase
 
-from ..columns import Column, BoolColumn
-from ..graphs import GraphTable
+from src.gengraphlib.columns import Column, BoolColumn
+from src.gengraphlib.graphs import GraphTable
 
 class BoolIndexingTask( IndexTaskBase[bool] ):
 

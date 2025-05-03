@@ -3,15 +3,14 @@ from typing import Self
 from enum import IntEnum
 import datetime as dt
 
-from . import (
+from gengraphlib.model import (
     StrModProp,
     IntEnumModProp,
     BranchModProp,
     TmstModProp,
     ModelRegistry,
     ModelInfo,
-    DataTableModel,
-    #table_model,
+    DataTableModel
 )
 
 class PriorityEnum(IntEnum):
@@ -50,6 +49,14 @@ class LogEventModel(DataTableModel):
     def __init__( self: Self ) -> None:
         super().__init__("logevent")
 
+
+
+    def launch_indexing( self: Self ) -> None:
+        if self.indexing_process:
+            self.indexing_process.index_bootlog( self.get_info(), self.graph_table, active_keys, write_bin, write_log )
+        return self.graph_table
+
+
 if __name__ == "__main__":
 
     logevent_model = LogEventModel()
@@ -63,15 +70,7 @@ if __name__ == "__main__":
 
     ModelRegistry.dump_models()
 
-    def test_fn( x: int, y: int ) -> str:
-        return f'x = {x} and y = {y}'
 
-    test = {
-        "test": test_fn,
-        "other": 25
-    }
-
-    print( test["test"]( 5, 8 ) )
 
 
 

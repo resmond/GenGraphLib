@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 
 
 from gengraphlib.AppProcessBase import AppProcessBase
-from BootLogSchema import BootLogSchema, ParseProcessInfo
+from LogParseProcess import LogParseProcess, ParseProcessInfo
 from src.qt.MyMainWin import MyMainWindow
 
 class MainApp( AppProcessBase ):
@@ -30,13 +30,10 @@ class MainApp( AppProcessBase ):
                 end_event=self.end_event(),
                 id="parse-proc",
                 log_root= "/home/richard/data/jctl-logs/",
-                boot_index = -1,
-                groupid = "evt",
-                write_log = True,
-                autostart = True
+                boot_index = -1
             )
 
-        self.parse_process: mp.Process = mp.Process( target = BootLogSchema.entrypoint, args=(self.parse_info,) )
+        self.parse_process: mp.Process = mp.Process( target = LogParseProcess.entrypoint, args=(self.parse_info,) )
         self.parse_process.start()
 
         self.main_window.show()

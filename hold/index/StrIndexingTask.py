@@ -4,39 +4,39 @@ import multiprocessing as mp
 
 from sortedcontainers import SortedDict
 
-from ..common import (
+from src.gengraphlib.common import (
     LineRefList,
     KeyType,
     KeyIndexType,
     KeyInfo,
-    KeyIndexState,
     keyIndexInfo,
+    KeyIndexState,
     BootLogInfo
 )
 
 from .ImportTask import IndexTaskBase
 
-from ..columns import Column, FloatColumn
-from ..graphs import GraphTable
+from src.gengraphlib.columns import Column, StrColumn
+from src.gengraphlib.graphs import GraphTable
 
 
-# noinspection DuplicatedCode
-class FloatIndexingTask( IndexTaskBase[float] ):
+class StrIndexingTask( IndexTaskBase[str] ):
+
     def __init__( self: Self, key_info: KeyInfo, bootlog_info: BootLogInfo, graph_table: GraphTable, app_msgqueue: mp.Queue, end_event: mp.Event ) -> None:
         super().__init__( key_info, bootlog_info, graph_table, app_msgqueue, end_event )
 
-        self._keytype     = KeyType.KFloat
-        self.index_type   = KeyIndexType.FloatSorted
-        self._index_state = KeyIndexState.Running
+        self.keytype      = KeyType.KStr
+        self.index_type   = KeyIndexType.StrSorted
+        self.index_state  = KeyIndexState.Running
 
         self._queue: mp.Queue = mp.Queue()
 
-        self._keymap: SortedDict[float, LineRefList ] = SortedDict[float, LineRefList ]()
+        self.keymap: SortedDict[ str, LineRefList ] = SortedDict[str, LineRefList]()
 
-        self._thread: th.Thread = th.Thread(
+        self.thread: th.Thread = th.Thread(
             target=self.main_loop,
-            name=f"{self.key}-Float-index",
-            args = (self._queue, self.end_event,)
+            name=f"{self.key}-Str-index",
+            args = (self.queue, self.end_event,)
         )
 
     @property
@@ -44,44 +44,51 @@ class FloatIndexingTask( IndexTaskBase[float] ):
         return self._queue
 
     def start(self: Self) -> None:
-        self._thread.start()
+        self.thread.start()
 
     def main_loop( self: Self, queue: mp.Queue, end_event: mp.Event ) -> None:
         keyindex_info: keyIndexInfo = self.get_index_info()
         self.app_msgqueue.put( keyindex_info )
-
+        print(f'[{self.key}-index]: Started')
         try:
-            while True:
+            while True:   #not end_event:
                 rec_num, value = queue.get()
 
                 if rec_num == -1:
-                    self.apply_tocolumn( int(value) )
+                    self.apply_tocolumn(int(value))
                     break
 
-                float_value: float = float( value )
-
-                if float_value not in self._keymap:
+                if value not in self.keymap:
                     self.keycnt += 1
-                    self._keymap[float_value ] = LineRefList()
+                    self.keymap[ value ] = LineRefList()
+                else:
+                    self.isunique = False
 
-                self._keymap[float_value ].append( rec_num )
+                self.keymap[value].append( rec_num )
                 self.refcnt += 1
 
                 if self.refcnt % self.status_cnt == 0:
                     keyindex_info: keyIndexInfo = self.get_index_info()
                     self.app_msgqueue.put( keyindex_info )
+                    #print(f'StrIndexing: {keyindex_info}')
 
         except ValueError as valexc:
-            print(f'FloatIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
+            print(f'StrIndexing({self.key}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'FloatIndexing({self.key}:{self.alias}) Exception: {exc}')
+            print(f'StrIndexing({self.key}:{self.alias}) Exception: {exc}')
+
+        print(f'StrIndexing({self.key}:{self.alias}) Done')
 
     def apply_tocolumn( self: Self, maxrecnum: int ) -> bool:
-        print(f'[{self.key}-index]: FloatColumn Applying Data')
+        print(f'[{self.key}-index]: StrColumn Applying Data')
         column: Column[bool] = self.graph_table.gettyped_column( self.key )
         if column:
-            floatcolumn: FloatColumn = cast(FloatColumn, column)
-            return floatcolumn.apply_data( self._keymap, int( self.refcnt ), maxrecnum )
+            strcolumn: StrColumn = cast(StrColumn, column)
+            return strcolumn.apply_data( self.keymap, int( self.refcnt ), maxrecnum )
         else:
             return False
+
+
+
+

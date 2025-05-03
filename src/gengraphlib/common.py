@@ -256,23 +256,23 @@ class KeyValSchemaInfo:
         self.active_groups: list[str] | None = active_groups
         self.active_keys:   list[str] | None = active_keys
 
-class BootLogInfo:
-
-    def __init__(
-            self: Self,
-            boot_id: str,
-            boot_index: int,
-            first_dt: dt.datetime,
-            last_dt: dt.datetime,
-            dir_name: str,
-            dir_path: str,
-            keys_path: str | None = None
-        ) -> None:
-        super().__init__()
-        self.boot_id: str                = boot_id
-        self.boot_index:    int          = boot_index
-        self.first_dt:      dt.datetime  = first_dt
-        self.last_dt:       dt.datetime  = last_dt
-        self.dir_name:      str          = dir_name
-        self.dir_path:      str          = dir_path
-        self.keys_path: str | None       = keys_path
+# class BootLogInfo:
+#
+#     def __init__(
+#             self: Self,
+#             boot_id: str,
+#             boot_index: int,
+#             first_dt: dt.datetime,
+#             last_dt: dt.datetime,
+#             dir_name: str,
+#             dir_path: str,
+#             keys_path: str | None = None
+#         ) -> None:
+#         super().__init__()
+#         self.boot_id: str                = boot_id
+#         self.boot_index:    int          = boot_index
+#         self.first_dt:      dt.datetime  = first_dt
+#         self.last_dt:       dt.datetime  = last_dt
+#         self.dir_name:      str          = dir_name
+#         self.dir_path:      str          = dir_path
+#         self.keys_path: str | None       = keys_path

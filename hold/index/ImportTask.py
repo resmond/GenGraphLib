@@ -3,7 +3,7 @@ from typing import Self
 
 import multiprocessing as mp
 
-from ..common import (
+from src.gengraphlib.common import (
     KeyValTypes,
     KeyType,
     KeyIndexType,
@@ -14,7 +14,7 @@ from ..common import (
     BootLogInfo
 )
 
-from ..graphs import GraphTable
+from src.gengraphlib.graphs import GraphTable
 
 class IndexTaskBase[ T: KeyValTypes ]( IndexTaskInterface ):
 

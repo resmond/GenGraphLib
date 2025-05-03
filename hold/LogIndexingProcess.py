@@ -6,17 +6,17 @@ import multiprocessing as mp
 import asyncio as aio
 import time
 
-from ..common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
+from src.gengraphlib.common import KeyType, KeyValSchemaInfo, KeyValuePacket, IndexTaskInterface, BootLogInfo
 
-from ..graphs import GraphTable
+from src.gengraphlib.graphs import GraphTable
 
-from .CmdStdoutStream import CmdStdoutStream
+from src.gengraphlib.index.CmdStdoutStream import CmdStdoutStream
 
-from .StrIndexingTask import StrIndexingTask
-from .IntIndexingTask import IntIndexingTask
-from .BoolIndexingTask import BoolIndexingTask
-from .FloatIndexingTask import FloatIndexingTask
-from .TmstIndexingTask import TmstIndexingTask
+from src.gengraphlib.index.StrIndexingTask import StrIndexingTask
+from src.gengraphlib.index.IntIndexingTask import IntIndexingTask
+from src.gengraphlib.index.BoolIndexingTask import BoolIndexingTask
+from src.gengraphlib.index.FloatIndexingTask import FloatIndexingTask
+from src.gengraphlib.index.TmstIndexingTask import TmstIndexingTask
 
 
 # noinspection PyUnresolvedReferences

@@ -1,5 +1,5 @@
 from .ImportTask import IndexTaskBase
-from .LogIndexingProcess import LogIndexingProcess
+from hold.LogIndexingProcess import LogIndexingProcess
 from .IntIndexingTask import IntIndexingTask
 from .StrIndexingTask import StrIndexingTask
 from .TmstIndexingTask import TmstIndexingTask

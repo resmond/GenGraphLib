@@ -3,9 +3,6 @@ from typing import Self
 import subprocess
 import datetime as dt
 import os as os
-import multiprocessing as mp
-
-from .. import KeyValSchemaInfo
 
 from .BootLog import BootLog
 
@@ -32,16 +29,10 @@ class BootLogManager:
     def __init__(
         self: Self,
         root_dir: str,
-        schema_info: KeyValSchemaInfo,
-        app_msgqueue: mp.Queue,
-        end_event: mp.Event,
     ) -> None:
         super().__init__()
 
         self.root_dir: str = root_dir
-        self.schema_info: KeyValSchemaInfo = schema_info
-        self.app_msgqueue: mp.Queue = app_msgqueue
-        self.end_event: mp.Event = end_event
 
         self._bootdir_path: str = os.path.join( self.root_dir, "boots" )
         self._bootlist_txtfilepath: str = os.path.join( self.root_dir, "boots", "bootlist.txt" )
@@ -80,7 +71,7 @@ class BootLogManager:
 
                 for log_line in file:
                     if not first_line:
-                        boot_log = BootLog( self.root_dir, log_line, self.schema_info, self.app_msgqueue, self.end_event )
+                        boot_log = BootLog( self.root_dir, log_line )
                         self._bootlog_list.append( boot_log )
                         self._logdate_map[ boot_log.first_dt ] = boot_log
                         self._bootlog_index[ boot_log.boot_index ] = boot_log
