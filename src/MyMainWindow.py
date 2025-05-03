@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QSpacerItem, QStatusBar, QTreeView, QWidget
 )
 
-from src.gengraphlib.common import keyIndexInfo
+from src.gengraphlib.common import IndexInfo
 from src.qt import QtMsgQueueReader
 
 class MyMainWindow(QMainWindow):
@@ -19,7 +19,7 @@ class MyMainWindow(QMainWindow):
     MINIMUM_WIDTH = 800
     MINIMUM_HEIGHT = 600
 
-    def process_data(self: Self, index_info: keyIndexInfo) -> None:
+    def process_data( self: Self, index_info: IndexInfo ) -> None:
         print(f"{self.WINDOW_TITLE}: {index_info.key} - keycnt: {index_info.keycnt}  refcnt: {index_info.refcnt}  hit%: {index_info.hitpct}")
 
     def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:

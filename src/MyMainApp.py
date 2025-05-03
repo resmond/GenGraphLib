@@ -12,10 +12,11 @@ from LogParseProcess import LogParseProcess, ParseProcessInfo
 class MyMainApp( AppBase ):
     def __init__(self: Self):
         super().__init__( "app-main" )
+
         self.parse_info: ParseProcessInfo | None = None
         self.parse_process: mp.Process | None = None
         self.qt_app: QApplication = QApplication()
-        self.main_window: MyMainWindow = MyMainWindow( self.mainapp_msgqueue(), self.end_event() )
+        self.main_window: MyMainWindow = MyMainWindow( self.app_msgqueue(), self.end_event() )
         self.main_window.setWindowTitle( "Boot Log Parser" )
         self.init_internals()
 
@@ -23,9 +24,7 @@ class MyMainApp( AppBase ):
 
         self.parse_info: ParseProcessInfo = \
             ParseProcessInfo(
-                app_msgqueue=self.mainapp_msgqueue(),
-                end_event=self.end_event(),
-                id="parse-proc",
+                app_msgqueue=self.app_msgqueue(),
                 log_root= "/home/richard/data/jctl-logs/",
                 boot_index = -1
             )

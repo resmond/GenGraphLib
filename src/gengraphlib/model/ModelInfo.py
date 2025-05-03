@@ -1,18 +1,27 @@
-from typing import Self
+from typing import Self, Protocol
 
 from .ModelProperty import ModelProperty
-from .ModelRegistry import ModelRegistry
+#from .. import DataTableModel
 
+
+#from .ModelRegistry import ModelRegistry
+
+class ModelRegistryInterface(Protocol):
+
+    @classmethod
+    def register_model( cls, name:str, model_info: object ) -> None: ...
 
 class ModelInfo:
+    models:          dict[str, Self]           = {}
+#    model_classes:   dict[str, type]           = {}
+#    model_instances: dict[str, DataTableModel] = {}
 
     def __init__( self: Self, mod_id: str ) -> None:
         super().__init__()
 
         self.properties: dict[ str, ModelProperty ] = dict[str, ModelProperty ]()
         self.mod_id: str = mod_id
-        self.mod_cls: object = self.__class__
-        ModelRegistry.register_model(self)
+        ModelInfo.models[ self.mod_id ] = self
 
     def __set_name__( self: Self, owner: object, name: str ) -> None:
         self.name  = name

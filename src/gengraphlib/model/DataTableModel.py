@@ -2,12 +2,7 @@ from typing import Self
 
 import multiprocessing as mp
 
-from . import (
-    ModelRegistry,
-    ModelProperty,
-    ModelImportFilter
-)
-
+from . import ModelProperty, ModelInfo
 
 class DataTableModel:
 
@@ -15,25 +10,20 @@ class DataTableModel:
         super().__init__()
 
         self.mod_id: str = mod_id
-        self.mod_cls: object = self.__class__
+        self.model_info: ModelInfo | None = None
         self.properties: dict[ str, ModelProperty ] | None = None
-        self.importers:  dict[ str, ModelImportFilter ] = dict[ str, ModelImportFilter ]()
-
-        ModelRegistry.register_modelclass(self)
+        self.queuemap:   dict[ str, mp.Queue ] = dict[ str, mp.Queue ]()
 
     def init_import( self: Self, app_msgqueue: mp.Queue) -> dict[str, mp.Queue] | None:
-        import_queues: dict[str, mp.Queue] = {}
-        if hasattr( DataTableModel, "model_info" ):
-            self.properties = DataTableModel.model_info.properties
-            for key, prop in self.properties.items():
-                import_queue = prop.init_import( app_msgqueue )
-                if import_queue:
-                    import_queues[key] = import_queue
-                else:
-                    return None
-            return import_queues
+        if "model" in self.__dict__:
+            self.model_info: ModelInfo = self.__dict__["model"]
+            self.properties = self.model_info.properties
+            for name, prop in self.properties:
+                self.importers[ name ] = prop.importer
+            for name, prop in self.properties:
+                self.queuemap[ name ] = prop.start(app_msgqueue)
+
+            return self.queuemap
         else:
             return None
-
-
 

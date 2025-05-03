@@ -23,18 +23,6 @@ VectorValTypes: type = type[ None, str, int, bool, float, dt.datetime ]
 KeyValTypes: type = type[ str, int, bool, float, dt.datetime ]
 KValueDict: type  = dict[ str, KeyValTypes ]
 
-KeyValueTuple: type = tuple[str, str]
-KeyRecordList: type = list[KeyValueTuple]
-KeyRecordPacket: type = tuple[int, KeyRecordList ]
-KeyValuePacket: type = tuple[int, str]
-ModelPropTypes: type = type[ str, int, float, dt.datetime, StrEnum, IntEnum, bool]
-
-class ImportValueInterface[ T: ModelPropTypes ]( Protocol ):
-
-    def recv_import( self: Self, row_num: int, import_value: T ) -> None: ...
-    def finalize( self: Self, maxrecnum: int ) -> None: ...
-    def get_pararray( self: Self ) -> par.Array | None:  ...
-
 class KeyType( IntEnum ):
     KStr    = 1        #utf8
     KInt    = 2
@@ -112,84 +100,6 @@ class ProcRegistry(Protocol):
     def register_proc( self, proc: Startable ) -> None: ...
 
 
-class keyIndexInfo:
-
-    def __init__(
-            self: Self,
-            keyinfo_id:  str,
-            key:         str,
-            alias:       str,
-            index_type:  KeyIndexType,
-            index_state: KeyIndexState,
-            hitpct:      int,
-            keycnt:      int,
-            refcnt:      int,
-            unique:      bool
-        ) -> None:
-        super().__init__()
-
-        self.keyinfo_id:  str           = keyinfo_id
-        self.key:         str           = key
-        self.alias:       str           = alias
-        self.index_type:  KeyIndexType  = index_type
-        self.index_state: KeyIndexState = index_state
-
-        self.hitpct:  int   = hitpct
-        self.keycnt:  int   = keycnt
-        self.refcnt:  int   = refcnt
-        self.unique:  bool  = unique
-
-KeyIndexPacket: type = namedtuple(
-        "KeyIndexPacket",
-        [
-                    "keyinfo_id",
-                    "key",
-                    "alias",
-                    "index_type",
-                    "index_state",
-                    "hitpct",
-                    "keycnt",
-                    "refcnt",
-                    "isunique"
-                   ])
-
-keyIndexMsgTuple: type = tuple[str, KeyIndexType, KeyIndexState, int, int, bool ]
-
-class KeyIndexMsg(NamedTuple):
-    keyinfo_id:    str
-    key:           str
-    alias:         str
-    index_type:    KeyIndexType
-    index_state:   KeyIndexState
-    hitpct:        int
-    keycnt:        int
-    refcnt:        int
-    isunique:      bool
-
-    def to_packet( self: Self ) -> tuple:
-        return ( 
-            self.keyinfo_id,
-            self.key,
-            self.alias,
-            self.index_type,
-            self.index_state,
-            self.hitpct,
-            self.keycnt,
-            self.refcnt,
-            self.isunique
-        )
-
-    # @classmethod
-    # def from_packet( cls, keyindex_packet: KeyIndexPacket ):
-    #     message = cls( *keyindex_packet )
-    #     return message
-
-class SerializationType( IntEnum ):
-    Pickle          = 1
-    Parquet         = 2
-    EqualKeyValLine = 3
-    ColonKeyValLine = 4
-    CSV             = 5
 
 class KeyDefInterface( Protocol ):
     key:      str
@@ -256,3 +166,91 @@ class KeyValSchemaInfo:
         self.active_groups: list[str] | None = active_groups
         self.active_keys:   list[str] | None = active_keys
 
+
+
+#---------------------------------------------------------
+
+KeyValueTuple: type = tuple[str, str]
+KeyRecordList: type = list[KeyValueTuple]
+KeyRecordPacket: type = tuple[int, KeyRecordList ]
+KeyValuePacket: type = tuple[int, str]
+ModelPropTypes: type = type[ str, int, float, dt.datetime, StrEnum, IntEnum, bool]
+
+class IndexInfo:
+
+    def __init__(
+            self: Self,
+            keyinfo_id:  str,
+            key:         str,
+            alias:       str,
+            index_type:  KeyIndexType,
+            index_state: KeyIndexState,
+            hitpct:      float,
+            keycnt:      int,
+            refcnt:      int,
+            unique:      bool
+        ) -> None:
+        super().__init__()
+
+        self.keyinfo_id:  str           = keyinfo_id
+        self.key:         str           = key
+        self.alias:       str           = alias
+        self.index_type:  KeyIndexType  = index_type
+        self.index_state: KeyIndexState = index_state
+
+        self.hitpct:  float   = hitpct
+        self.keycnt:  int   = keycnt
+        self.refcnt:  int   = refcnt
+        self.unique:  bool  = unique
+
+IndexPacket: type = namedtuple(
+        "KeyIndexPacket",
+        [
+                    "keyinfo_id",
+                    "key",
+                    "alias",
+                    "index_type",
+                    "index_state",
+                    "hitpct",
+                    "keycnt",
+                    "refcnt",
+                    "isunique"
+                   ])
+
+IndexMsgTuple: type = tuple[str, str, str, KeyIndexType, KeyIndexState, float, int, int, bool ]
+
+class KeyIndexMsg(NamedTuple):
+    keyinfo_id:    str
+    key:           str
+    alias:         str
+    index_type:    KeyIndexType
+    index_state:   KeyIndexState
+    hitpct:        int
+    keycnt:        int
+    refcnt:        int
+    isunique:      bool
+
+    def to_packet( self: Self ) -> tuple:
+        return (
+            self.keyinfo_id,
+            self.key,
+            self.alias,
+            self.index_type,
+            self.index_state,
+            self.hitpct,
+            self.keycnt,
+            self.refcnt,
+            self.isunique
+        )
+
+    @classmethod
+    def from_packet( cls, keyindex_packet: IndexPacket ):
+        message = cls( *keyindex_packet )
+        return message
+
+class SerializationType( IntEnum ):
+    Pickle          = 1
+    Parquet         = 2
+    EqualKeyValLine = 3
+    ColonKeyValLine = 4
+    CSV             = 5

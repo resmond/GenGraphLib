@@ -1,17 +1,15 @@
 from typing import Self
 
+import threading as th
 import multiprocessing as mp
 
 import pyarrow as par
 
 from sortedcontainers import SortedDict
 
-from . import ModelImportFilter
-from ..common import ModelPropTypes, LineRefList, ImportValueInterface
+from ..common import ModelPropTypes, LineRefList
 
-from .ModelInfo import ModelInfo
-
-class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
+class ModelProperty[ T: ModelPropTypes ]:
 
     def __init__(
             self: Self,
@@ -24,7 +22,7 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
 
         super().__init__()
 
-        self.model:     ModelInfo | None = None
+        #self.model:     ModelInfo | None = None
         self.ttype:     type = type(T)
         self.mod_id:    str    | None = mod_id
         self.name:      str    | None = mod_id
@@ -33,6 +31,12 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
 
         self.import_type: par.DataType = import_type
         self.store_type:  par.DataType = store_type
+
+
+        self.import_queue: mp.Queue = mp.Queue()
+        self.app_msgqueue: mp.Queue | None = None
+        self.thread:      th.Thread | None = None
+        self.status_triggercnt: int     = 5000
 
         self.use_dict: bool = use_dict
         self.counts: dict[str,int] = {}
@@ -43,25 +47,56 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
         self.keycnt:    float   = 0
         self.refcnt:    float   = 0
         self.isunique:  bool    = True
-        self.import_filter = ModelImportFilter[T]( self )
 
     def __set_name__( self: Self, owner: object, name: str ) -> None:
         self.name  = name
         self.owner = owner
 
-        if hasattr( self.owner, "model_info" ):
-            self.model = self.owner.model_info
-            if isinstance( self.model, ModelInfo ):
-                self.model.register_properties()
-
     def __get__( self: Self, instance: object, owner: object ) -> T:
-        return instance.__dict__[self.name]
+        if self.name in instance.__dict__:
+            return instance.__dict__[self.name]
+        else:
+            return None
 
     def __set__( self: Self, instance: object, value: T ) -> None:
         instance.__dict__[self.name] = value
 
     def init_import( self: Self, app_msgqueue: mp.Queue ) -> mp.Queue:
-        return self.import_filter.start( app_msgqueue )
+        self.app_msgqueue = app_msgqueue
+        self.thread = th.Thread(
+            target=self.main_loop,
+            name=f"{self.name}-index",
+            args = (self.import_queue,)
+        )
+        self.thread.start()
+        return self.import_queue
+
+    def main_loop( self: Self, queue: mp.Queue ) -> None:
+        #keyindex_info: keyIndexInfo = self.get_index_info()
+        #self.app_msgqueue.put( keyindex_info )
+        print(f'[{self.name}-index]: Started' )
+        try:
+            while True:   #not end_event:
+                rownum, value = queue.get()
+
+                if rownum == -1:
+                    self.finalize(int(value))
+                    break
+
+                self.recv_value( rownum, value )
+
+                if rownum % self.status_triggercnt == 0:
+                    #keyindex_info: keyIndexInfo = self.get_index_info()
+                    #self.app_msgqueue.put( keyindex_info )
+                    print(f'ModelImport({self.name}:{self.alias}) refs: {rownum}' )
+
+        except ValueError as valexc:
+            print(f'ModelImport({self.name}:{self.alias}) ValueError: {valexc}' )
+
+        except Exception as exc:
+            print(f'ModelImport({self.name}:{self.alias}) Exception: {exc}' )
+
+        print(f'ModelImport({self.name}:{self.alias}) Done' )
 
     def recv_value( self: Self, row_num: int, import_value: T ) -> None:
         self.counts[ import_value.name ] += 1

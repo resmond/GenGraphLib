@@ -7,7 +7,6 @@ from gengraphlib.model import (
     IntEnumModProp,
     BranchModProp,
     TmstModProp,
-    ModelRegistry,
     ModelInfo,
     DataTableModel
 )
@@ -23,11 +22,10 @@ class PriorityModProp( IntEnumModProp[ PriorityEnum ] ):
     def __init__( self: Self, *args, **kwargs ) -> None:
         super().__init__(*args, **kwargs)
 
-#@table_model
 class LogEventModel(DataTableModel):
-    model_info   = ModelInfo("logevent")
+    model = ModelInfo("logevent")
 
-    priority     = PriorityModProp( alias="PRIORITY")
+    #priority     = PriorityModProp( alias="PRIORITY")
     timestamp    = TmstModProp(alias="__REALTIME_TIMESTAMP")
     message      = StrModProp(alias="MESSAGE")
 
@@ -49,10 +47,6 @@ class LogEventModel(DataTableModel):
         super().__init__("logevent")
 
 
-if __name__ == "__main__":
-
-    ModelRegistry.init_models()
-    ModelRegistry.dump_models()
 
 
 
