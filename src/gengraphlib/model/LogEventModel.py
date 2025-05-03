@@ -10,7 +10,8 @@ from . import (
     TmstModProp,
     ModelRegistry,
     ModelInfo,
-    graphmodel,
+    DataTableModel,
+    #table_model,
 )
 
 class PriorityEnum(IntEnum):
@@ -24,17 +25,30 @@ class PriorityModProp[PriorityEnum](IntEnumModProp):
     def __init__( self: Self, *args, **kwargs ) -> None:
         super().__init__(*args, **kwargs)
 
-@graphmodel
-class LogEventModel:
-    model_info = ModelInfo("logevent")
+#@table_model
+class LogEventModel(DataTableModel):
+    model_info   = ModelInfo("logevent")
 
-    priority   = PriorityModProp( alias="PRIORITY")
-    subsystem  = BranchModProp(alias="_KERNEL_SUBSYSTEM")
-    timestamp  = TmstModProp(alias="__REALTIME_TIMESTAMP")
-    message    = StrModProp(alias="MESSAGE")
+    priority     = PriorityModProp( alias="PRIORITY")
+    timestamp    = TmstModProp(alias="__REALTIME_TIMESTAMP")
+    message      = StrModProp(alias="MESSAGE")
 
+    facility     = BranchModProp(alias="SYSLOG_FACILITY")
+    comm         = BranchModProp(alias="_COMM")
+    subsystem    = BranchModProp(alias="_KERNEL_SUBSYSTEM")
+    kerneldevice = BranchModProp(alias="_KERNEL_DEVICE")
+    device       = BranchModProp(alias="DEVICE")
+    cfgfile      = BranchModProp(alias="CONFIG_FILE")
 
+    cmdline      = StrModProp(alias="_CMDLINE")
+    command      = StrModProp(alias="COMMAND")
+    exe          = StrModProp(alias="_EXE")
+    code_fn      = StrModProp(alias="CODE_FUNC")
+    code_line    = StrModProp(alias="CODE_LINE")
+    code_file    = StrModProp(alias="CODE_FILE")
 
+    def __init__( self: Self ) -> None:
+        super().__init__("logevent")
 
 if __name__ == "__main__":
 

@@ -29,7 +29,9 @@ from .model import (
     TmstModProp,
     StrEnumModProp,
     IntEnumModProp,
-    BoolModProp
+    BoolModProp,
+    DataTableModel,
+    ModelImportFilter
 )
 
 from .columns import (
@@ -40,8 +42,6 @@ from .graphs import (
       NodeDict, IndexedNodeList, GNodeInterface, RecordBase
     , GraphTable
 )
-
-
 
 
 from .index import (
@@ -82,6 +82,7 @@ __all__ = [
 
     , "ModelInfo", "ModelProperty", "ModelRegistry"
     , "StrModProp", "BranchModProp", "IntModProp", "TmstModProp", "StrEnumModProp", "IntEnumModProp", "BoolModProp"
+    , "DataTableModel", "ModelImportFilter"
 
 
     , "LineRefList", "Column", "StrColumn", "IntColumn", "BoolColumn", "FloatColumn", "TmstColumn"

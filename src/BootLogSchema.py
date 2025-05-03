@@ -217,8 +217,10 @@ class BootLogSchema( KeyValueSchema ):
         self.cur_bootlog  = self.log_manager.get_bootlog( boot_index = self.cur_bootindex )
         self.bootlog_info = self.cur_bootlog.get_info()
 
-        self.graph_table = self.cur_bootlog.launch_indexing( self.active_keys, self.write_bin, self.write_log )
-        self.graph_table.save_table()
+        
+
+        #self.graph_table = self.cur_bootlog.launch_indexing( self.active_keys, self.write_bin, self.write_log )
+        #self.graph_table.save_table()
 
 
 

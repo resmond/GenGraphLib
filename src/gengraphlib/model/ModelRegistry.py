@@ -26,10 +26,10 @@ class ModelRegistry:
     def register_modelclass( cls: Self, modelclass: type ) -> None:
         cls.model_classes[modelclass.__name__] = modelclass
 
-def graphmodel( cls: type ) -> type:
+def table_model( cls: type) -> type:
     class new_modelclass(cls):
         def is_graphmodel( self: Self ) -> bool:
-            self.__dict__["_is_graphmodel"] = True
+            self.__dict__["_table_model"] = True
             return True
 
     return new_modelclass

@@ -1,9 +1,12 @@
 from typing import Self
 
+import multiprocessing as mp
+
 import pyarrow as par
 
 from sortedcontainers import SortedDict
 
+from . import ModelImportFilter
 from ..common import ModelPropTypes, LineRefList, ImportValueInterface
 
 from .ModelInfo import ModelInfo
@@ -27,17 +30,20 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
         self.name:      str    | None = mod_id
         self.alias:     str    | None = alias
         self.owner:     object | None = None
+
         self.import_type: par.DataType = import_type
         self.store_type:  par.DataType = store_type
+
         self.use_dict: bool = use_dict
         self.counts: dict[str,int] = {}
-        self.keymap: SortedDict[ T, LineRefList ] = SortedDict[str, LineRefList]()
+        self.valuemap: SortedDict[ T, LineRefList ] = SortedDict[str, LineRefList ]()
         self.valueindex_to_keyvalue: list[ T ] = []
         self.ref_to_valueindex:      list[ int | None ] = []
-        self.rownummax: float   = 1
+        self.maxrownum: float   = 1
         self.keycnt:    float   = 0
         self.refcnt:    float   = 0
         self.isunique:  bool    = True
+        self.import_filter = ModelImportFilter[T]( self )
 
     def __set_name__( self: Self, owner: object, name: str ) -> None:
         self.name  = name
@@ -54,22 +60,26 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
     def __set__( self: Self, instance: object, value: T ) -> None:
         instance.__dict__[self.name] = value
 
-    def recv_value( self: Self, row_num: int, import_value: T ) -> None:
-        self.counts[import_value.name ] += 1
-        self.rownummax = max(self.rownummax, row_num)
+    def init_import( self: Self, app_msgqueue: mp.Queue ) -> mp.Queue:
+        return self.import_filter.start( app_msgqueue )
 
-        if import_value not in self.keymap:
+    def recv_value( self: Self, row_num: int, import_value: T ) -> None:
+        self.counts[ import_value.name ] += 1
+        self.maxrownum = max( self.maxrownum, row_num )
+
+        if import_value not in self.valuemap:
             self.keycnt += 1
-            self.keymap[import_value] = LineRefList()
+            self.valuemap[ import_value ] = LineRefList()
         else:
             self.isunique = False
 
-        self.keymap[import_value].append(row_num)
+        self.valuemap[ import_value ].append( row_num )
         self.refcnt += 1
 
         return import_value.value
 
-    def finalize( self: Self ) -> None:
+    def finalize( self: Self, maxrownum: int ) -> None:
+        self.maxrownum = maxrownum
         self.keycnt = len(self.keyvaluemap_to_refs)
 
         self.valueindex_to_keyvalue = [""] * self.keyvaluecnt
@@ -77,13 +87,15 @@ class ModelProperty[ T: ModelPropTypes ]( ImportValueInterface ):
 
         valueindex: int = 0
         for key, reflist in self.keyvaluemap_to_refs.items():
-            self.valueindex_to_keyvalue[valueindex] = key
+            self.valueindex_to_keyvalue[ valueindex ] = key
             for ref in reflist:
-                self.ref_to_valueindex[ref] = valueindex
+                self.ref_to_valueindex[ ref ] = valueindex
             valueindex += 1
 
-        comp_ratio = float(len(self.ref_to_valueindex)) / float(
-            len(self.valueindex_to_keyvalue)
+        comp_ratio = (
+            float( len(self.ref_to_valueindex) )
+            /
+            float( len(self.valueindex_to_keyvalue) )
         )
 
         self.use_dict = comp_ratio > 2.5

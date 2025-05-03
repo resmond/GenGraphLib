@@ -23,7 +23,7 @@ from src.gengraphlib.columns import (
     TmstColumn
 )
 
-from src.gengraphlib.arrow.ParquetFileIo import write_parquet, read_parquet
+from ..arrow.ParquetFileIo import write_parquet, read_parquet
 
 ValuesDict: type = dict[str, VectorValTypes ]
 
