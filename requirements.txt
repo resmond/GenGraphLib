@@ -9,8 +9,9 @@ numpydoc
 numba
 sortedcontainers
 sortedcontainers-stubs
-progress
 polars
 pyarrow
 pyside6
 slint
+open3d
+numba

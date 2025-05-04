@@ -3,27 +3,36 @@ from typing import Self
 import multiprocessing as mp
 
 from . import ModelProperty, ModelInfo
+from .. import ModelDictData
+from ..arrow import ArrowResults
 
 class DataTableModel:
 
-    def __init__( self: Self, mod_id: str | None = None ) -> None:
+    def __init__( self: Self, mod_id: str | None = None, **kwargs ) -> None:
         super().__init__()
 
         self.mod_id: str = mod_id
         self.model_info: ModelInfo | None = None
-        self.properties: dict[ str, ModelProperty ] | None = None
         self.queuemap:   dict[ str, mp.Queue ] = dict[ str, mp.Queue ]()
+        self.data: ModelDictData = kwargs if kwargs else ModelDictData()
+
+        self.properties: dict[ str, ModelProperty ] | None = self.model
+        self.data.update(self.cfg)
 
     def init_import( self: Self, app_msgqueue: mp.Queue) -> dict[str, mp.Queue] | None:
-        if "model" in self.__dict__:
-            self.model_info: ModelInfo = self.__dict__["model"]
-            self.properties = self.model_info.properties
-            for name, prop in self.properties:
-                self.importers[ name ] = prop.importer
-            for name, prop in self.properties:
-                self.queuemap[ name ] = prop.start(app_msgqueue)
 
-            return self.queuemap
-        else:
-            return None
+        for name, prop in self.properties.items():
+            self.queuemap[ prop.alias ] = prop.start_import( app_msgqueue )
+
+        return self.queuemap
+
+    def wait_tocomplete( self: Self ) -> None:
+        for name, prop in self.properties.items():
+            thr = prop.get_thread()
+            thr.join()
+
+    def save_table( self: Self ):
+        ArrowResults.s
+
+
 

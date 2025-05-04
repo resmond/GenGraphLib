@@ -5,35 +5,29 @@ import datetime as dt
 
 class BootLog:
 
-    def __init__(
-        self: Self,
-        root_dir: str,
-        logrec_line: str
-    ) -> None:
+    def __init__( self: Self, root_dir: str, logrec_line: str ) -> None:
         super().__init__()
 
         self.root_dir = root_dir
 
         val_list: list[str] = logrec_line.split()
         boot_index = int( val_list[0] )
-        boot_id = val_list[1]
-        first_dt = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
-        last_dt = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
-        bootlog_path = os.path.join( self.root_dir, "boots", str(self.boot_label()) )
-        keys_path = os.path.join( self.root_dir, "keys" )
+        boot_id    = val_list[1]
+        first_dt   = dt.datetime.fromisoformat(" ".join(val_list[3:5]))
+        last_dt    = dt.datetime.fromisoformat(" ".join(val_list[7:9]))
+        yymmdd     = first_dt.strftime("%y-%m-%d")
+        hhmm       = first_dt.strftime("%H-%M")
 
-        self.boot_index: int = boot_index
-        self.boot_id:    str = boot_id
+        self.bool_label: str = f"{yymmdd}:{hhmm}"
 
-        self.first_dt: dt.datetime = first_dt
-        self.last_dt:  dt.datetime = last_dt
-        self.bootlog_path:   str   = bootlog_path
-        self.keys_path:      str   = keys_path
+        bootlog_path = os.path.join( self.root_dir, "boots", self.bool_label )
 
-    def boot_label( self: Self ) -> str:
-        yymmdd: str = self.first_dt.strftime("%y-%m-%d")
-        hhmm:   str = self.first_dt.strftime("%H-%M")
-        return f"{yymmdd}:{hhmm}"
+        self.boot_index:   int         = boot_index
+        self.boot_id:      str         = boot_id
+
+        self.first_dt:     dt.datetime = first_dt
+        self.last_dt:      dt.datetime = last_dt
+        self.bootlog_path: str         = bootlog_path
 
     def make_dir( self: Self ) -> bool:
         try:

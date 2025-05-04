@@ -5,7 +5,7 @@ from enum import IntEnum
 from gengraphlib.model import (
     StrModProp,
     IntEnumModProp,
-    BranchModProp,
+    ParentModProp,
     TmstModProp,
     ModelInfo,
     DataTableModel
@@ -19,23 +19,23 @@ class PriorityEnum(IntEnum):
     Harmfull   =    7
 
 class PriorityModProp( IntEnumModProp[ PriorityEnum ] ):
-    def __init__( self: Self, *args, **kwargs ) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__( self: Self, alias: str, *args, **kwargs ) -> None:
+        super().__init__( alias=alias, *args, *kwargs )
 
 class LogEventModel(DataTableModel):
-    model = ModelInfo("logevent")
+    model = ModelInfo("logevents")
 
     #priority     = PriorityModProp( alias="PRIORITY")
     timestamp    = TmstModProp(alias="__REALTIME_TIMESTAMP")
     message      = StrModProp(alias="MESSAGE")
 
-    facility     = BranchModProp(alias="SYSLOG_FACILITY")
-    comm         = BranchModProp(alias="_COMM")
-    subsystem    = BranchModProp(alias="_KERNEL_SUBSYSTEM")
-    kerneldevice = BranchModProp(alias="_KERNEL_DEVICE")
-    device       = BranchModProp(alias="DEVICE")
+    facility     = ParentModProp( alias= "SYSLOG_FACILITY" )
+    comm         = ParentModProp( alias= "_COMM" )
+    subsystem    = ParentModProp( alias= "_KERNEL_SUBSYSTEM" )
+    kerneldevice = ParentModProp( alias= "_KERNEL_DEVICE" )
+    device       = ParentModProp( alias= "DEVICE" )
 
-    cfgfile      = BranchModProp(alias="CONFIG_FILE")
+    cfgfile      = ParentModProp( alias= "CONFIG_FILE" )
     cmdline      = StrModProp(alias="_CMDLINE")
     command      = StrModProp(alias="COMMAND")
     exe          = StrModProp(alias="_EXE")

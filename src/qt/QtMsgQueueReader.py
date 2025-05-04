@@ -11,21 +11,20 @@ class QtMsgQueueReader( QObject ):
     activated     = Signal(object)
     data_received = Signal(object)
 
-    def __init__( self: Self, msg_queue: mp.Queue, end_event: mp.Event, parent: QObject | None = None ):
+    def __init__( self: Self, msg_queue: mp.Queue, parent: QObject | None = None ):
         super().__init__(parent)
         self.msg_queue: mp.Queue = msg_queue
-        self.end_event: mp.Event = end_event
 
         self.reader_process = mp.Process(
             target=self._reader_process_func,
-            args=(self.msg_queue, self.end_event,)
+            args=(self.msg_queue, )
         )
         self.reader_process.daemon = True
         self.reader_process.start()
 
-    def _reader_process_func( self: Self, queue: mp.Queue, end_event: mp.Event ):
+    def _reader_process_func( self: Self, queue: mp.Queue ):
         try:
-            while not end_event.is_set():
+            while True:
                 try:
                     # Non-blocking queue check with timeout
                     if not queue.empty():

@@ -3,27 +3,20 @@
 from .common import (
 
       KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket, ModelPropTypes
-    , LineRefList, KeyIndexType, KeyIndexState, IndexInfo
+    , LineRefList, KeyIndexType, KeyIndexState, IndexInfo, ModelDictDataTypes, ModelDictData
     , SerializationType
 )
 
 from .model import (
-    ModelInfo,
-    ModelProperty,
-    StrModProp,
-    BranchModProp,
-    IntModProp,
-    TmstModProp,
-    StrEnumModProp,
-    IntEnumModProp,
-    BoolModProp,
-    DataTableModel
+    DataTableModel, StrModProp, IntModProp, FloatModProp,
+    BoolModProp, StrEnumModProp, IntEnumModProp, ParentModProp, TmstModProp
 )
 
 
 __all__ = [
       "KeyIndexType", "KeyIndexState", "IndexInfo" , "SerializationType", "KeyValueTuple"
     , "KeyRecordList", "KeyRecordPacket", "KeyValuePacket", "ModelPropTypes", "LineRefList"
-    , "ModelInfo", "ModelProperty", "StrModProp", "BranchModProp", "IntModProp", "TmstModProp"
-    , "StrEnumModProp", "IntEnumModProp", "BoolModProp", "DataTableModel"
+    , "ModelDictDataTypes", "ModelDictData"
+    , "DataTableModel", "StrEnumModProp", "IntEnumModProp"
+    , "StrModProp", "IntModProp", "FloatModProp", "BoolModProp", "ParentModProp", "TmstModProp"
 ]

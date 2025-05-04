@@ -27,7 +27,7 @@ class MyMainWindow(QMainWindow):
 
         self.msg_queue: mp.Queue = msg_queue
         self.end_event: mp.Event = end_event
-        self.queue_reader = QtMsgQueueReader( msg_queue=self.msg_queue, end_event=self.end_event, parent=self )
+        self.queue_reader = QtMsgQueueReader( msg_queue=self.msg_queue, parent=self )
         self.queue_reader.data_received.connect(self.process_data)
 
         self.setWindowTitle(self.WINDOW_TITLE)

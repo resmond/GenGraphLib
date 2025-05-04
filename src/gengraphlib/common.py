@@ -5,6 +5,9 @@ import datetime as dt
 from enum import IntEnum, StrEnum
 
 LineRefList: type = list[ int ]
+ModelDictDataTypes: type = type( str | int | bool | dict )
+ModelDictData: type = dict[str, ModelDictDataTypes ]
+
 
 class KeyIndexType(StrEnum):
     Undetermined      = "Undetermined"

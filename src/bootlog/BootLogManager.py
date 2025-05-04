@@ -90,13 +90,14 @@ class BootLogManager:
     # noinspection PyUnusedLocal
     def get_bootlog( self: Self, boot_index: int, skip_query: bool = False ) -> BootLog | None:
 
-        # if not skip_query and not self._bootlist_loaded:
-        #     self._query_bootlist( delete_logs=False )
-        #     self._load_bootlist()
+        if not skip_query and not self._bootlist_loaded:
+             self._query_bootlist( delete_logs=False )
+             self._load_bootlist()
 
-        boot_dir = self._bootlog_index[ boot_index ]
-        boot_dir.make_dir()
-        return boot_dir
+        boot_log = self._bootlog_index[ boot_index ]
+        boot_log.make_dir()
+
+        return boot_log
 
 
 

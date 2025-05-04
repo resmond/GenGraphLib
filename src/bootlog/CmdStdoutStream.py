@@ -20,27 +20,31 @@ class CmdStdoutStream:
             return
 
         print("CmdStdoutStream: stream started")
-        line_cnt: int = 0
+        line_cnt: int = -1
         while True:
             try:
                 buffer = await exec_process.stdout.read(1024*256)
 
-                if not self.end_event or buffer is None or len(buffer) == 0:
+                if buffer is None or len(buffer) == 0:
                     break
                 else:
                     new_text = buffer.decode(errors="replace")
                     merged_text = self.tail_text + new_text
                     lines: list[str] = merged_text.split("\n")
-                    self.tail_text = lines.pop()
+                    if lines:
+                        self.tail_text = lines.pop()
 
-                    for line in lines:
-                        #print(f'[{line_cnt}] {line}')
-                        line_cnt += 1
-                        yield line
+                        for line in lines:
+                            #print(f'[{line_cnt}] {line}')
+                            line_cnt += 1
+                            yield line
+                    else:
+                        print(f"CmdStdoutStream: {self.cmd} - lines empty" )
 
             except Exception as exc:
-                print(f'CmdStdoutStream: Exception on {self.cmd}')
-                print(f'    {exc}')
+                breakpoint()
+                print(f"CmdStdoutStream: Exception on {self.cmd}")
+                print(f"    {exc}")
 
         print("CmdStdoutStream: stream ended")
 
