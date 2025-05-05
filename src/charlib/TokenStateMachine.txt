@@ -1,0 +1,67 @@
+
+Token State Machine:
+
+                                                +--------------<<<--------------+
+
+    11 -  float   +---> 111YYYYY - 5 bits and one more exponent plus *4more ->--+
+                  |
+            +---> +                                      +--->  1101XXXX positive + 4 bits data -->--+
+            |     |                                      |                                           |
+            |     +---> 110YYYYY - 5 bits and done -->---+                                           +---
+            |                                            |                                           |                                    |
+            |                                            +--->  1100XXXX negative + 4 bits data -->--+                                    |
+            |                                                                                                                             |
+            +----------------------------------------------------------- <<<<<< -------------------------------------------------------- 10
+
+
+
+
+    10 - ineger
+            101XXXXX negative integer + 5 bits data
+            100XXXXX positive integer + 5 bits data
+
+                                                                                                                        11XXXXXX continue plus six bits data
+            10XXXXXX last six bits data
+
+
+
+
+                        11Z0YYYY - four bits exponent and on to mantissa
+
+                        1XXXXXXX - seven bits mantissa until hi-bit cleared
+
+
+
+ +----> 000 -- Lowercase Alpha + 6 special
+
+ +----> 001 -- Uppercase Alpha + 6 special
+ |
+ |
+-+
+ |
+ +----> 010 -- 32 Tokens
+ |
+ +----> 011 -- 5 bit lookup marker
+
+
+class CharCatagory(IntEnum):
+    DataSeg      = 4   #  0b 0XX  7 bits of data (repeating until hi-bit is cleared)
+
+
+
+    LowerAscSeg  = 0   #  0b 000  - a-z + 6 Extra Char Defs
+    UpperAscSeg  = 1   #  0b 001  - A-Z + 6 Extra Char Defs
+    TokenSeg     = 2   #  0b 010  - 32 Tokens
+
+    NumPosSeg             0b 10X  6 bits of numeric data (trigger)
+    NumNegSeg             ob 10X  6 bits of numeric data (tigger)
+    NumExpSeg    = 7   #  0b 110  5 bits of exponent data (repeating)
+    MarkerSeg    = 3   #  0b 111  5 bit lookup (next on to Data)
+
+                                101 Pos
+                                100 Neg
+
+                                1XXXXXXX
+
+
+

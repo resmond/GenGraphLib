@@ -117,6 +117,7 @@ class BootLogSchema( KeyValueSchema ):
                 StrKeyDef("nmLogLev", "NM_LOG_LEVEL", "noise"),
                 StrKeyDef("jbRes", "JOB_RESULT", "noise"),
                 StrKeyDef("smTime", "_SOURCE_MONOTONIC_TIMESTAMP", "noise"),
+
                 StrKeyDef("jbID", "JOB_ID", "noise"),
                 StrKeyDef("jbType", "JOB_TYPE", "noise"),
                 StrKeyDef("invID", "INVOCATION_ID", "noise"),
@@ -161,6 +162,7 @@ class BootLogSchema( KeyValueSchema ):
                 StrKeyDef("boltDevSt", "BOLT_DEVICE_STATE", "noise"),
                 StrKeyDef("boltDevUid", "BOLT_DEVICE_UID", "noise"),
                 StrKeyDef("interface", "INTERFACE", "noise"),
+
                 StrKeyDef("krnUSec", "KERNEL_USEC", "noise"),
                 StrKeyDef("usrUSec", "USERSPACE_USEC", "noise"),
                 StrKeyDef("sesID", "SESSION_ID", "noise"),

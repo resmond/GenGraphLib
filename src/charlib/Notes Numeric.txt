@@ -1,0 +1,24 @@
+
+
+
+7 - Flip                                        No-Flip
+6 - Num                                         7-bits mantisa
+5 - Neg
+4 - is exp        |   no-exp
+3-- ? last exp    |
+                  |   4-bits
+2--               |   mantisa
+1 |  3-bits-exp   |
+0--               |
+
+=============================================
+
+7 - no-flip       |
+6 - last-exp      |
+                  |
+5--               |
+4 |               |
+3 | 5-bits        |
+2 | exp           |
+1 |               |
+0--               |

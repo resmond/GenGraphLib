@@ -8,15 +8,20 @@ from ..arrow import ArrowResults
 
 class DataTableModel:
 
-    def __init__( self: Self, mod_id: str | None = None, **kwargs ) -> None:
+    def __init__( self: Self, model_id: str | None = None, **kwargs ) -> None:
         super().__init__()
 
-        self.mod_id: str = mod_id
+        self.model_id: str = model_id
         self.model_info: ModelInfo | None = None
         self.queuemap:   dict[ str, mp.Queue ] = dict[ str, mp.Queue ]()
         self.data: ModelDictData = kwargs if kwargs else ModelDictData()
 
         self.properties: dict[ str, ModelProperty ] | None = self.model
+        
+        classdict = self.__class__.__dict__
+        self.model_info = classdict["model"] if "model" in classdict else None
+        self.model_id = self.model_info.model_id
+        
         self.data.update(self.cfg)
 
     def init_import( self: Self, app_msgqueue: mp.Queue) -> dict[str, mp.Queue] | None:
@@ -31,8 +36,8 @@ class DataTableModel:
             thr = prop.get_thread()
             thr.join()
 
-    def save_table( self: Self ):
-        ArrowResults.s
+    def save_table( self: Self, filepath: str | None = None ):
+        ArrowResults.write_arrowtable( self.model_id, filepath )
 
 
 

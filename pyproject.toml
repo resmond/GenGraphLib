@@ -39,7 +39,8 @@ dependencies = [
     "polars[all]>=1.28.1",
     "pyarrow",
     "open3d",
-    "numba"
+    "numba",
+    "notebook>=7.4.1",
 ]
 
 [build-system]

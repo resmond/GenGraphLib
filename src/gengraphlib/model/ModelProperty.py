@@ -9,7 +9,7 @@ import pyarrow as par
 from sortedcontainers import SortedDict
 
 from ..common import ModelPropTypes, LineRefList, ModelDictData
-from ..arrow import ArrowResults
+from ..arrow import ArrowResults, PropertyStats
 
 class ModelProperty[ T: ModelPropTypes ]:
     def __init__( self: Self, name: str | None, alias: str | None, store_type: par.DataType, *kwargs ) -> None:
@@ -18,7 +18,7 @@ class ModelProperty[ T: ModelPropTypes ]:
 
         #self.model:     ModelInfo | None = None
         self.ttype:     type = type(T)
-        self.model_id: str | None = None
+        self.model_id:  str | None = None
         self.name:      str | None = name
         self.alias:     str | None = alias
         self.data: ModelDictData = kwargs if kwargs else ModelDictData()
@@ -31,18 +31,18 @@ class ModelProperty[ T: ModelPropTypes ]:
         self.app_msgqueue: mp.Queue | None = None
         self.thread:      th.Thread | None = None
 
-        self.status_triggercnt: int = self.data[ "status_triggercnt" ] if self.data[ "status_triggercnt" ] else 5000
+        self.status_triggercnt: int = self.data[ "status_triggercnt" ] if "status_triggercnt" in self.data else 5000
 
         self.keyvaluemap_to_refs: SortedDict[ T, LineRefList ] = SortedDict[T, LineRefList ]()
         self.valueindex_to_keyvalue: list[ T ] = []
         self.ref_to_keyvalue:        list[ T | None ] = []
 
-        self.maxrownum: int   = 0
-        self.keycnt:    int   = 0
-        self.refcnt:    int   = 0
-        self.hitpct:    int   = 0
-        self.isunique:  bool  = True
-        self.use_dict:  bool  = False
+        self.maxrownum:  int   = 0
+        self.keycnt:     int   = 0
+        self.refcnt:     int   = 0
+        self.hitpct:     int   = 0
+        self.isunique:   bool  = True
+        self.use_dict:   bool  = False
         self.calc_stats: bool = True
         self.par_array: par.Array | None = None
 
@@ -142,7 +142,8 @@ class ModelProperty[ T: ModelPropTypes ]:
             self.use_dict  = comp_ratio > 2.5
             self.par_array = par.array( self.ref_to_keyvalue, type=self.store_type )  # , self.store_type
 
-            ArrowResults.store_results( self.model_id, self.name, self.par_array )
+            propstats = PropertyStats( self.name, self.alias, self.ttype.__name__, self.keycnt, self.refcnt, self.hitpct, self.isunique )
+            ArrowResults.stash_results( self.model_id, self.name, self.par_array, propstats )
 
             # print(f'{type(self).__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} keys: {self.keycnt} refs: {self.refcnt} ratio: {comp_ratio} hitpct: {self.hitpct}' )
             # print(f"{type(self).__name__}({self.name}:{self.alias}) partype: {self.store_type} key2ref: {len(self.keyvaluemap_to_refs)} val2ref: {len(self.valueindex_to_keyvalue)} ref2key: {len(self.ref_to_keyvalue)}")

@@ -13,6 +13,21 @@ from gengraphlib import KeyValuePacket
 
 from src.LogEventModel import LogEventModel
 
+#from gengraphlib.arrow import ArrowResults
+#from gengraphlib.model import StatsModProp
+
+class StatsValCounter:
+    def __init__( self: Self, value: str ) -> None:
+        self.keymap: dict[str,int] = { value: 1 }
+
+    def next_value( self: Self, value: str ) -> None:
+        if value not in self.keymap:
+            self.keymap[value] = 1
+        else:
+            self.keymap[value] += 1
+        return
+
+
 class ParseProcessInfo:
     def __init__( self: Self, app_msgqueue: mp.Queue, log_root: str, boot_index: int ) -> None:
         super().__init__()
@@ -51,12 +66,20 @@ class LogParseProcess:
         self.cmd_stream:  CmdStdoutStream = CmdStdoutStream( self.cmd )
         self.record_count: int = 0
 
+        self.local_stats: dict[str, StatsValCounter ] = dict[str, StatsValCounter ]()
+
+    def update_stats( self: Self, keyvalue: str, value: str ):
+        if keyvalue not in self.local_stats:
+            self.local_stats[ keyvalue ] = StatsValCounter( value )
+        else:
+            self.local_stats[ keyvalue ].next_value( value )
 
     async def run_import( self: Self ) -> None:
 
         try:
             async for line in self.cmd_stream.stream_lines():
 
+                scratchcnt: int = 0
                 match line:
                     case str() if len(line) == 0:
                         self.record_count += 1
@@ -67,10 +90,22 @@ class LogParseProcess:
                         alias: str = line[:split]
                         value: str = line[split + 1 :]
 
+                        self.update_stats( alias, value )
+
                         if alias in self.queues_byalias:
                             keyindex_queue: mp.Queue = self.queues_byalias[alias]
                             value_packet: KeyValuePacket = (self.record_count, value)
                             keyindex_queue.put(value_packet)
+                        else:
+                            scratchcnt += 1
+                            #print( f'starting {alias} scratchcnt: {scratchcnt}')
+                            # statsprop = StatsModProp( name=alias, alias=alias )
+                            # prop_msgqueue = statsprop.start_import( self.app_msgqueue )
+                            # self.queues_byalias[ alias ] = prop_msgqueue
+                            # await aio.sleep(0.1)
+                            # value_packet: KeyValuePacket = (self.record_count, value)
+                            # prop_msgqueue.put(value_packet)
+
 
             for alias, keyindex_queue in self.queues_byalias.items():
                 value_packet: KeyValuePacket = (-1, str(self.record_count))
@@ -85,7 +120,19 @@ class LogParseProcess:
         self.table_model.wait_tocomplete()
 
         filepath: str = os.path.join( self.bootlog_path, "logevents.parquet" )
-        self.table_model.save_arrowtable( "logevents", filepath=filepath )
+        self.table_model.save_table(filepath)
+        self.dump_stats( filepath )
+
+    def dump_stats( self: Self, filepath: str ):
+        with open(f'{filepath}.noise',"w") as file:
+            for propname, stats in self.local_stats.items():
+                keycnt: int = len(stats.keymap)
+                refcnt: int = 0
+                for value, cnt in stats.keymap.items():
+                    refcnt += cnt
+                hitpct = (refcnt / self.record_count) * 100
+                print(f'{propname}: keycnt: {keycnt}  refcnt: {refcnt}  hitpct: {hitpct}\n')
+                file.write(f'{propname}: keycnt: {keycnt}  refcnt: {refcnt}  hitpct: {hitpct}\n')
 
 
 

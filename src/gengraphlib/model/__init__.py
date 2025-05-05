@@ -6,10 +6,12 @@ from .ScalarProps      import StrModProp, IntModProp, FloatModProp, BoolModProp
 from .EnumProps        import StrEnumModProp, IntEnumModProp
 from .CatagoricalProps import ParentModProp
 from .DatetimeProps    import TmstModProp
+from .StatsProp        import StatsModProp
 
 __all__ = [
       "ModelInfo", "ModelProperty", "DataTableModel", "StrEnumModProp", "IntEnumModProp"
     , "StrModProp", "IntModProp", "FloatModProp", "BoolModProp", "ParentModProp", "TmstModProp"
+    , "StatsModProp"
 ]
 
 
