@@ -1,8 +1,8 @@
 from .BootLog     import BootLog
 from .BootLogManager import BootLogManager
-from .CmdStdoutStream import CmdStdoutStream
+from .CmdKeyValueStream import CmdKeyValueStream
 
 __all__ = [
-    "BootLog", "BootLogManager", "CmdStdoutStream"
+    "BootLog", "BootLogManager", "CmdKeyValueStream"
 ]
 

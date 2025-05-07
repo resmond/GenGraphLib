@@ -6,7 +6,8 @@ from PySide6.QtCore import QObject, Signal
 
 from src.gengraphlib.common import IndexInfo
 
-# noinspection DuplicatedCode
+
+# noinspection DuplicatedCode,PyUnresolvedReferences
 class QtMsgQueueReader( QObject ):
     activated     = Signal(object)
     data_received = Signal(object)

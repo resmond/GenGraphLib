@@ -4,7 +4,7 @@ import asyncio as aio
 import multiprocessing as mp
 
 from src.bootlog import (
-    CmdStdoutStream,
+    CmdKeyValueStream,
     BootLogManager,
     BootLog
 )
@@ -49,7 +49,6 @@ class LogParseProcess:
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super().__init__()
 
-
         parse_info: ParseProcessInfo = parse_info
         self.log_root: str           = parse_info.log_root
         self.cur_bootindex: int      = parse_info.boot_index
@@ -63,7 +62,7 @@ class LogParseProcess:
         self.queues_byalias: dict[str, mp.Queue ] = self.table_model.init_import( self.app_msgqueue )
 
         self.cmd: str = f"/bin/journalctl -b {self.cur_bootindex} -o export"
-        self.cmd_stream:  CmdStdoutStream = CmdStdoutStream( self.cmd )
+        self.cmd_stream:  CmdKeyValueStream = CmdKeyValueStream( self.cmd )
         self.record_count: int = 0
 
         self.local_stats: dict[str, StatsValCounter ] = dict[str, StatsValCounter ]()
@@ -77,35 +76,14 @@ class LogParseProcess:
     async def run_import( self: Self ) -> None:
 
         try:
-            async for line in self.cmd_stream.stream_lines():
-
-                scratchcnt: int = 0
-                match line:
-                    case str() if len(line) == 0:
-                        self.record_count += 1
-
-                    case _:
-
-                        split: int = line.find("=")
-                        alias: str = line[:split]
-                        value: str = line[split + 1 :]
-
-                        self.update_stats( alias, value )
-
-                        if alias in self.queues_byalias:
-                            keyindex_queue: mp.Queue = self.queues_byalias[alias]
-                            value_packet: KeyValuePacket = (self.record_count, value)
-                            keyindex_queue.put(value_packet)
-                        else:
-                            scratchcnt += 1
-                            #print( f'starting {alias} scratchcnt: {scratchcnt}')
-                            # statsprop = StatsModProp( name=alias, alias=alias )
-                            # prop_msgqueue = statsprop.start_import( self.app_msgqueue )
-                            # self.queues_byalias[ alias ] = prop_msgqueue
-                            # await aio.sleep(0.1)
-                            # value_packet: KeyValuePacket = (self.record_count, value)
-                            # prop_msgqueue.put(value_packet)
-
+            async for keyvalue_tuple in self.cmd_stream.stream_values():
+                if keyvalue_tuple is not None:
+                    alias, value = keyvalue_tuple
+                    self.update_stats(alias, value)
+                    if alias in self.queues_byalias:
+                        keyindex_queue: mp.Queue = self.queues_byalias[alias]
+                        value_packet: KeyValuePacket = (self.record_count, value)
+                        keyindex_queue.put(value_packet)
 
             for alias, keyindex_queue in self.queues_byalias.items():
                 value_packet: KeyValuePacket = (-1, str(self.record_count))

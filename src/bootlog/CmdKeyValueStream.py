@@ -5,9 +5,11 @@ import asyncio.subprocess as asub
 
 from collections.abc import AsyncGenerator
 
+from ..gengraphlib import KeyValueTuple
+
 from .LineSlicer import LineSlicer
 
-class CmdStdoutStream:
+class CmdKeyValueStream:
 
     def __init__(self: Self, cmd: str ) -> None:
         super().__init__()
@@ -17,7 +19,7 @@ class CmdStdoutStream:
 
         self.line_slicer = LineSlicer()
 
-    async def stream_lines( self: Self ) -> AsyncGenerator[ str, None ]:
+    async def stream_values( self: Self ) -> AsyncGenerator[ KeyValueTuple, None ]:
 
         exec_process: asub.Process = await aio.create_subprocess_shell( cmd=self.cmd, stdout=aio.subprocess.PIPE, limit = 16*1024 )
         if exec_process is None:
@@ -31,15 +33,15 @@ class CmdStdoutStream:
 
                 if buffer is None or len(buffer) == 0:
 
-                    tail_str = self.line_slicer.get_tail()
-                    if len(tail_str) > 0:
-                        yield tail_str
+                    keyvalue_tuple = self.line_slicer.get_tail()
+                    if len(keyvalue_tuple) > 0:
+                        yield keyvalue_tuple
 
                     break
                 else:
-                    for line in self.line_slicer.lines( buffer ):
+                    for keyvalue_tuple in self.line_slicer.pass_buffer( buffer ):
                         line_cnt += 1
-                        yield line
+                        yield keyvalue_tuple
 
                     # new_text = buffer.decode(errors="replace")
                     # merged_text = self.tail_text + new_text

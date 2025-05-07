@@ -3,7 +3,8 @@ from typing import Self, Dict, List, Any
 
 from PySide6.QtCore import Signal, Property, Slot, QObject, QAbstractTableModel, QModelIndex
 
-# noinspection PyPep8Naming
+
+# noinspection PyPep8Naming,PyArgumentList,PyUnresolvedReferences
 class QtGuiTreeModel( QAbstractTableModel, QModelIndex ):
     depthChanged      = Signal()
     isExpandedChanged = Signal()

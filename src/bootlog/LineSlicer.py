@@ -4,6 +4,8 @@ from collections.abc import Generator
 
 from loguru import logger
 
+from ..gengraphlib import KeyValueTuple
+
 class BCharType( IntEnum ):
     LowJunk    = -1      # [1:31]  with exceptions
     Special    =  1      # [0, 10, 12, 13] Null, Tab, Lf, Cr
@@ -141,6 +143,9 @@ class HitType(IntEnum):
 
 JunkSpan: type = tuple[int,int]
 
+#KeyValueTuple:      type = tuple[ str, str ]
+#KeyValueLineResult: type = type[ KeyValueTuple | None ]
+
 class LineSlicer:
     def __init__( self: Self ) -> None:
         super().__init__()
@@ -166,12 +171,7 @@ class LineSlicer:
         self.in_key:  bool = True
         self.in_junk: bool = False
 
-    def push_junksegment( self: Self ) -> None:
-        self.junk_spans.append((self.junk_offset, self.currnet_index))
-        self.in_junk = False
-        pass
-
-    def build_keyvalue( self: Self ) -> tuple[str, str] | None:
+    def build_keyvalue( self: Self ) -> KeyValueTuple | None:
         key_buffer: bytearray = self.currentBuffer[self.line_start:self.equals_index]
         val_buffer: bytearray = self.currentBuffer[self.equals_index:self.current_index-1]
 
@@ -187,18 +187,28 @@ class LineSlicer:
         logger.info(f'key: {key_buffer.decode()} value: {val_buffer.decode()}')
         return key_buffer.decode(), val_buffer.decode()
 
-    def next_buffer( self: Self, buffer: bytes ) -> Generator[tuple[str,str], None ]:
+    def pass_buffer(self: Self, buffer: bytes ) -> Generator[tuple[str, str], None]:
+        self.current_buffer = bytearray(self.tail_buffer + buffer)
+        self.buffer_len     = len(self.current_buffer)
+        self.tail_buffer    = bytes(0)
+        self.current_index  = -1
+        self.last_offset    = 0
+
+        while keyvalue_result := self._next_keyvalueline():
+            yield keyvalue_result
+
+    def _next_keyvalueline( self: Self ) -> KeyValueTuple | None :
         try:
-            self.current_buffer = bytearray( self.tail_buffer + buffer )
-            self.buffer_len     = len( self.current_buffer )
-            self.tail_buffer    = bytes(0)
-            self.current_index  = -1
-            self.last_offset    = 0
+            self.line_start   = self.current_index - 1
+            self.in_key       = True
+            self.equals_index = -1
+            self.junk_spans   = []
+            self.junk_offset  = -1
 
             while True:
                 self.current_index += 1
                 if self.current_index >= self.buffer_len:
-                    break   # do end of buffer
+                    return None   # do end of buffer
 
                 cint: int = self.current_buffer[ self.current_index ]
                 bchar_info: BinCharInfo = self.bchars.getinfo( cint )
@@ -209,37 +219,27 @@ class LineSlicer:
                         self.in_junk = True
                 else:
                     if self.in_junk:
-                        self.push_junksegment()
+                        self.junk_spans.append((self.junk_offset, self.currnet_index))
+                        self.in_junk = False
 
                     if cint == 61:
                         self.in_key = False
                         self.equals_index = self.current_index
 
                     elif bchar_info.linefeed:
-                        yield self.build_keyvalue()
-
-                        #reset for next line
-                        self.in_key = True
-                        self.equals_index = -1
-                        self.junk_spans   = []
-                        self.junk_offset  = -1
-                        self.line_start   = self.current_index-1
-                continue
+                        return self.build_keyvalue()
 
         except Exception as exc:
-            print(f'LineSlicer.linex()" Exception = {exc}')
+            logger.error(f'LineSlicer.linex()" Exception = {exc}')
+            return None
 
-    def get_tail( self: Self ) -> str:
-        return self.decode_line(self.last_tail)
+    def get_tail( self: Self ) -> tuple[str,str] | None:
+        if len(self.last_tail):
+            key, value = self.next_buffer(self.last_tail)
+            return key, value
+        else:
+            return None
 
-    @classmethod
-    def decode_line( cls, line_buffer: bytes ) -> str:
-        try:
-            return line_buffer.decode()
-
-        except Exception as exc:
-            print(f'LineSlice Exception {exc}')
-            return ""
 
 
 

@@ -14,9 +14,10 @@ from .model import (
 
 
 __all__ = [
-      "KeyIndexType", "KeyIndexState", "IndexInfo" , "SerializationType", "KeyValueTuple"
+      "KeyValueTuple", "KeyIndexType", "KeyIndexState", "IndexInfo" , "SerializationType"
     , "KeyRecordList", "KeyRecordPacket", "KeyValuePacket", "ModelPropTypes", "LineRefList"
     , "ModelDictDataTypes", "ModelDictData"
+
     , "DataTableModel", "StrEnumModProp", "IntEnumModProp"
     , "StrModProp", "IntModProp", "FloatModProp", "BoolModProp", "ParentModProp", "TmstModProp"
 ]

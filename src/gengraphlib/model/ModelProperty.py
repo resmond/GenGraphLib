@@ -13,7 +13,6 @@ from ..arrow import ArrowResults, PropertyStats
 
 class ModelProperty[ T: ModelPropTypes ]:
     def __init__( self: Self, name: str | None, alias: str | None, store_type: par.DataType, *kwargs ) -> None:
-
         super().__init__()
 
         #self.model:     ModelInfo | None = None
