@@ -4,10 +4,10 @@
 6 - Char                                        7-bits mantisa
 
 5 - Asc0           |     Token
-4 - is exp         |   no-exp
+4 - is exp         |    no-exp
 
 3-- ? last exp     |
-                   |   4-bits
-2--                |   mantisa
+                   |    4-bits
+2--                |    mantisa
 1 |  3-bits-exp    |
 0--                |

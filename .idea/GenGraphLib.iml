@@ -8,7 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.ven312" />
       <excludeFolder url="file://$MODULE_DIR$/.venv312" />
     </content>
-    <orderEntry type="jdk" jdkName="uv (ParseCore)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (GenGraphLib)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jctl-logs" />
   </component>

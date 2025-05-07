@@ -28,19 +28,18 @@ dynamic = [
 ]
 dependencies = [
     "regex",
-    "json_stream",
     "numpy",
     "numpydoc",
     "numba",
+    "pyarrow",
+    "polars[all]>=1.28.1",
     "sortedcontainers",
     "sortedcontainers-stubs",
     "Pyside6",
-    "slint",
-    "polars[all]>=1.28.1",
-    "pyarrow",
     "open3d",
-    "numba",
     "notebook>=7.4.1",
+    "loguru",
+    "cachetools==6.0.0b4",
 ]
 
 [build-system]
