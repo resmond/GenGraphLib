@@ -2,6 +2,8 @@ from typing import Self
 
 import multiprocessing as mp
 
+from loguru import logger
+
 from PySide6.QtCore import QCoreApplication, QMetaObject, QRect
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -20,7 +22,7 @@ class MyMainWindow(QMainWindow):
     MINIMUM_HEIGHT = 600
 
     def process_data( self: Self, index_info: IndexInfo ) -> None:
-        print(f"{self.WINDOW_TITLE}: {index_info.key} - keycnt: {index_info.keycnt}  refcnt: {index_info.refcnt}  hit%: {index_info.hitpct}")
+        logger.info(f"{self.WINDOW_TITLE}: {index_info.key} - keycnt: {index_info.keycnt}  refcnt: {index_info.refcnt}  hit%: {index_info.hitpct}")
 
     def __init__(self: Self, msg_queue: mp.Queue, end_event: mp.Event ) -> None:
         super().__init__()

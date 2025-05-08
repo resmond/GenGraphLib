@@ -4,6 +4,8 @@ from typing import Self
 import pyarrow as par
 import pyarrow.parquet as parquet
 
+from loguru import logger
+
 class PropertyStats:
     def __init__( self: Self, name: str, alias: str, ttype: str, keycnt: int, refcnt: int, hitpct: int, unique: bool ) -> None:
         self.name: str = name
@@ -50,8 +52,8 @@ class ArrowResults:
         with open(f'{filepath}.stats',"w") as file:
             for model_id, modelstats in ArrowResults.stats.items():
                 for name, propstats in modelstats.items():
-                    print(f'{model_id}:{name} - {propstats.getstr()}')
-                    file.write(f'{model_id}:{name} - {propstats.getstr()}')
+                    logger.info(f'{model_id}:{name} - {propstats.getstr()}')
+                    file.write(f'{model_id}:{name} - {propstats.getstr()}\n')
 
     @classmethod
     def write_arrowtable( cls, model_id: str, filepath: str ) -> None:
@@ -67,17 +69,15 @@ class ArrowResults:
                 arrow_table = par.table( arrow_arrays, column_names)
                 parquet.write_table(table=arrow_table, where=filepath)
             else:
-                breakpoint()
+                logger.error(f'No model_resuls found in ArrowResults.models for [{model_id}]')
 
             ArrowResults.dump_stats(filepath)
 
         except KeyError as keyerr:
-            breakpoint()
-            print(f"DataTableModel.save_arrowtable( {filepath} ): Excption - {keyerr}")
+            logger.error(f"save_arrowtable( {filepath} ): Excption - {keyerr}")
 
         except Exception as ext:
-            breakpoint()
-            print(f"DataTableModel.save_arrowtable( {filepath} ): Excption - {ext}")
+            logger.error(f"save_arrowtable( {filepath} ): Excption - {ext}")
 
     @classmethod
     def get_modelresults( cls, model_id: str ) -> ModelResults | None:

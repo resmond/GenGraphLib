@@ -24,8 +24,8 @@ class PriorityModProp( IntEnumModProp[ PriorityEnum ] ):
         super().__init__( alias=alias, store_type=uint8(), *kwargs )
 
     def recv_value( self: Self, row_num: int, import_value: str ) -> None:
-        int_value = int(import_value)
-        super().recv_value( row_num, int_value )
+        #int_value = int(import_value)
+        super().recv_value( row_num, import_value )
 
     def finalize( self: Self, maxrownum: int ) -> None:
         super().finalize( maxrownum )

@@ -4,6 +4,8 @@ import subprocess
 import datetime as dt
 import os as os
 
+from loguru import logger
+
 from .BootLog import BootLog
 
 
@@ -57,7 +59,7 @@ class BootLogManager:
             return process.returncode == 0
 
         except Exception as ext:
-            print(f'[BootLogManager._query_bootlist] Exception: {ext}')
+            logger.error(f'Exception: {ext}')
             return False
 
     """
@@ -83,7 +85,7 @@ class BootLogManager:
             return True
 
         except Exception as exc:
-            print(f"[BootLogManager._load_txt] Exception: {exc}")
+            logger.error(f"Exception: {exc}")
 
         return False
 

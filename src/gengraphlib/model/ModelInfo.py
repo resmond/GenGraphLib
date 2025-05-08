@@ -3,6 +3,7 @@ from typing import Self
 from ..common import ModelDictData
 from .ModelProperty import ModelProperty
 
+from loguru import logger
 
 class ModelInfo:
 
@@ -29,4 +30,4 @@ class ModelInfo:
 
     def dump_props( self: Self ) -> None:
         for name, prop in self.properties.items():
-            print(f'{self.model_id}[{name}] proptype: {prop.__class__.__name__}  generictype: {prop.ttype} store: {prop.store_type}')
+            logger.info(f'{self.model_id}[{name}] proptype: {prop.__class__.__name__}  generictype: {prop.ttype} store: {prop.store_type}')

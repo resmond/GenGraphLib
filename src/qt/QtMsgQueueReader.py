@@ -2,6 +2,8 @@ import multiprocessing as mp
 import time
 from typing import Self
 
+from loguru import logger
+
 from PySide6.QtCore import QObject, Signal
 
 from src.gengraphlib.common import IndexInfo
@@ -33,12 +35,12 @@ class QtMsgQueueReader( QObject ):
                         self._process_message(message)
                     time.sleep(0.01)  # Short sleep to prevent CPU hogging
                 except Exception as e:
-                    print(f"Error processing message: {e}")
+                    logger.error(f"Error processing message: {e}")
 
         except KeyboardInterrupt:
-            print("Reader received interrupt, shutting down gracefully")
+            logger.info("Reader received interrupt, shutting down gracefully")
         finally:
-            print("Reader process exiting")
+            logger.info("Reader process exiting")
 
     def _process_message( self: Self, index_info: IndexInfo ):
         #print(f"Processing message: {index_info}")

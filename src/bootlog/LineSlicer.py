@@ -47,7 +47,7 @@ class BChars( list[BinCharInfo] ):
     def __init__( self: Self ) -> None:
         super().__init__()
 
-        self.hitcnts: list[int] = []
+        self.hitcnts: list[int] = [0] * 256
 
         for cint in range(0,255):
             byte:      bytes = bytes(1)
@@ -143,99 +143,144 @@ class HitType(IntEnum):
 
 JunkSpan: type = tuple[int,int]
 
-#KeyValueTuple:      type = tuple[ str, str ]
-#KeyValueLineResult: type = type[ KeyValueTuple | None ]
-
 class LineSlicer:
     def __init__( self: Self ) -> None:
         super().__init__()
 
         self.bchars = BChars()
 
-        self.tail_buffer:     bytes = bytes(0)
-
-        self.junk_spans:      list[JunkSpan] = []
-        self.current_buffer:  bytes | None = None
-        self.buffer_len:      int  = 0
-        self.line_start:      int  = 0
+        self.tail_buffer:     bytearray = bytearray()
+        self.current_buffer:  bytearray | None = None
+        self.buffer_len:      int  =  0
+        self.line_start:      int  =  0
         self.equals_index:    int  = -1
-
         self.current_index:   int  = -1
-        self.last_offset:     int  = 0
-
-        self.current_key:     str | None = None
-
-        self.junk_offset:     int = 0
-        self.junk_cnt:        int = 0
-
-        self.in_key:  bool = True
-        self.in_junk: bool = False
+        self.in_key:          bool = True
+        self.is_junk:         bool = False
 
     def build_keyvalue( self: Self ) -> KeyValueTuple | None:
-        key_buffer: bytearray = self.currentBuffer[self.line_start:self.equals_index]
-        val_buffer: bytearray = self.currentBuffer[self.equals_index:self.current_index-1]
+        try:
+            keystr: str = self.current_buffer[self.line_start:self.equals_index].decode()
+            valstr: str = self.current_buffer[self.equals_index+1:self.current_index].decode()
+            #cur_span = bytearray(self.current_buffer[self.current_index - 3 : self.current_index + 3])
 
-        for junk_span in self.junk_spans:
-            replacement_buf: bytes = b"$" * (junk_span[1] - junk_span[0] + 1)
-            if junk_span[0] < self.equals_index:
-                key_buffer[junk_span[0]:junk_span[1]] = replacement_buf
-            else:
-                shifted_start: int = junk_span[0] - self.equals_index
-                shifted_end:   int = junk_span[1] - self.equals_index
-                val_buffer[shifted_start:shifted_end] = replacement_buf
+            #logger.info(f'key: {keystr} value: {valstr}')
+            return keystr, valstr
+        except Exception as exc:
+            logger.error(f"decode error {exc}")
+            return None
 
-        logger.info(f'key: {key_buffer.decode()} value: {val_buffer.decode()}')
-        return key_buffer.decode(), val_buffer.decode()
+        # for junk_span in self.junk_spans:
+        #     replacement_buf: bytes = b"$" * (junk_span[1] - junk_span[0] + 1)
+        #     if junk_span[0] < self.equals_index:
+        #         if len(self.junk_spans) == 1 and junk_span[0] == self.line_start:
+        #             key_buffer = self.current_buffer[junk_span[1]:self.equals_index]
+        #         else:
+        #             key_buffer[junk_span[0]:junk_span[1]] = replacement_buf
+        #     else:
+        #         shifted_start: int = junk_span[0] - self.equals_index
+        #         shifted_end:   int = junk_span[1] - self.equals_index
+        #         val_buffer[shifted_start:shifted_end] = replacement_buf
+        #
 
     def pass_buffer(self: Self, buffer: bytes ) -> Generator[tuple[str, str], None]:
         self.current_buffer = bytearray(self.tail_buffer + buffer)
         self.buffer_len     = len(self.current_buffer)
         self.tail_buffer    = bytes(0)
         self.current_index  = -1
-        self.last_offset    = 0
+        self.line_start     = 0
+
 
         while keyvalue_result := self._next_keyvalueline():
-            yield keyvalue_result
+            if keyvalue_result[0] != 'skip':
+                yield keyvalue_result
 
     def _next_keyvalueline( self: Self ) -> KeyValueTuple | None :
         try:
-            self.line_start   = self.current_index - 1
+            self.line_start   = self.current_index + 1
             self.in_key       = True
-            self.equals_index = -1
             self.junk_spans   = []
+            self.equals_index = -1
             self.junk_offset  = -1
 
             while True:
                 self.current_index += 1
                 if self.current_index >= self.buffer_len:
+                    self.tail_buffer = bytearray( self.current_buffer[self.line_start:] )
                     return None   # do end of buffer
 
                 cint: int = self.current_buffer[ self.current_index ]
                 bchar_info: BinCharInfo = self.bchars.getinfo( cint )
 
-                if bchar_info.junk:
-                    if not self.in_junk:
-                        self.junk_offset = self.currnet_index
-                        self.in_junk = True
-                else:
-                    if self.in_junk:
-                        self.junk_spans.append((self.junk_offset, self.currnet_index))
-                        self.in_junk = False
+                if cint == 61:
+                    self.equals_index = self.current_index
+                    self.in_key = False
 
-                    if cint == 61:
-                        self.in_key = False
-                        self.equals_index = self.current_index
+                elif bchar_info.linefeed:
 
-                    elif bchar_info.linefeed:
+                    if self.is_junk:
+                        self.is_junk = False
+                        return "skip", ""
+
+                    if self.in_key:
+
+                        #look_back    = bytearray(self.current_buffer[self.line_start-20:self.current_index])
+                        #cur_line     = bytearray(self.current_buffer[self.line_start:self.current_index+1])
+                        #cur_span     = bytearray(self.current_buffer[self.current_index-5:self.current_index+5])
+                        #look_forward = bytearray(self.current_buffer[self.current_index:self.current_index+20])
+
+                        if self.current_buffer[ self.current_index-1 ] == 10:
+                            return '', ''
+                        else:
+                            return 'skip', ''
+                    else:
                         return self.build_keyvalue()
 
+                if bchar_info.junk:
+                    self.is_junk = True
+                    
+                # else:
+                #     if bchar_info.junk:
+                #         look_back   = bytearray(self.current_buffer[self.line_start-20:self.current_index])
+                #         cur_line = bytearray(self.current_buffer[self.line_start:self.current_index+1])
+                #         look_forward = bytearray(self.current_buffer[self.current_index:self.current_index+20])
+                #
+                #         while True:
+                #             self.current_index += 1
+                #             if self.current_index >= self.buffer_len:
+                #                 return None  # do end of buffer
+                #
+                #             cint: int = self.current_buffer[self.current_index]
+                #             bchar_info: BinCharInfo = self.bchars.getinfo(cint)
+                #             if not bchar_info.linefeed:
+                #                 continue
+                #             else:
+                #                 return '', ''
+                    #
+                    #     if not self.in_junk:
+                    #         look_back   = bytearray(self.current_buffer[self.line_start-20:self.current_index])
+                    #         cur_line = bytearray(self.current_buffer[self.line_start:self.current_index+1])
+                    #         look_forward = bytearray(self.current_buffer[self.current_index:self.current_index+20])
+                    #         self.junk_offset = self.current_index
+                    #         self.in_junk = True
+                    # else:
+                    #     if self.in_junk:
+                    #         self.junk_spans.append( (self.junk_offset, self.current_index) )
+                    #         self.in_junk = False
+
+
+                                #return self.build_keyvalue()
+                                #self.junk_spans = []
+                                #self.line_start = self.current_index
+
+
         except Exception as exc:
-            logger.error(f'LineSlicer.linex()" Exception = {exc}')
+            logger.error( f'Exception = {exc}' )
             return None
 
     def get_tail( self: Self ) -> tuple[str,str] | None:
-        if len(self.last_tail):
-            key, value = self.next_buffer(self.last_tail)
+        if len(self.tail_buffer):
+            key, value = self.next_buffer(self.tail_buffer)
             return key, value
         else:
             return None

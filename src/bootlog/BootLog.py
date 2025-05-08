@@ -2,6 +2,8 @@ from typing import Self
 import os
 import datetime as dt
 
+from loguru import logger
+
 class BootLog:
 
     def __init__( self: Self, root_dir: str, logrec_line: str ) -> None:
@@ -34,7 +36,7 @@ class BootLog:
             return True
 
         except Exception as e:
-            print(f'[BootLog._dir_exists] Exception: {e}')
+            logger.error(f'Exception: {e}')
             return False
 
     def __repr__( self: Self ) -> str:

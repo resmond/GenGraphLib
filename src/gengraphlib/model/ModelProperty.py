@@ -3,8 +3,9 @@ from typing import Self
 import sys
 import threading as th
 import multiprocessing as mp
-
 import pyarrow as par
+
+from loguru import logger
 
 from sortedcontainers import SortedDict
 
@@ -56,7 +57,7 @@ class ModelProperty[ T: ModelPropTypes ]:
             model.properties[ self.name ] = self
             self.model_id = model.model_id
         else:
-            breakpoint()
+            logger.error(f"{self.name} failure to attach to owner.__dict__['model']")
 
     def __get__( self: Self, instance: object, owner: object ) -> T | None:
         if self.name in instance.__dict__:
@@ -82,16 +83,26 @@ class ModelProperty[ T: ModelPropTypes ]:
 
     def main_loop( self: Self, queue: mp.Queue ) ->None:
         #self.app_msgqueue.put( keyindex_info )
-        print(f'[{self.name}-index]: Started' )
+        logger.info(f'[{self.name}-index]: Started' )
+        outer_rownum: int = -999
+        outer_value:  str = "empty"
+        trace:  str = "init"
         try:
             while True:
                 rownum, value = queue.get()
+                outer_rownum = rownum
+                outer_value  = value
+                trace = "got queue"
 
                 if rownum == -1:
+                    trace = f"about to finalize - {len(value)} = {value}"
                     self.finalize(int(value))
+                    trace = "done finalize"
                     break
 
+                trace = f"about to call recv_value {rownum} {value} "
                 self.recv_value( rownum, value )
+                trace = "recv_value done"
 
                 if rownum % self.status_triggercnt == 0:
                     #keyindex_info: keyIndexInfo = self.get_index_info()
@@ -99,14 +110,12 @@ class ModelProperty[ T: ModelPropTypes ]:
                     pass
 
         except ValueError as valexc:
-            breakpoint()
-            print(f'{type(self).__name__}({self.name}:{self.alias}) ValueError: {valexc}' )
+            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) ValueError: {valexc}  {trace}  {outer_rownum} {outer_value}' )
 
         except Exception as exc:
-            breakpoint()
-            print(f'{type(self).__name__}({self.name}:{self.alias}) Exception: {exc}' )
+            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) Exception: {exc}  {trace}' )
 
-        print(f"{type(self).__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} key2ref: {len(self.keyvaluemap_to_refs)} refs: {self.refcnt}")
+        logger.info(f"{self.ttype.__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} key2ref: {len(self.keyvaluemap_to_refs)} refs: {self.refcnt}")
 
     def recv_value( self: Self, row_num: int, import_value: T ) -> None:
         #self.counts[ import_value.name ] += 1
@@ -144,20 +153,18 @@ class ModelProperty[ T: ModelPropTypes ]:
             propstats = PropertyStats( self.name, self.alias, self.ttype.__name__, self.keycnt, self.refcnt, self.hitpct, self.isunique )
             ArrowResults.stash_results( self.model_id, self.name, self.par_array, propstats )
 
-            # print(f'{type(self).__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} keys: {self.keycnt} refs: {self.refcnt} ratio: {comp_ratio} hitpct: {self.hitpct}' )
-            # print(f"{type(self).__name__}({self.name}:{self.alias}) partype: {self.store_type} key2ref: {len(self.keyvaluemap_to_refs)} val2ref: {len(self.valueindex_to_keyvalue)} ref2key: {len(self.ref_to_keyvalue)}")
-            # print(f"{type(self).__name__}({self.name}: par_array: {sys.getsizeof(self.par_array)}")
+            # p (f'{type(self).__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} keys: {self.keycnt} refs: {self.refcnt} ratio: {comp_ratio} hitpct: {self.hitpct}' )
+            # p (f"{type(self).__name__}({self.name}:{self.alias}) partype: {self.store_type} key2ref: {len(self.keyvaluemap_to_refs)} val2ref: {len(self.valueindex_to_keyvalue)} ref2key: {len(self.ref_to_keyvalue)}")
+            # p (f"{type(self).__name__}({self.name}: par_array: {sys.getsizeof(self.par_array)}")
 
         except ValueError as valexc:
-            print(f'{type(self).__name__}.finalize({self.name}:{self.alias}) ValueError: {valexc}' )
-            breakpoint()
+            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            print(f'{type(self).__name__}.finalize({self.name}:{self.alias}) Exception: {exc}' )
-            breakpoint()
+            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) Exception: {exc}' )
 
     def get_pararray(self: Self) -> par.Array | None:
-        print(f"{type(self).__name__}({self.name}: get_pararray(): {self.par_array} = {sys.getsizeof(self.par_array)}" )
+        logger.info(f"{self.ttype.__name__}({self.name}:{self.alias}) - {self.par_array} = {sys.getsizeof(self.par_array)}" )
         return self.par_array
 
 

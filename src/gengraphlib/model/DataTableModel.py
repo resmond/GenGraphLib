@@ -2,6 +2,8 @@ from typing import Self
 
 import multiprocessing as mp
 
+from loguru import logger
+
 from . import ModelProperty, ModelInfo
 from .. import ModelDictData
 from ..arrow import ArrowResults

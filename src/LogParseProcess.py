@@ -3,6 +3,8 @@ from typing import Self
 import asyncio as aio
 import multiprocessing as mp
 
+from loguru import logger
+
 from src.bootlog import (
     CmdKeyValueStream,
     BootLogManager,
@@ -49,6 +51,13 @@ class LogParseProcess:
     def __init__( self: Self, parse_info: ParseProcessInfo ) -> None:
         super().__init__()
 
+        logger.add(
+            "/home/richard/data/jctl-logs/GenGraphLib.log",
+            format="{time} {level} {message}",
+            filter="gengraphlib",
+            level="INFO"
+        )
+
         parse_info: ParseProcessInfo = parse_info
         self.log_root: str           = parse_info.log_root
         self.cur_bootindex: int      = parse_info.boot_index
@@ -79,20 +88,21 @@ class LogParseProcess:
             async for keyvalue_tuple in self.cmd_stream.stream_values():
                 if keyvalue_tuple is not None:
                     alias, value = keyvalue_tuple
-                    self.update_stats(alias, value)
-                    if alias in self.queues_byalias:
-                        keyindex_queue: mp.Queue = self.queues_byalias[alias]
-                        value_packet: KeyValuePacket = (self.record_count, value)
-                        keyindex_queue.put(value_packet)
+                    if alias == "":
+                        self.record_count += 1
+                    else:
+                        self.update_stats(alias, value)
+                        if alias in self.queues_byalias:
+                            keyindex_queue: mp.Queue = self.queues_byalias[alias]
+                            value_packet: KeyValuePacket = (self.record_count, value)
+                            keyindex_queue.put(value_packet)
 
             for alias, keyindex_queue in self.queues_byalias.items():
                 value_packet: KeyValuePacket = (-1, str(self.record_count))
                 keyindex_queue.put(value_packet)
 
         except Exception as exc:
-            breakpoint()
-            print(f'Exception: {exc}')
-
+            logger.error(f'Exception: {exc}')
 
     def parse_completed( self: Self ) -> None:
         self.table_model.wait_tocomplete()
@@ -109,7 +119,7 @@ class LogParseProcess:
                 for value, cnt in stats.keymap.items():
                     refcnt += cnt
                 hitpct = (refcnt / self.record_count) * 100
-                print(f'{propname}: keycnt: {keycnt}  refcnt: {refcnt}  hitpct: {hitpct}\n')
+                logger.info(f'{propname}: keycnt: {keycnt}  refcnt: {refcnt}  hitpct: {hitpct}\n')
                 file.write(f'{propname}: keycnt: {keycnt}  refcnt: {refcnt}  hitpct: {hitpct}\n')
 
 
