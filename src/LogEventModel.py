@@ -33,16 +33,18 @@ class PriorityModProp( IntEnumModProp[ PriorityEnum ] ):
 class LogEventModel(DataTableModel):
     model = ModelInfo("logevents")
 
-    priority     = PriorityModProp( alias="PRIORITY")
-    timestamp    = TmstModProp(alias="__REALTIME_TIMESTAMP")
-    message      = StrModProp(alias="MESSAGE")
+    priority       = PriorityModProp( alias="PRIORITY")
+    timestamp      = TmstModProp(alias="__REALTIME_TIMESTAMP")
+    sysd_cgroup    = StrModProp(alias="_SYSTEMD_CGROUP")
+    syslog_id      = StrModProp(alias="SYSLOG_IDENTIFIER")
+    netwk_domains  = StrModProp(alias="NM_LOG_DOMAINS")
+    netwk_device   = StrModProp(alias="NM_DEVICE")
+    message        = StrModProp(alias="MESSAGE")
 
     # pid          = StrModProp(alias="_PID")
-    # syslog_id    = StrModProp(alias="SYSLOG_IDENTIFIER")
     # syslog_pid   = StrModProp(alias="SYSLOG_PID")
     # linux_ctx    = StrModProp(alias="_SELINUX_CONTEXT")
-    # sysd_cgroup  = StrModProp(alias="_SYSTEMD_CGROUP")
-    sysd_usrunit = StrModProp(alias="_SYSTEMD_USER_UNIT")
+    #sysd_usrunit = StrModProp(alias="_SYSTEMD_USER_UNIT")
     # transport    = StrModProp(alias="_TRANSPORT")
 
 
@@ -69,12 +71,12 @@ class LogEventModel(DataTableModel):
     # cap_eff      = StrModProp(alias="_CAP_EFFECTIVE")
     # jrnlPath     = StrModProp(alias="JOURNAL_PATH")
     # jrnlName     = StrModProp(alias="JOURNAL_NAME")
-    sysdRaw      = StrModProp(alias="SYSLOG_RAW")
-    thID         = StrModProp(alias="THREAD_ID")
-    errMsg       = StrModProp(alias="ERROR_MESSAGE")
-    errCode      = StrModProp(alias="ERROR_CODE")
-    errDom       = StrModProp(alias="ERROR_DOMAIN")
-    interface    = StrModProp(alias="INTERFACE")
+    #sysdRaw      = StrModProp(alias="SYSLOG_RAW")
+    #thID         = StrModProp(alias="THREAD_ID")
+    #errMsg       = StrModProp(alias="ERROR_MESSAGE")
+    #errCode      = StrModProp(alias="ERROR_CODE")
+    #errDom       = StrModProp(alias="ERROR_DOMAIN")
+    #interface    = StrModProp(alias="INTERFACE")
 
 
 

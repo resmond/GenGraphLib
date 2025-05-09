@@ -7,7 +7,7 @@ from enum import IntEnum, StrEnum
 LineRefList: type = list[ int ]
 ModelDictDataTypes: type = type( str | int | bool | dict )
 ModelDictData: type = dict[str, ModelDictDataTypes ]
-
+PropAliases: type = type[ str | list[str ] | None ]
 
 class KeyIndexType(StrEnum):
     Undetermined      = "Undetermined"

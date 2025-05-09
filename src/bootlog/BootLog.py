@@ -30,6 +30,9 @@ class BootLog:
         self.last_dt:      dt.datetime = last_dt
         self.bootlog_path: str         = bootlog_path
 
+    def get_bootlogpath( self: Self ) -> str:
+        return self.bootlog_path
+
     def make_dir( self: Self ) -> bool:
         try:
             os.makedirs( self.bootlog_path, exist_ok=True )

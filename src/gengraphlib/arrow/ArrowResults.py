@@ -26,7 +26,7 @@ class PropertyStats:
         self.unique = False
 
     def getstr( self: Self ) -> str:
-        return f'{self.name}:{self.alias}[{self.ttype}] keycnt: {self.keycnt}  refcnt: {self.refcnt}  hitpct: {self.hitpct}  unique: {self.unique}'
+        return f'{self.name:15}:{self.alias:25} keycnt: {self.keycnt:6}  refcnt: {self.refcnt:6}  hitpct: {self.hitpct:2}  unique: {self.unique}'
 
 ModelResults: type = dict[ str, par.Array     ]
 StatsResults: type = dict[ str, PropertyStats ]
@@ -52,8 +52,8 @@ class ArrowResults:
         with open(f'{filepath}.stats',"w") as file:
             for model_id, modelstats in ArrowResults.stats.items():
                 for name, propstats in modelstats.items():
-                    logger.info(f'{model_id}:{name} - {propstats.getstr()}')
-                    file.write(f'{model_id}:{name} - {propstats.getstr()}\n')
+                    logger.info(f'{propstats.getstr()}')
+                    file.write(f'{propstats.getstr()}\n')
 
     @classmethod
     def write_arrowtable( cls, model_id: str, filepath: str ) -> None:

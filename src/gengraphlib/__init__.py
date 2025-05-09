@@ -2,7 +2,7 @@
 
 from .common import (
 
-      KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket, ModelPropTypes
+      KeyValueTuple, KeyRecordList, KeyRecordPacket, KeyValuePacket, ModelPropTypes, PropAliases
     , LineRefList, KeyIndexType, KeyIndexState, IndexInfo, ModelDictDataTypes, ModelDictData
     , SerializationType
 )
@@ -15,7 +15,7 @@ from .model import (
 
 __all__ = [
       "KeyValueTuple", "KeyIndexType", "KeyIndexState", "IndexInfo" , "SerializationType"
-    , "KeyRecordList", "KeyRecordPacket", "KeyValuePacket", "ModelPropTypes", "LineRefList"
+    , "KeyRecordList", "KeyRecordPacket", "KeyValuePacket", "ModelPropTypes", "PropAliases", "LineRefList"
     , "ModelDictDataTypes", "ModelDictData"
 
     , "DataTableModel", "StrEnumModProp", "IntEnumModProp"

@@ -110,12 +110,12 @@ class ModelProperty[ T: ModelPropTypes ]:
                     pass
 
         except ValueError as valexc:
-            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) ValueError: {valexc}  {trace}  {outer_rownum} {outer_value}' )
+            logger.error(f'({self.name}: {self.alias}) ValueError: {valexc}  {trace}  {outer_rownum} {outer_value}' )
 
         except Exception as exc:
-            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) Exception: {exc}  {trace}' )
+            logger.error(f'({self.name}: {self.alias}) Exception: {exc}  {trace}' )
 
-        logger.info(f"{self.ttype.__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} key2ref: {len(self.keyvaluemap_to_refs)} refs: {self.refcnt}")
+        logger.info(f"({self.name}: {self.alias}) maxrow: {self.maxrownum} key2ref: {len(self.keyvaluemap_to_refs)} refs: {self.refcnt}")
 
     def recv_value( self: Self, row_num: int, import_value: T ) -> None:
         #self.counts[ import_value.name ] += 1
@@ -132,15 +132,17 @@ class ModelProperty[ T: ModelPropTypes ]:
 
     def finalize( self: Self, maxrownum: int ) -> None:
         try:
-            self.maxrownum = maxrownum
+            self.maxrownum = max( self.maxrownum, maxrownum )
 
-            self.ref_to_keyvalue = [None] * self.maxrownum
+            self.ref_to_keyvalue = [None] * ( self.maxrownum + 1 )
             #self.valueindex_to_keyvalue: list[T | None] = [ key for key, refs in self.keyvaluemap_to_refs.items() ]
 
             for key, reflist in self.keyvaluemap_to_refs.items():
                 for ref in reflist:
-                    self.ref_to_keyvalue[ ref ] = key
-
+                    if ref > self.maxrownum:
+                        logger.error( f'({self.name}: {self.alias})  ref: {ref} > maxrownum: {self.maxrownum}' )
+                    else:
+                        self.ref_to_keyvalue[ ref ] = key
 
             ref2keysize = float( sys.getsizeof( self.ref_to_keyvalue) )
             valindexmapsize = float( sys.getsizeof(self.valueindex_to_keyvalue) + sys.getsizeof(self.keyvaluemap_to_refs) )
@@ -153,18 +155,14 @@ class ModelProperty[ T: ModelPropTypes ]:
             propstats = PropertyStats( self.name, self.alias, self.ttype.__name__, self.keycnt, self.refcnt, self.hitpct, self.isunique )
             ArrowResults.stash_results( self.model_id, self.name, self.par_array, propstats )
 
-            # p (f'{type(self).__name__}({self.name}:{self.alias}) maxrow: {self.maxrownum} keys: {self.keycnt} refs: {self.refcnt} ratio: {comp_ratio} hitpct: {self.hitpct}' )
-            # p (f"{type(self).__name__}({self.name}:{self.alias}) partype: {self.store_type} key2ref: {len(self.keyvaluemap_to_refs)} val2ref: {len(self.valueindex_to_keyvalue)} ref2key: {len(self.ref_to_keyvalue)}")
-            # p (f"{type(self).__name__}({self.name}: par_array: {sys.getsizeof(self.par_array)}")
-
         except ValueError as valexc:
-            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) ValueError: {valexc}' )
+            logger.error(f'({self.name}: {self.alias}) ValueError: {valexc}' )
 
         except Exception as exc:
-            logger.error(f'{self.ttype.__name__}({self.name}:{self.alias}) Exception: {exc}' )
+            logger.error(f'({self.name}: {self.alias}) Exception: {exc}' )
 
     def get_pararray(self: Self) -> par.Array | None:
-        logger.info(f"{self.ttype.__name__}({self.name}:{self.alias}) - {self.par_array} = {sys.getsizeof(self.par_array)}" )
+        logger.info(f"({self.name}: {self.alias}) - {self.par_array} = {sys.getsizeof(self.par_array)}" )
         return self.par_array
 
 
